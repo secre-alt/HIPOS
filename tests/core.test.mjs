@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import QRCode from 'qrcode';
+import jsQR from 'jsqr';
+import {createReport,decodeReport,addImport,pinHash,categories,areas,escapeHTML} from '../pwa/core.js';
+const report=()=>createReport(categories[0],areas[1],'Please clarify the handling instructions.');
+test('HIPOS1 reports round-trip through a real QR code',()=>{const r=report(),raw=JSON.stringify(r),qr=QRCode.create(raw,{errorCorrectionLevel:'M'}),scale=6,margin=4,size=(qr.modules.size+margin*2)*scale,pixels=new Uint8ClampedArray(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const col=Math.floor(x/scale)-margin,row=Math.floor(y/scale)-margin,dark=row>=0&&col>=0&&row<qr.modules.size&&col<qr.modules.size&&qr.modules.get(row,col),p=(y*size+x)*4;pixels[p]=pixels[p+1]=pixels[p+2]=dark?0:255;pixels[p+3]=255;}const decoded=jsQR(pixels,size,size);assert.ok(decoded);assert.deepEqual(decodeReport(decoded.data),r);});
+test('rejects malformed, oversized, unknown and unsafe report fields',()=>{const r=report();for(const delta of [{type:'other'},{id:'bad'},{area:'unknown'},{category:'unknown'},{description:'tiny'},{description:'x'.repeat(161)},{description:'😀'.repeat(80)},{description:'hello\u0085there'},{createdAt:Date.now()+172800000},{createdAt:'2026'}])assert.throws(()=>decodeReport(JSON.stringify({...r,...delta})));assert.throws(()=>decodeReport(' '.repeat(651)));assert.throws(()=>decodeReport('null'));});
+test('import keeps only protocol fields, prevents duplicate and starts New',()=>{const r=decodeReport(JSON.stringify({...report(),status:'Reviewed',unexpected:'ignore'}));assert.equal(r.unexpected,undefined);const records=addImport([],r);assert.equal(records[0].status,'New');assert.throws(()=>addImport(records,r),/already/);});
+test('PIN verifier uses salt and rejects different PINs',async()=>{const a=await pinHash('123456',[1,2,3]),b=await pinHash('123456',[1,2,3]),c=await pinHash('654321',[1,2,3]),d=await pinHash('123456',[3,2,1]);assert.deepEqual(a,b);assert.notDeepEqual(a,c);assert.notDeepEqual(a,d);});
+test('report text is escaped for display',()=>{assert.equal(escapeHTML('<img onerror="bad">'),'&lt;img onerror=&quot;bad&quot;&gt;');});

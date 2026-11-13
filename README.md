@@ -1,74 +1,56 @@
-# HIPOS — Offline Android Application (prototype source)
+﻿# HIPOS — Offline-first PWA
 
 **Hygienic and Intelligent Personal Organization System**  
-**Prevent • Reuse • Safely Carry Out**
+Prevent · Reuse · Safely Carry Out
 
-This is the **first code implementation** of the originally proposed HIPOS app, not a product already deployed at a school. It is intended for a performance-task prototype. It does **not** contain a campus trash-can feature.
+HIPOS now runs as an installable web app for students and staff. It includes offline guides, local concern reports, generated QR codes, camera scanning, explicit import confirmation, a local staff PIN, and persistent review status.
 
-## What is included
+## Run on your computer
 
-The project has **two installable Android variants** in one Android Studio project:
+Install Node.js 22 or later, then run in this project folder:
 
-1. `studentDebug` → **HIPOS Student** (`ph.edu.hipos.student`): welcome dashboard; offline prevention advice; reusable alternatives; waste classification; safe carry-out guide; create/view/delete local concerns; voluntarily show report QR code; privacy and policy screens.
-2. `staffDebug` → **HIPOS Staff** (`ph.edu.hipos.staff`): setup and unlock with a local PIN; bundled-model on-device QR scanning; explicit import confirmation; duplicate ID prevention; offline report list, status tracking, and counts.
+```powershell
+npm.cmd install
+npm.cmd run dev
+```
 
-**Never grant internet permission** to either APK. The Android dependencies must be downloaded during the **development/build process**, but normal app use requires no Wi-Fi or mobile data. Guidance content is bundled with the app and reporting uses local SQLite. QR exchange requires the two devices to be near each other; it is not network synchronization.
+Open **http://localhost:4173**. Wait for **Ready offline** before disconnecting. The development server builds on startup; restart it after source changes.
 
-## Build on Windows with Android Studio
+Use the browser's install menu or the **Install app** button. On iPhone or iPad, use Safari → Share → Add to Home Screen.
 
-Prerequisites: Android Studio, Android SDK Platform 36, Android SDK Build Tools, **JDK 17** (Android Studio's embedded JDK is suitable), an internet connection during the initial Gradle dependency download, and a test Android device running Android 8.0+ (API 26).
+## Build for phones and hosting
 
-**Note:** This archive does not contain the Gradle wrapper JAR, because the build environment used to produce it had no Gradle installation and could not download binaries. Use the official setup script in `scripts/setup-gradle-wrapper.ps1` on Windows to fetch the wrapper JAR from Gradle's official distribution server and verify its SHA-256 checksum, or run `gradle wrapper --gradle-version 8.13` with an installed Gradle distribution.
+```powershell
+npm.cmd run build
+```
 
-1. Extract this ZIP and open the **`HIPOS_AndroidStudio`** folder in Android Studio.
-2. On Windows PowerShell, in the project folder:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\scripts\setup-gradle-wrapper.ps1
-   .\gradlew.bat :app:assembleStudentDebug :app:assembleStaffDebug
-   ```
-3. Wait for Gradle dependencies and Android SDK components to install on your **own development computer**. This step needs internet once, unlike app runtime.
-4. Install the generated build variants to Android devices or emulators:
-   - `app/build/outputs/apk/student/debug/app-student-debug.apk`
-   - `app/build/outputs/apk/staff/debug/app-staff-debug.apk`
-5. Run student and staff APKs on **different devices** for the QR camera-transfer demonstration, or one device and an emulator using a camera feed.
+Deploy the contents of `dist/` to an HTTPS static host. Open that URL on each phone once online, then install. HTTPS is required for production camera access and offline support. Opening the HTML file directly or using a computer's plain HTTP LAN address does not provide the full PWA experience.
 
-The project uses **Kotlin 2.2.21, Android Gradle Plugin 8.13.2, Gradle 8.13, and Compose BOM 2026.09.00**. If you use a newer Android Studio, let the IDE guide any compatible updates rather than blindly changing unrelated dependencies.
+This change is implemented locally; no hosted site has been published.
 
-### How to demonstrate
+## Student and staff workflows
 
-1. On student phone, open the Prevention Guide in airplane mode.
-2. Choose a waste category, read the handling advice, and explain that an optional pouch is for suitable dry waste only.
-3. Go to Reports → Create; enter a **fictional** short concern, Save on this phone.
-4. In My Reports, tap Show QR. Do **not** describe this as submitted to staff.
-5. On the separate staff device, set the local PIN, tap Scan, scan the student's QR, review the preview, and Confirm import.
-6. Mark the report Under Review or Reviewed. Scan the same code again and demonstrate duplicate detection.
-7. Turn airplane mode on both devices, restart the apps, and confirm local persistence.
+- Students browse prevention, reuse, classification, and carry-out guides, then optionally save a nonidentifying concern and show its QR.
+- Staff open **Staff review**, create a local PIN, scan a student's QR or paste its transfer text, review the contents, and confirm import.
+- Imported concerns start **New** and can move to **Under Review** or **Reviewed**. Duplicate report IDs are rejected.
+- Staff access locks when the app is hidden or reloaded. PINs are hashed; the local PIN does not prove employment or encrypt browser data.
+- Reports stay on the current browser and device. There is no automatic submission, account, server database, or synchronization. QR contents are readable by anyone who scans them.
 
-### Explicit limitations
+Use fictional reports for this school prototype. School handling procedures, disposal arrangements, and any canteen return program still need approval. Browser storage may be cleared or evicted; it is not a backup.
 
-- The first version uses platform `SQLiteOpenHelper`, not Room. It **does use local SQLite**, the proposed data-storage technology; Room could be added later.
-- The staff PIN is **not proof of employment**. The school must control who receives/installs the staff APK. Staff storage is **not encrypted** in this prototype; deploy only with fictional data until stronger device security and a privacy review are completed.
-- The QR is **not encrypted**. Anyone with a QR scanner could read the report text. Students must not include identifying information, and in-person QR showing is not guaranteed anonymous.
-- The student app says QR *Ready*, never *Received*. There is no automatic acknowledgement/synchronization.
-- Canteen reusable-container returns, permitted disposal options, and staff handling rules must be **approved by the school** before HIPOS makes specific claims about them.
-- No automatic AI, internet features, facial recognition, GPS, or individual behavior scoring are included.
-- This code was created without a runnable Android SDK/Gradle toolchain and **has not been compiled or installed** in the current environment. Build and device testing are required before calling it a working APK.
+## Validate
 
-## Source tree
+```powershell
+npm.cmd test
+npm.cmd run test:browser
+```
 
-- `app/src/main/java/ph/edu/hipos/Content.kt` — bundled waste-prevention rules.
-- `app/src/main/java/ph/edu/hipos/HiposDatabase.kt` — local SQLite reports.
-- `app/src/main/java/ph/edu/hipos/QrProtocol.kt` — offline short QR payload and bitmap rendering.
-- `app/src/student/java/ph/edu/hipos/StudentApp.kt` — student screens.
-- `app/src/staff/java/ph/edu/hipos/StaffApp.kt` — staff screens and review statuses.
-- `app/src/staff/java/ph/edu/hipos/OfflineScanner.kt` — CameraX and fully bundled ML Kit scanner.
-- `app/src/staff/java/ph/edu/hipos/StaffSecurity.kt` — local PBKDF2 PIN verifier.
-- `docs/TEST_PLAN.md` — acceptance and security checks.
+The browser test uses installed Microsoft Edge and checks storage, PIN access, import confirmation, duplicate detection, status persistence, camera denial, offline reload/QR, deletion, and mobile layout. Screenshots go to `test-results/`. Real phone installation and live camera scanning still require device testing.
 
-## Submission scope
+See [PWA test plan](docs/PWA_TEST_PLAN.md) and [PWA architecture and hosting](docs/PWA.md).
 
-Your instructor only requires a nonfunctional miniature, sketch/screens, and paperwork. A complete functioning APK is an **optional extension**. Do not represent this source code as tested or deployed until it builds successfully on your Android Studio device.
+## Existing Android source
 
-## Bonus interactive preview
+The Android source remains in `app/` as a reference. You do not need Gradle, Android Studio, an SDK, or APK installation to build or run the PWA. Android HIPOS1 QR reports use the same protocol; existing native SQLite records are not migrated automatically. See [Android reference documentation](docs/ANDROID.md).
 
-Open `HIPOS_Offline_Browser_Preview.html` (included at the root of the ZIP) in your browser for a **separate, standalone browser demo** of the main screens. It works without server access and saves demo reports to that browser’s local storage. **It does not implement native Android SQLite, camera QR scanning, or staff authentication**, which are in the Android source.
+`HIPOS_Offline_Browser_Preview.html` is the original standalone mockup. Use the new PWA for offline installation and QR features.
