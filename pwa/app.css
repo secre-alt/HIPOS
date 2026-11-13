@@ -8,15 +8,15 @@ html{overflow-anchor:none}
 .step-heading h2{margin:0;font-size:18px}
 .unsuitable-step{border-left:4px solid #b4895a}
 
-.install-banner{background:#e6ecdc;border-bottom:1px solid #c4d2bc;color:var(--green)}
+.install-banner{position:fixed;right:24px;bottom:max(24px,env(safe-area-inset-bottom));z-index:30;width:380px;max-width:calc(100% - 32px);background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 32px #102f2726;color:var(--green);max-height:calc(100dvh - 32px);overflow-y:auto}
 #footer-install{display:flex;align-items:center;gap:10px;margin:0;padding:8px 0;background:transparent;color:var(--muted);border:0;border-radius:4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-align:left}
 #footer-install:hover{color:var(--green);text-decoration:underline;text-underline-offset:4px}
-.install-banner-inner{max-width:1184px;margin:auto;padding:12px 32px;display:flex;align-items:center;gap:16px}
-.install-banner-icon{width:48px;height:48px;flex-shrink:0;border-radius:50%;background:#d1dfbe;display:grid;place-items:center}
-.install-banner-copy{flex:1;min-width:0;overflow-wrap:anywhere}.install-banner-copy strong{font-size:16px;font-weight:600}.install-banner-copy p{font-size:14px;margin:0;color:var(--muted)}
-#install{border-radius:28px;padding:12px 24px;flex-shrink:0}
-#dismiss-install{display:grid;place-items:center;min-width:44px;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;flex-shrink:0}
-@media(max-width:760px){.install-banner-inner{padding:12px 16px;gap:12px;display:grid;grid-template-columns:40px minmax(0,1fr) 44px}.install-banner-icon{width:40px;height:40px}.install-banner-copy{grid-column:2;grid-row:1}.install-banner-copy p{margin-top:4px}#dismiss-install{grid-column:3;grid-row:1}#install{grid-column:2;justify-self:start;padding:12px 24px}}
+.install-banner-inner{padding:16px;display:grid;grid-template-columns:40px minmax(0,1fr) 44px;align-items:start;gap:12px}
+.install-banner-icon{width:40px;height:40px;flex-shrink:0;border-radius:50%;background:#d1dfbe;display:grid;place-items:center}
+.install-banner-copy{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}.install-banner-copy strong{font-size:16px;font-weight:600}.install-banner-copy p{font-size:14px;line-height:1.5;margin:4px 0 0;color:var(--muted)}
+#install{grid-column:1 / -1;grid-row:2;border-radius:8px;padding:12px 24px;width:100%;min-height:48px}
+#dismiss-install{grid-column:3;grid-row:1;display:grid;place-items:center;min-width:44px;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;flex-shrink:0}
+@media(max-width:760px){.install-banner{right:16px;bottom:max(16px,env(safe-area-inset-bottom))}}
 *{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}
 button,.button-link{min-height:48px;min-width:44px;padding:12px 16px;border:1px solid transparent;border-radius:8px;background:var(--green);color:white;font-weight:600;line-height:1.4;white-space:normal;overflow-wrap:anywhere;text-align:center;cursor:pointer}
 .button-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}button:hover,.button-link:hover{background:#245540}button:disabled{opacity:.5;cursor:wait}a{color:var(--green);text-underline-offset:4px}

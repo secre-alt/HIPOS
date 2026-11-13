@@ -135,6 +135,11 @@ try{
     await p.evaluate(()=>window.scrollTo(0,0));
     await p.screenshot({path:`test-results/home-${width}.png`,fullPage:true});
     await expect(p.locator('#install-banner')).toBeVisible();
+    await expect(p.locator('#install-banner')).toHaveCSS('position','fixed');
+    assert.equal((await p.locator('aside').boundingBox()).y,0,'Install popup does not push the navbar down');
+    const popup=await p.locator('#install-banner').boundingBox();
+    assert.ok(popup.x>=0&&popup.x+popup.width<=width&&popup.y>=0&&popup.y+popup.height<=844,'Install popup fits phone viewport');
+    await p.locator('#install-banner').screenshot({path:`test-results/install-popup-${width}.png`});
     await expect(p.locator('#footer-install')).toBeHidden();
     assert.equal(await p.locator('#install').count(),1,'Only the banner install action exists');
     await p.evaluate(()=>{const prompt=new Event('beforeinstallprompt',{cancelable:true});prompt.prompt=async()=>{window.installPromptCalled=true;};prompt.userChoice=Promise.resolve({outcome:'dismissed'});window.dispatchEvent(prompt);});
