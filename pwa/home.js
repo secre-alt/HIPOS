@@ -1,3 +1,4 @@
+import {dailyChallenge,weekly,recentGuides,schoolSection} from './engagement.js';
 import {waste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {checklist,quiz} from './activities.js';
@@ -18,8 +19,8 @@ export function home(){
   <section class="waste-checker" aria-labelledby="checker-heading"><div class="checker-heading"><div><h2 id="checker-heading">What are you throwing away?</h2><p>Choose an item to check the guidance</p></div><a href="#classify">Check Waste Type</a></div>
   <div class="waste-choices">${waste.map(([title],i)=>`<button class="waste-choice" data-waste="${i}" aria-label="${e(title)}" aria-pressed="false" aria-controls="waste-result"><span class="item-art"><svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${drawings[i]}</svg></span><span>${captions[i]}</span></button>`).join('')}</div>
   <div id="waste-result" class="waste-result" role="status" aria-live="polite" aria-atomic="true"><p>Select an item above. Guidance will appear here.</p></div></section>
-  ${activities()}<section class="home-next" aria-labelledby="next-heading"><h2 id="next-heading">Make the next choice easier</h2><div class="home-guides"><a class="card card-link" href="#prevent"><span class="guide-number">01 / Prevent</span><h3>Less packaging, less to carry</h3><p>A little planning before your next snack or drink.</p><span class="guide-link">Prevent Waste →</span></a><a class="card card-link" href="#reuse"><span class="guide-number">02 / Reuse</span><h3>Bring it. Use it again.</h3><p>Your own bottle, lunchbox, or utensils, where permitted.</p><span class="guide-link">Explore reuse →</span></a><a class="card card-link" href="#carry"><span class="guide-number">03 / Carry out</span><h3>Know what can come with you</h3><p>Clean, dry, nonhazardous waste only. A pouch is optional.</p><span class="guide-link">Read the guide →</span></a></div></section>
-  <section class="concern-strip"><div><h2>Something needs attention?</h2><p>Save a concern on this device and choose when to share it.</p></div><a class="button-link secondary" href="#reports">Record a concern</a></section><p class="note">School project prototype. Reusable canteen services: <strong>Requires school approval</strong>.</p>`;
+  ${activities()}${recentGuides()}<section class="home-next" aria-labelledby="next-heading"><h2 id="next-heading">Make the next choice easier</h2><div class="home-guides"><a class="card card-link" href="#prevent"><span class="guide-number">01 / Prevent</span><h3>Less packaging, less to carry</h3><p>A little planning before your next snack or drink.</p><span class="guide-link">Prevent Waste →</span></a><a class="card card-link" href="#reuse"><span class="guide-number">02 / Reuse</span><h3>Bring it. Use it again.</h3><p>Your own bottle, lunchbox, or utensils, where permitted.</p><span class="guide-link">Explore reuse →</span></a><a class="card card-link" href="#carry"><span class="guide-number">03 / Carry out</span><h3>Know what can come with you</h3><p>Clean, dry, nonhazardous waste only. A pouch is optional.</p><span class="guide-link">Read the guide →</span></a></div></section>
+  ${weekly()}${schoolSection()}<section class="concern-strip"><div><h2>Something needs attention?</h2><p>Save a concern on this device and choose when to share it.</p></div><a class="button-link secondary" href="#reports">Record a concern</a></section><p class="note">School project prototype. Reusable canteen services: <strong>Requires school approval</strong>.</p>`;
 }
 export function selectWaste(button){
   const item=waste[Number(button.dataset.waste)];
@@ -30,7 +31,7 @@ export function selectWaste(button){
   result.innerHTML=`<span class="result-label">${suitable?'Suitable only if clean, dry and nonhazardous':'Keep out of your dry-waste pouch'}</span><h3>${e(title)}</h3><p>${e(body)}</p><a href="#carry">Read the safe carry-out guide →</a>`;
 }
 
-export function activities(){return `<div class="home-activities">${quiz()}${checklist()}</div>`;}
+export function activities(){return `<div class="home-activities">${dailyChallenge()}${quiz()}${checklist()}</div>`;}
 
 const reuseDrawings=[drawings[2],'<rect x="14" y="34" width="68" height="44" rx="12" fill="#dfc58c"/><rect x="12" y="28" width="72" height="14" rx="6" fill="#efdfba"/><path d="M41 29v49h14V29M34 28v-8h28v8"/>','<path d="M27 14v23m-8-23v15q0 10 8 10t8-10V14M27 39v43M65 14q-15 0-15 17t15 17q15 0 15-17T65 14M65 48v34" fill="#d9e5d3"/>'];
 export function reuseArt(index){return index<3?`<svg class="reuse-art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${reuseDrawings[index]}</svg>`:'';}

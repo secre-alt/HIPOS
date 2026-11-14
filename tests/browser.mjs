@@ -246,9 +246,12 @@ try{
     await expect(p.locator('.mobile-bottom-nav a').first()).toHaveAttribute('aria-current','page');
     await p.getByLabel('Packed my clean bottle',{exact:true}).check();
     await expect(p.locator('#daily-progress')).toHaveText('1 of 3 actions completed today');
+    await p.evaluate(()=>localStorage.setItem('hipos.quiz.v2',JSON.stringify({ids:[0,1,2],answers:[],position:0})));
     await p.reload();await expect(p.getByLabel('Packed my clean bottle',{exact:true})).toBeChecked();
     await p.getByRole('button',{name:'Keep out of the pouch',exact:true}).click();
     await expect(p.locator('#quiz-feedback')).toContainText('Let');
+    await p.reload();await expect(p.locator('#quiz-feedback')).toContainText('Let');
+    await expect(p.locator('[data-answer]').first()).toBeDisabled();
     await p.getByRole('button',{name:'Next question',exact:true}).click();
     await p.getByRole('button',{name:'Keep out of the pouch',exact:true}).click();
     await expect(p.locator('#quiz-feedback')).toContainText('Correct.');
@@ -272,6 +275,56 @@ try{
     await go('Reuse');await expect(p.locator('.reuse-art')).toHaveCount(3);
     await p.getByRole('link',{name:'My Concerns',exact:true}).click();
     await expect(p.locator('#page-label')).toHaveText('My reports');
+    await p.getByRole('link',{name:'Home page',exact:true}).click();
+    await expect(p.locator('.recent-guides')).toContainText('Reuse');
+    await expect(p.locator('.school-info')).toContainText('Awaiting school approval');
+    await expect(p.locator('.week-days li')).toHaveCount(7);
+    await p.getByRole('button',{name:'Mark complete',exact:true}).click();
+    await expect(p.locator('#challenge-feedback')).toContainText('Completed today');
+    await expect(p.locator('.week-days li').last()).toContainText('Completed an action');
+    await p.reload();await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','true');
+    await p.getByRole('button',{name:'Skip today',exact:true}).click();
+    await expect(p.locator('#challenge-feedback')).toContainText('Skipped today');
+    await p.getByRole('button',{name:'Undo',exact:true}).click();
+    await expect(p.locator('#challenge-feedback')).toBeEmpty();
+    await p.locator('#language').selectOption('fil');
+    await expect(p.locator('html')).toHaveAttribute('lang','fil');
+    await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
+    await p.reload();await expect(p.locator('#language')).toHaveValue('fil');
+    await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
+    await noOverflow();await touchTargets();
+    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.screenshot({path:'test-results/filipino-'+width+'.png',fullPage:true});
+    for(const desktopWidth of [1001,1280,1920]){
+      await p.setViewportSize({width:desktopWidth,height:900});await noOverflow();
+    }
+    await p.setViewportSize({width,height:844});
+    await p.getByRole('link',{name:'Pagkapribado at impormasyon ng app',exact:true}).click();
+    await expect(p.locator('#view')).toContainText('Mga gawain mo sa device na ito');
+    await p.getByRole('link',{name:'Mga alalahanin ko',exact:true}).click();
+    await p.locator('#description').fill('Clean paper');
+    await p.locator('#category').selectOption('Excessive packaging');
+    await p.getByRole('button',{name:'I-save sa device na ito',exact:true}).click();
+    await expect(p.locator('.report-description').first()).toHaveText('Clean paper');
+    const bilingualReport=await p.evaluate(()=>JSON.parse(localStorage.getItem('hipos.pwa.v1')).reports[0]);
+    assert.equal(bilingualReport.category,'Excessive packaging');
+    await p.locator('#language').selectOption('en');
+    await expect(p.locator('html')).toHaveAttribute('lang','en');
+    await expect(p.locator('#page-label')).toHaveText('My reports');
+    await p.getByRole('link',{name:'Home page',exact:true}).click();
+    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.screenshot({path:'test-results/engagement-'+width+'.png',fullPage:true});
+    await p.evaluate(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage full');};});
+    await p.getByRole('button',{name:'Mark complete',exact:true}).click();
+    await expect(p.locator('#challenge-feedback')).toContainText('Could not save');
+    await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','false');
+    await p.locator('[data-answer]').first().click();
+    await expect(p.locator('#quiz-storage')).toContainText('could not be saved');
+    await p.locator('#language').selectOption('fil');
+    await expect(p.locator('#language')).toHaveValue('en');
+    await expect(p.locator('#notice')).toContainText('Could not save language');
+    await p.reload();
+
     await p.getByRole('button',{name:'Menu',exact:true}).click();
     // Stress a navigation label to verify wrapping, rather than clipping or horizontal scrolling.
     await p.locator('#nav a').first().evaluate(el=>{el.textContent='Student home and everyday waste prevention guidance';});
@@ -279,5 +332,5 @@ try{
     await noOverflow();await touchTargets();
     assert.deepEqual(mobileErrors,[]);await mobile.close();
   }
-  console.log('Browser checks passed at desktop, 360px and 390px: home actions, 44px targets, wrapping, storage, cross-device QR import, invalid camera QR, permission denial, offline guides/reports/QR, PIN, duplicates and status.');
+  console.log('Browser checks passed: desktop/mobile layouts, offline quiz resume and scoring, challenges, weekly history, checklist, English/Filipino, storage failures, reporting, QR import, camera denial, PIN and status persistence.');
 }finally{await browser?.close();server.kill();}

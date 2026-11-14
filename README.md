@@ -31,8 +31,11 @@ This change is implemented locally; no hosted site has been published.
 ## Student and staff workflows
 
 - The home waste checker shows illustrated choices and item-specific handling guidance.
-- A three-question sorting quiz gives immediate explanations and a final score; it works offline and can be restarted.
+- A three-question sorting quiz draws from nine school scenarios, gives immediate explanations and a related guide, and saves progress across reloads. Retrying chooses three questions outside the previous set. It works offline.
 - An optional daily checklist saves bottle, lunchbox, and utensil reminders on this device. It resets by the device's local calendar day and makes no environmental impact estimates.
+- A rotating daily challenge can be completed, skipped, or undone. A private seven-day view records checklist and challenge activity; missing days have no penalty. Recent guides can be reopened from Home. Activity history is trimmed to about 35 days when new activity is saved on the device.
+- Choose English or Filipino in the header. The choice is saved locally and works offline; report descriptions and transfer data retain their original contents.
+- School information has an explicit awaiting-approval state until verified content is supplied. See [school information setup](docs/SCHOOL_INFORMATION.md) for the approval fields required before publishing procedures or contacts.
 - Mobile quick navigation keeps Home, Waste Guide, and My Concerns within reach. Installation appears in the page flow without covering guides.
 - Students browse prevention, reuse, classification, and carry-out guides, then optionally save a nonidentifying concern and show its QR.
 - Staff open **Staff review**, create a local PIN, scan a student's QR or paste its transfer text, review the contents, and confirm import.
