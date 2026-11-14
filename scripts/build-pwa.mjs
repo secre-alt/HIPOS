@@ -1,10 +1,14 @@
 import {build} from 'esbuild';
-import {mkdir,copyFile,writeFile,readFile} from 'node:fs/promises';
+import {mkdir,copyFile,writeFile,readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 await mkdir('dist/icons',{recursive:true});
 for(const f of ['index.html','app.css','manifest.webmanifest'])await copyFile(`pwa/${f}`,`dist/${f}`);
-await build({entryPoints:['pwa/app.js'],bundle:true,minify:true,format:'esm',target:['es2022'],outfile:'dist/app.js'});
+await mkdir('dist/screenshots',{recursive:true});
+for(const f of await readdir('pwa/screenshots').catch(()=>[]))await copyFile(`pwa/screenshots/${f}`,`dist/screenshots/${f}`);
+// Build id shown on the Privacy page (Vercel provides the commit; local builds say "dev").
+const buildInfo={version:(process.env.VERCEL_GIT_COMMIT_SHA||'dev').slice(0,7),date:new Date().toISOString().slice(0,10)};
+await build({entryPoints:['pwa/app.js'],bundle:true,minify:true,format:'esm',target:['es2022'],outfile:'dist/app.js',define:{__HIPOS_BUILD__:JSON.stringify(buildInfo)}});
 // Generate app-owned PNG artwork directly; no remote image/font dependencies.
 function crc(buf){let c=0xffffffff;for(const b of buf){c^=b;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
 function chunk(type,body){const t=Buffer.from(type),n=Buffer.alloc(4),checksum=Buffer.alloc(4);n.writeUInt32BE(body.length);checksum.writeUInt32BE(crc(Buffer.concat([t,body])));return Buffer.concat([n,t,body,checksum]);}
@@ -22,9 +26,9 @@ function icon(size){
     const color=[0,0,0];
     for(let sy=0;sy<samples;sy++)for(let sx=0;sx<samples;sx++){
       const nx=(x+(sx+.5)/samples)/size,ny=(y+(sy+.5)/samples)/size;
-      const h=ny>=.395&&ny<=.605&&((nx>=.415&&nx<=.441)||(nx>=.559&&nx<=.585)||(ny>=.486&&ny<=.512&&nx>=.415&&nx<=.585));
-      const outline=insideMark(nx,ny)&&!insideMark(nx,ny,.011);
-      const sample=h?[212,232,183]:outline?[139,181,155]:[18,63,50];
+      const h=ny>=.39&&ny<=.61&&((nx>=.402&&nx<=.45)||(nx>=.55&&nx<=.598)||(ny>=.476&&ny<=.524&&nx>=.402&&nx<=.598));
+      const t=(nx+ny)/2,bg=[11+16*t,47+60*t,37+39*t];
+      const sample=h?[11,47,37]:insideMark(nx,ny)?[185,242,107]:bg;
       for(let c=0;c<3;c++)color[c]+=sample[c]/(samples*samples);
     }
     const p=y*(size*4+1)+1+x*4;
@@ -34,9 +38,9 @@ function icon(size){
   const head=Buffer.alloc(13);head.writeUInt32BE(size);head.writeUInt32BE(size,4);head[8]=8;head[9]=6;
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',head),chunk('IDAT',deflateSync(pixels)),chunk('IEND',Buffer.alloc(0))]);
 }
-await writeFile('dist/icons/icon-192.png',icon(192));await writeFile('dist/icons/icon-512.png',icon(512));await writeFile('dist/icons/maskable-512.png',icon(512));
-const assets=['./','./index.html','./app.js','./app.css','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png'];
+await writeFile('dist/icons/icon-180.png',icon(180));await writeFile('dist/icons/icon-192.png',icon(192));await writeFile('dist/icons/icon-512.png',icon(512));await writeFile('dist/icons/maskable-512.png',icon(512));
+const assets=['./','./index.html','./app.js','./app.css','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png'];
 const hash=createHash('sha256');for(const f of assets.slice(1))hash.update(await readFile(`dist/${f.slice(2)}`));
 const version=hash.digest('hex').slice(0,16);
-await writeFile('dist/sw.js',`const PREFIX='hipos-shell-'+self.registration.scope;\nconst CACHE=PREFIX+'${version}';\nconst ASSETS=${JSON.stringify(assets)};\nself.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\nself.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!event.request.url.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);if(event.request.mode==='navigate')return (await cache.match('./index.html'))||fetch(event.request);return (await cache.match(event.request,{ignoreSearch:true}))||fetch(event.request);})());});\n`);
+await writeFile('dist/sw.js',`const PREFIX='hipos-shell-'+self.registration.scope;\nconst CACHE=PREFIX+'${version}';\nconst ASSETS=${JSON.stringify(assets)};\nself.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\nself.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!event.request.url.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const hit=event.request.mode==='navigate'?await cache.match('./index.html'):await cache.match(event.request,{ignoreSearch:true});if(hit)return hit;try{return await fetch(event.request);}catch{return new Response('Offline',{status:503,statusText:'Offline',headers:{'content-type':'text/plain'}});}})());});\n`);
 console.log(`HIPOS built in dist/ (offline cache ${version}).`);

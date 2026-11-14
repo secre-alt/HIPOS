@@ -269,7 +269,7 @@ body{
     #f6f8ee;
   background-attachment:fixed;
 }
-h1,h2,h3{font-family:var(--font-display);color:var(--green-deep)}
+h1,h2,h3{font-family:var(--font-display);color:var(--heading,var(--green-deep))}
 h1{font-weight:800;letter-spacing:-.03em;line-height:1.05}
 h2{font-weight:750;letter-spacing:-.01em}
 h3{font-weight:700}
@@ -451,7 +451,56 @@ footer{border-top-color:#d3ddc8}
 
 /* ---- "Update available" banner ----------------------------------------- */
 .update-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;padding:16px 20px;border-radius:20px;border-left:6px solid var(--green-mid);background:linear-gradient(120deg,#e9f9cf,#d5f1de);box-shadow:var(--shadow-sm);animation:hipos-rise .4s var(--ease)}
-.update-banner-copy{min-width:0}.update-banner-copy strong{font-family:var(--font-display);font-weight:750;color:var(--green-deep)}
+.update-banner-copy{min-width:0}.update-banner-copy strong{font-family:var(--font-display);font-weight:750;color:var(--heading,var(--green-deep))}
 .update-banner-copy p{margin:2px 0 0;font-size:var(--type-small);color:#3a5a48}
 .update-banner-actions{display:flex;gap:10px;flex-shrink:0}
 @media(max-width:760px){.update-banner{flex-direction:column;align-items:stretch;gap:12px;padding:16px}.update-banner-actions>button{flex:1}}
+
+/* ==========================================================================
+   Dark theme — follows the phone's setting. Light mode is untouched above.
+   ========================================================================== */
+@media(prefers-color-scheme:dark){
+:root{color-scheme:dark;color:#e3eee6;--ink:#e3eee6;--heading:#eaf6e1;--muted:#a3bbac;--line:#27433a;--surface:#12251e;--leaf-soft:#1c3a2b;--mint:#17342a;
+  --shadow-sm:0 1px 2px #0006,0 4px 14px #0004;--shadow-md:0 2px 4px #0006,0 14px 34px #0005;--shadow-lg:0 4px 8px #0006,0 26px 60px #0007}
+body{color:var(--ink);background:radial-gradient(60rem 28rem at 105% -6rem,#14352a 0%,transparent 60%),radial-gradient(48rem 24rem at -10% 18rem,#10291f 0%,transparent 62%),#0b1713;background-attachment:fixed}
+a{color:#a9e57b}.guide-link{color:#a9e57b}.skip{color:#143026}
+aside,.brand,#menu-toggle{color:#fffef9}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:#e8c26a}
+aside{background:linear-gradient(120deg,#061a14 0%,#0c3126 60%,#13503a 100%)}
+header,footer{border-color:var(--line)}
+#connection{background:var(--leaf-soft);color:#cdeeb0}
+input,select,textarea,.language-control select{background:#0f1f19;border-color:#36574a;color:var(--ink)}
+input:focus,select:focus,textarea:focus{border-color:#7bd77a;box-shadow:0 0 0 4px #b9f26b33}
+.card,.waste-checker,dialog{background:var(--surface);color:var(--ink)}
+.card-link:hover{background:#17302a}
+.secondary{background:var(--surface);border-color:#3a5d4e;color:#d8efc9}
+.secondary:hover{background:#1d3a2c;border-color:#7bd77a}
+.danger{background:#3a211b;color:#ffc9b8;border-color:#6a3b2f}.danger:hover{background:#4a2b23}
+.home-intro{box-shadow:0 0 0 1px #ffffff14,var(--shadow-lg)}
+.checker-heading>a{background:var(--leaf-soft);color:#cdeeb0}.checker-heading>a:hover{background:var(--leaf);color:var(--green-deep)}
+.waste-choice{color:#e8f3e2}
+.waste-choice:nth-child(1){--tile:#1c2a3d}.waste-choice:nth-child(2){--tile:#3a321a}.waste-choice:nth-child(3){--tile:#17352f}
+.waste-choice:nth-child(4){--tile:#2a3a17}.waste-choice:nth-child(5){--tile:#2c2440}.waste-choice:nth-child(6){--tile:#402620}
+.waste-choice[aria-pressed=true]{border-color:var(--leaf)}.waste-choice[aria-pressed=true]::after{box-shadow:0 0 0 2px var(--leaf)}
+.item-art{background:#f1f6e8;color:#143026;box-shadow:inset 0 0 0 2px #fff,0 4px 10px #0006}
+.waste-guide-art,.reuse-art{background:#eef5e3;color:#143026}
+.waste-result{background:var(--leaf-soft)}.waste-result.needs-care{background:#3a211b}
+.result-label{background:#ffffff14;color:#cdeeb0}.needs-care .result-label{color:#ffb9a3}
+.pill,.approval-label{background:var(--leaf-soft);color:#bfe69a}.pill.unsafe,.approval-label{background:#3a211b;color:#ffb9a3}
+.challenge-panel{background:linear-gradient(135deg,#1b3d27,#143328)}.challenge-panel p{color:#c5dccc}
+#daily-progress{background:var(--leaf-soft);color:#cdeeb0}.daily-items label:hover{background:var(--leaf-soft)}
+.concern-strip{background:linear-gradient(120deg,#3a2f1a,#3a2420)}.concern-strip p{color:#e0c9b8}
+.week-days li{background:#17302a;color:var(--ink)}.week-days li.activity-done{background:var(--leaf);color:var(--green-deep)}
+.install-banner,.update-banner{background:linear-gradient(120deg,#1b3d27,#143328);color:var(--ink)}
+.install-banner-copy strong{color:var(--heading)}.install-banner-copy p,.update-banner-copy p{color:#b6cfbf}
+#notice:not(:empty),.feedback{background:var(--leaf-soft);color:var(--ink)}.error-feedback{background:#3a211b;color:#ffd0c2}
+.empty-state{background:#ffffff08;border-color:#3a5d4e}
+dialog::backdrop{background:#000000b3}
+nav.mobile-bottom-nav{background:#0f1f19ee;box-shadow:0 -8px 28px #0008}
+.mobile-bottom-nav a{color:var(--muted)}.mobile-bottom-nav a[aria-current=page]{background:var(--leaf);color:var(--green-deep)}
+@media(max-width:1000px){
+  nav{border-color:var(--line);box-shadow:0 12px 24px #0008}
+  nav a{color:var(--ink)}nav a:hover{background:#1d3a2c;color:#fff}
+  nav a.active{background:var(--leaf-soft);color:#fff}nav a.active::after{background:var(--leaf)}
+}
+}
