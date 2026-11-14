@@ -129,6 +129,72 @@ try{
     await close(s);
   });
 
+  await check('Waste Guide: search (English and Filipino words), filter chips, safe empty state',async()=>{
+    const s=await open({viewport:{width:390,height:844},reducedMotion:'reduce'}),{page}=s;
+    await page.evaluate(()=>{location.hash='classify';});await page.locator('#guide-search').waitFor();
+    const shown=()=>page.evaluate(()=>[...document.querySelectorAll('.visual-waste-card')].filter(c=>!c.hidden).map(c=>c.querySelector('h3').textContent));
+    assert.equal((await shown()).length,16);assert.equal(await page.locator('.waste-guide-art').count(),6);
+    await page.fill('#guide-search','juice box');assert.deepEqual(await shown(),['Clean drink carton']);
+    assert.equal(await page.locator('#guide-count').innerText(),'1 of 16 items');
+    await page.fill('#guide-search','baterya');assert.deepEqual(await shown(),['Batteries and electronic items']);
+    await page.fill('#guide-search','tissue');assert.deepEqual(await shown(),['Used tissues and hygiene waste']);
+    await page.fill('#guide-search','zzzz');assert.deepEqual(await shown(),[]);
+    assert.ok(await page.locator('#guide-empty').isVisible());assert.match(await page.locator('#guide-empty').innerText(),/keep it out of your pouch and ask school staff/);
+    await page.fill('#guide-search','');
+    await page.getByRole('button',{name:'Keep out of your pouch'}).click();
+    assert.equal((await shown()).length,8);
+    assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.visual-waste-card')].filter(c=>!c.hidden).every(c=>c.dataset.kind==='no')),'only keep-out items');
+    await page.getByRole('button',{name:'All',exact:true}).click();assert.equal((await shown()).length,16);
+    await page.selectOption('#language','fil');await page.waitForTimeout(400);
+    assert.equal(await page.locator('label[for=guide-search]').innerText(),'Hanapin sa gabay');
+    await page.fill('#guide-search','karton');assert.match(await page.locator('#guide-count').innerText(),/^\d+ sa 16 aytem$/);
+    await close(s);
+  });
+
+  await check('staff review: filter reports, export CSV (formula-safe), Filipino',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
+    const mk=(category,area,description,minutes)=>JSON.stringify({type:'HIPOS1',id:randomUUID(),category,area,description,createdAt:Date.now()-minutes*60000});
+    const reports=[mk('Excessive packaging','Canteen','Too much plastic on every snack, every day.',5),mk('Unsafe waste concern','Hallway','=HYPERLINK("http://example.com") please check, thanks',4),mk('Excessive packaging','Classroom','Lots of wrappers, in the bin "by the door".',3)];
+    await page.evaluate(()=>{location.hash='staff';});
+    await page.getByLabel('Choose a PIN').fill('123456');await page.getByLabel('Confirm PIN',{exact:true}).fill('123456');
+    await page.getByRole('button',{name:'Set PIN and continue'}).click();
+    assert.equal(await page.locator('.staff-filters').count(),0,'no filters before anything is imported');
+    for(const raw of reports){
+      await page.getByRole('button',{name:'Paste transfer text'}).click();
+      await page.getByLabel('Transfer text',{exact:true}).fill(raw);
+      await page.getByRole('button',{name:'Review report',exact:true}).click();
+      await page.getByRole('button',{name:'Confirm import'}).click();await noticeHas(page,'Report imported');
+    }
+    const cards=()=>page.locator('#staff-list article').count(),count=()=>page.locator('#staff-count').innerText();
+    assert.equal(await cards(),3);assert.equal(await count(),'Showing 3 of 3 reports');
+    assert.equal(await page.locator('[data-status]').count(),3,'status dropdowns are still one per report');
+    await page.locator('[data-status]').first().selectOption('Under Review');await noticeHas(page,'Review status saved.');
+    await page.selectOption('#filter-status','Under Review');assert.equal(await cards(),1);assert.equal(await count(),'Showing 1 of 3 reports');
+    await page.selectOption('#filter-status','');await page.selectOption('#filter-category','Excessive packaging');assert.equal(await cards(),2);
+    await page.selectOption('#filter-area','Canteen');assert.equal(await cards(),1);
+    await page.selectOption('#filter-status','Reviewed');assert.equal(await cards(),0);
+    assert.match(await page.locator('#staff-list').innerText(),/No reports match these filters\./);
+    await page.getByRole('button',{name:'Clear filters'}).click();assert.equal(await cards(),3);
+    assert.equal(await page.inputValue('#filter-status'),'');assert.equal(await page.inputValue('#filter-category'),'');
+    // export only what is shown
+    const parse=csv=>csv.replace(/^﻿/,'').trim().split('\r\n').map(line=>{const cells=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'&&line[i+1]==='"'){cur+='"';i++;}else if(ch==='"')q=false;else cur+=ch;}else if(ch==='"')q=true;else if(ch===','){cells.push(cur);cur='';}else cur+=ch;}cells.push(cur);return cells;});
+    async function exportCsv(name){const [d]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export CSV'}).click()]);assert.match(d.suggestedFilename(),/^hipos-reports-\d{4}-\d{2}-\d{2}\.csv$/);const f=join(work,name);await d.saveAs(f);return readFile(f,'utf8');}
+    await page.selectOption('#filter-category','Unsafe waste concern');
+    let csv=await exportCsv('one.csv');assert.ok(csv.startsWith('﻿'),'byte-order mark');
+    let rows=parse(csv);assert.equal(rows.length,2,'header plus the one filtered report');
+    assert.equal(rows[1][3],`'=HYPERLINK("http://example.com") please check, thanks`,'formula is neutralised and commas/quotes survive');
+    await page.getByRole('button',{name:'Clear filters'}).click();
+    csv=await exportCsv('all.csv');rows=parse(csv);assert.equal(rows.length,4);
+    assert.ok(rows.some(r=>r[3]==='Lots of wrappers, in the bin "by the door".'),'quotes and commas round-trip');
+    assert.deepEqual(rows[0],['Status','Category','School area','Description','Created','Report ID']);
+    // Filipino
+    await page.selectOption('#language','fil');await page.waitForTimeout(500);
+    assert.equal(await page.getByRole('button',{name:'I-export ang CSV'}).count(),1);
+    assert.equal(await count(),'Ipinapakita ang 3 sa 3 ulat');
+    assert.equal(await page.locator('#filter-heading').innerText(),'I-filter ang mga ulat');
+    await close(s);
+  });
+
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');

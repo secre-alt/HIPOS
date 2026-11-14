@@ -30,6 +30,12 @@ Run `npm run build` and deploy the **contents of `dist/`** to a static HTTPS hos
 
 `vercel.json` sets the production response headers: a strict Content-Security-Policy (same-origin scripts, styles, images and connections only, with no inline code), `Permissions-Policy` limiting the camera to this site, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and revalidation for `index.html`, `sw.js` and the manifest. Keep the app free of inline `style=` attributes, inline event handlers and `eval`, or the policy will block them. `npm run dev` and the browser tests serve `dist/` with these same headers, so a policy problem shows up locally. Do not add long-lived caching to files listed in the service worker's precache: the worker would then cache stale copies.
 
+## Waste Guide and staff tools
+
+The Waste Guide lists the six core items plus ten more (`moreWaste` in `pwa/content.js`) with a search box and filter chips. Search matches English and Filipino words, including the keywords stored with each item, so "juice box" and "baterya" both work. Anything wet, sharp, liquid, chemical or electronic says to keep it out of the pouch and ask school staff, and an empty search result says the same, so the safe default is always visible. New items should follow that rule and must not name school-specific procedures that have not been approved.
+
+Staff review can filter imported reports by status, category and school area, and **Export CSV** downloads the reports currently shown (on phones, through the share sheet). The CSV starts with a UTF-8 byte-order mark so Excel reads Filipino text correctly, and any cell that begins with `=`, `+`, `-` or `@` gets a leading apostrophe so spreadsheets do not run it as a formula. The file is not encrypted.
+
 ## Tests
 
 `npm test` runs the unit tests (including backup and restore parsing). `npm run test:browser` runs the browser suites against a local server: `tests/browser.mjs` (navigation, install, reports, staff review) and `tests/features.browser.mjs` (production headers and CSP, dark mode, scroll motion, Filipino completeness on every page, back up and restore, and the update banner flow). Browsers use bundled Chromium; set `PW_CHANNEL=msedge` to use Edge. GitHub Actions (`.github/workflows/ci.yml`) runs all of this on every push and pull request.

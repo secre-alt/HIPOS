@@ -37,3 +37,16 @@ export function activities(){return `<div class="home-activities">${dailyChallen
 const reuseDrawings=[drawings[2],'<rect x="14" y="34" width="68" height="44" rx="12" fill="#dfc58c"/><rect x="12" y="28" width="72" height="14" rx="6" fill="#efdfba"/><path d="M41 29v49h14V29M34 28v-8h28v8"/>','<path d="M27 14v23m-8-23v15q0 10 8 10t8-10V14M27 39v43M65 14q-15 0-15 17t15 17q15 0 15-17T65 14M65 48v34" fill="#d9e5d3"/>'];
 export function reuseArt(index){return index<3?`<svg class="reuse-art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${reuseDrawings[index]}</svg>`:'';}
 export function wasteArt(index){return `<svg class="waste-guide-art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${drawings[index]}</svg>`;}
+const moreDrawings=[
+  '<path d="M32 36h32v46H32zM32 36l8-13h16l8 13M62 14v14" fill="#cfe3f7"/><path d="M42 52h12M42 62h12"/>',
+  '<path d="M28 36h40l6 44H22z" fill="#f5f2e9"/><path d="M38 36q0-15 10-15t10 15M36 56h24"/>',
+  '<path d="m20 38 28-14 28 14v34L48 86 20 72z" fill="#dfc58c"/><path d="m20 38 28 14 28-14M48 52v34"/>',
+  '<path d="M30 14v22q0 8 6 8t6-8V14M36 44v38M62 14q-12 0-12 16t12 16M62 14v68" fill="#d9e5d3"/>',
+  '<ellipse cx="48" cy="40" rx="26" ry="10" fill="#efdbbd"/><path d="M22 40v14q0 10 26 10t26-10V40M22 54q26 12 52 0"/>',
+  '<path d="M25 12h30l16 16v52H25z" fill="#faf8ed"/><path d="M55 12v16h16"/><path d="M62 52q10 12 0 20t-14-6q-2-8 14-14z" fill="#9fc9f5"/>',
+  '<path d="M30 28h36l-5 52H35z" fill="#e2eefd"/><path d="M33 46h30M38 14l6 14"/>',
+  '<rect x="24" y="34" width="44" height="30" rx="6" fill="#efdbbd"/><path d="M68 44h6v10h-6M34 49h12M40 43v12"/><path d="M34 74l8-8m12 8 8-8" />',
+  '<path d="m22 30 22-10 8 22-20 10zM56 36l20 4-8 24-18-10z" fill="#d9e5d3"/><path d="m36 66 6 14M64 62l6 14"/>',
+  '<path d="M36 40h24v42H36zM40 24h16v16H40zM46 14h4" fill="#ffe2d8"/><path d="M44 52h8M44 62h8"/>',
+];
+export function moreWasteArt(index){return `<svg class="waste-more-art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${moreDrawings[index]||''}</svg>`;}

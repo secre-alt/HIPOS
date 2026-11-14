@@ -34,6 +34,14 @@ export function parseBackup(raw,existing=[],now=Date.now()){
   }
   return {reports:[...added,...existing].sort((a,b)=>b.createdAt-a.createdAt),added:added.length,duplicate,invalid};
 }
+// CSV for staff. A cell that starts with = + - @ (or a tab/CR) would be run as a formula by Excel and
+// Sheets, so it gets a leading apostrophe. A UTF-8 byte-order mark keeps Filipino text correct in Excel.
+const csvCell=value=>{let text=String(value??'').replace(/\r?\n/g,' ');if(/^[=+\-@\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';};
+export function reportsToCsv(rows){
+  const header=['Status','Category','School area','Description','Created','Report ID'];
+  const lines=[header,...rows.map(r=>[r.status||'New',r.category,r.area,r.description,new Date(r.createdAt).toISOString(),r.id])];
+  return '\ufeff'+lines.map(cols=>cols.map(csvCell).join(',')).join('\r\n')+'\r\n';
+}
 export function addImport(records,report){if(records.some(r=>r.id===report.id))throw Error('This report has already been imported.');return [{...report,status:'New'},...records];}
 export const escapeHTML=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export async function pinHash(pin,salt){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new Uint8Array(salt),iterations:210000,hash:'SHA-256'},key,256);return Array.from(new Uint8Array(bits));}

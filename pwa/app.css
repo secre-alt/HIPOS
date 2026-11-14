@@ -525,3 +525,32 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 .backup-card{margin-top:32px}
 .backup-card h2{font-size:1.25rem}
 .backup-card .note{padding:0;margin:0 0 4px}
+
+/* ---- Waste Guide: search, filters, extra items ----------------------- */
+.guide-tools{max-width:880px;margin:0 0 20px}
+.guide-tools label{margin-top:0}
+.guide-tools input[type=search]{-webkit-appearance:none;appearance:none;padding-left:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
+.chip{min-height:44px;padding:8px 18px;border-radius:999px;font-weight:700;font-size:var(--type-small)}
+.chip[aria-pressed=true]{background:var(--leaf);border-color:var(--green-deep);color:var(--green-deep);box-shadow:0 2px 0 #6fb23a}
+.chip[aria-pressed=true]:hover{background:var(--leaf)}
+#guide-count{margin:0;padding:4px 0 0}
+#guide-empty{max-width:880px;margin-top:0}
+.waste-more-art{float:right;width:80px;height:80px;margin:0 0 16px 20px;padding:10px;border-radius:50%;background:var(--leaf-soft);box-sizing:content-box;color:var(--green)}
+.visual-waste-card.extra[data-kind=ok]{--bar:var(--leaf)}
+.visual-waste-card.extra[data-kind=no]{--bar:var(--coral)}
+@media(max-width:760px){.waste-more-art{width:64px;height:64px;margin-left:16px}}
+@media(prefers-color-scheme:dark){
+  .waste-more-art{background:#eef5e3;color:#143026}
+  .chip[aria-pressed=true]{background:var(--leaf);color:var(--green-deep);border-color:var(--leaf)}
+}
+
+/* ---- Staff review: filters ------------------------------------------- */
+.staff-filters{margin:8px 0 20px;padding:20px 24px;border-radius:22px;background:#fff;box-shadow:var(--shadow-sm)}
+.staff-filters h2{font-size:1.125rem;margin-bottom:4px}
+.filter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 16px}
+.filter-grid label{margin-top:12px}
+.staff-filters .note{padding:8px 0 0;margin:0}
+.staff-filters .actions{margin-top:8px}
+@media(max-width:760px){.filter-grid{grid-template-columns:1fr}.staff-filters{padding:16px}}
+@media(prefers-color-scheme:dark){.staff-filters{background:var(--surface)}}
