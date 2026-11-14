@@ -94,7 +94,34 @@ standalone.addEventListener('change',updateInstallBanner);
 document.querySelector('#dismiss-install').addEventListener('click',()=>{installDismissed=true;try{sessionStorage.setItem('hipos.install.dismissed','true');}catch{}updateInstallBanner();});
 updateInstallBanner();
 render();connection();initLanguage();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>navigator.serviceWorker.ready).then(()=>{offlineReady=true;connection();}).catch(()=>{document.querySelector('#connection').textContent='Offline setup unavailable';message('Offline setup failed. Use HTTPS or localhost and reload online.');});}else document.querySelector('#connection').textContent='Offline caching unavailable';
+// Update flow: a new service worker waits until the person taps "Update now" (no surprise reloads
+// while they are typing a report). The first install never shows the banner or reloads.
+const updateBanner=document.querySelector('#update-banner'),applyUpdate=document.querySelector('#apply-update');
+let swRegistration=null,updating=false;
+function showUpdate(){if(!updating)updateBanner.hidden=false;}
+function trackWorker(worker){worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showUpdate();});}
+function watchUpdates(registration){
+  swRegistration=registration;
+  if(registration.waiting&&navigator.serviceWorker.controller)showUpdate();
+  if(registration.installing)trackWorker(registration.installing);
+  registration.addEventListener('updatefound',()=>{if(registration.installing)trackWorker(registration.installing);});
+}
+function checkForUpdate(){if(swRegistration&&navigator.onLine)swRegistration.update().catch(()=>{});}
+applyUpdate.addEventListener('click',()=>{
+  const waiting=swRegistration?.waiting;
+  if(!waiting){location.reload();return;}
+  updating=true;applyUpdate.disabled=true;applyUpdate.textContent=translate('Updating…');
+  waiting.postMessage({type:'SKIP_WAITING'});
+  setTimeout(()=>location.reload(),5000);
+});
+document.querySelector('#dismiss-update').addEventListener('click',()=>{updateBanner.hidden=true;});
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(updating)location.reload();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkForUpdate();});
+  window.addEventListener('online',checkForUpdate);
+  setInterval(()=>{if(!document.hidden)checkForUpdate();},30*60*1000);
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(registration=>{watchUpdates(registration);checkForUpdate();return navigator.serviceWorker.ready;}).then(()=>{offlineReady=true;connection();}).catch(()=>{document.querySelector('#connection').textContent='Offline setup unavailable';message('Offline setup failed. Use HTTPS or localhost and reload online.');});}else document.querySelector('#connection').textContent='Offline caching unavailable';
 
 function refreshDay(){const panel=document.querySelector('.daily-panel');if(panel&&panel.dataset.day!==localDay()){panel.outerHTML=checklist();refreshWeekly();}const challenge=document.querySelector('.challenge-panel');if(challenge&&challenge.dataset.day!==localDay())challenge.outerHTML=dailyChallenge();}
 setInterval(refreshDay,60000);

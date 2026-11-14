@@ -448,3 +448,10 @@ footer{border-top-color:#d3ddc8}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .waste-choice:hover,.waste-choice[aria-pressed=true],.card-link:hover{transform:none}
 }
+
+/* ---- "Update available" banner ----------------------------------------- */
+.update-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;padding:16px 20px;border-radius:20px;border-left:6px solid var(--green-mid);background:linear-gradient(120deg,#e9f9cf,#d5f1de);box-shadow:var(--shadow-sm);animation:hipos-rise .4s var(--ease)}
+.update-banner-copy{min-width:0}.update-banner-copy strong{font-family:var(--font-display);font-weight:750;color:var(--green-deep)}
+.update-banner-copy p{margin:2px 0 0;font-size:var(--type-small);color:#3a5a48}
+.update-banner-actions{display:flex;gap:10px;flex-shrink:0}
+@media(max-width:760px){.update-banner{flex-direction:column;align-items:stretch;gap:12px;padding:16px}.update-banner-actions>button{flex:1}}

@@ -10,7 +10,7 @@ The app has no runtime server, remote fonts, CDN scripts, analytics, or automati
 - `tests/core.test.mjs`: report validation, actual QR encode/decode, duplicate protection, PIN verifier, and HTML escaping.
 - `tests/browser.mjs`: Edge flows, persistence, offline caching, and mobile viewport checks.
 
-The service worker uses a cache name derived from all shell files. An updated worker waits for existing app windows to close before activating. Activation removes only obsolete HIPOS shell caches for its own scope. Browser report storage is independent of these caches.
+The service worker uses a cache name derived from all shell files. An updated worker waits to activate until the person taps **Update now** in the in-app "A new version of HIPOS is ready." banner (or closes every app window). The app checks for updates on launch, when it returns to the foreground, when the connection comes back, and every 30 minutes while open and online. The first install never shows the banner or reloads the page. Tapping **Update now** sends `SKIP_WAITING` to the waiting worker and reloads once it takes control. Activation removes only obsolete HIPOS shell caches for its own scope. Browser report storage is independent of these caches.
 
 ## Data
 

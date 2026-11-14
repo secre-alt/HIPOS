@@ -22,6 +22,10 @@
     </aside>
     <main>
       <header><span id="page-label">Your daily guide</span><div class="header-actions"><label class="language-control" for="language">Language / Wika<select id="language"><option value="en">English</option><option value="fil">Filipino</option></select></label><span id="connection" role="status">Preparing offline access…</span></div></header>
+      <section id="update-banner" class="update-banner" role="status" aria-live="polite" hidden>
+        <div class="update-banner-copy"><strong>A new version of HIPOS is ready.</strong><p>Your saved reports stay on this device.</p></div>
+        <div class="update-banner-actions"><button id="apply-update">Update now</button><button id="dismiss-update" class="secondary">Later</button></div>
+      </section>
       <div id="notice" role="status" aria-live="polite"></div>
       <div id="view" tabindex="-1"></div>
   <section id="install-banner" class="install-banner" aria-label="Install HIPOS" hidden>
