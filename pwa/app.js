@@ -1,6 +1,7 @@
 import {initLanguage,translate} from './i18n.js';
 import {updateChallenge,rememberGuide,dailyChallenge,refreshWeekly,weekSummary} from './engagement.js';
 import {weekCardBlob} from './summary-card.js';
+import {initTextSize} from './textsize.js';
 import {answerQuiz,nextQuestion,restartQuiz,updateHabit,localDay,checklist} from './activities.js';
 import {home,selectWaste,reuseArt,wasteArt} from './home.js';
 import {revealOnScroll,initScrollEffects} from './motion.js';
@@ -155,7 +156,7 @@ function updateInstallBanner(){const installed=appInstalled||standalone.matches|
 standalone.addEventListener('change',updateInstallBanner);
 document.querySelector('#dismiss-install').addEventListener('click',()=>{installDismissed=true;try{sessionStorage.setItem('hipos.install.dismissed','true');}catch{}updateInstallBanner();});
 updateInstallBanner();
-render();connection();initLanguage();initScrollEffects();
+render();connection();initLanguage();initTextSize();initScrollEffects();
 // Update flow: a new service worker waits until the person taps "Update now" (no surprise reloads
 // while they are typing a report). The first install never shows the banner or reloads.
 const updateBanner=document.querySelector('#update-banner'),applyUpdate=document.querySelector('#apply-update');

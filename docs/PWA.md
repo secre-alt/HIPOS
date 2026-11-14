@@ -36,8 +36,14 @@ The Waste Guide lists the six core items plus ten more (`moreWaste` in `pwa/cont
 
 Staff review can filter imported reports by status, category and school area, and **Export CSV** downloads the reports currently shown (on phones, through the share sheet). The CSV starts with a UTF-8 byte-order mark so Excel reads Filipino text correctly, and any cell that begins with `=`, `+`, `-` or `@` gets a leading apostrophe so spreadsheets do not run it as a formula. The file is not encrypted.
 
+## Streak, badges and text size
+
+The Weekly activity card shows a streak (days in a row with at least one habit checked or the daily challenge completed), the best streak, four badges, and **Save my week as an image**. Everything is computed on the device from the activity log (`pwa/streak.js`). The image is drawn on a canvas (`pwa/summary-card.js`) in the chosen language, contains no name or personal details, and is saved or shared as a PNG. It records completed actions, not environmental impact. Confetti respects reduced-motion settings.
+
+The **Text size** control (Standard, Large, Extra large) is stored in `hipos.textsize` and sets `data-text` on the root element. All type is in `rem`, so it scales with this control and with the phone's own font setting. The browser tests check that nothing overflows horizontally at Extra large from 360 to 1920 px wide, and run basic accessibility checks (names, labels, one `h1`, unique ids) on every page.
+
 ## Tests
 
-`npm test` runs the unit tests (including backup and restore parsing). `npm run test:browser` runs the browser suites against a local server: `tests/browser.mjs` (navigation, install, reports, staff review) and `tests/features.browser.mjs` (production headers and CSP, dark mode, scroll motion, Filipino completeness on every page, back up and restore, and the update banner flow). Browsers use bundled Chromium; set `PW_CHANNEL=msedge` to use Edge. GitHub Actions (`.github/workflows/ci.yml`) runs all of this on every push and pull request.
+`npm test` runs the unit tests (including backup and restore parsing). `npm run test:browser` runs the browser suites against a local server: `tests/browser.mjs` (navigation, install, reports, staff review) and `tests/features.browser.mjs` (production headers and CSP, dark mode, scroll motion, Filipino completeness on every page, back up and restore, Waste Guide and staff tools, streak and weekly image, text size, accessibility basics, and the update banner flow). Browsers use bundled Chromium; set `PW_CHANNEL=msedge` to use Edge. GitHub Actions (`.github/workflows/ci.yml`) runs all of this on every push and pull request.
 
 Do not serve the workspace root: it contains Android source and machine-specific configuration. The local development server serves only `dist/` and binds to loopback. Phone access needs a hosted HTTPS URL; `http://<computer-LAN-IP>` does not provide the secure context needed for the full PWA.

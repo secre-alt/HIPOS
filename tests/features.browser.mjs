@@ -215,6 +215,49 @@ try{
     await close(s);
   });
 
+  await check('text size: persists, scales type, no horizontal overflow at any width, Filipino',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
+    const size=()=>page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.home-intro p:not(.eyebrow)')).fontSize));
+    const base=await size();
+    await page.selectOption('#textsize','xlarge');
+    assert.ok(await size()>base*1.2,'type grows with Extra large');
+    await page.reload();await page.getByText(/offline/i).first().waitFor();
+    assert.equal(await page.inputValue('#textsize'),'xlarge');assert.ok(await size()>base*1.2,'choice is remembered');
+    for(const width of [360,390,768,1001,1280,1920]){
+      await page.setViewportSize({width,height:900});
+      for(const pg of ['home','classify','reports','privacy']){
+        await page.evaluate(h=>{location.hash=h;},pg);await page.waitForTimeout(250);
+        const over=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+        assert.ok(over<=0,`horizontal overflow of ${over}px on #${pg} at ${width}px wide with Extra large text`);
+      }
+    }
+    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.getByText(/offline/i).first().waitFor();
+    assert.match(await page.locator('.textsize-control').innerText(),/Laki ng teksto/);
+    assert.deepEqual(await page.locator('#textsize option').allInnerTexts(),['Karaniwan','Malaki','Napakalaki']);
+    await close(s);
+  });
+
+  await check('accessibility basics: names, one h1, unique ids, heading order, labels',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s,problems=[];
+    for(const pg of ['home','prevent','reuse','classify','carry','reports','privacy']){
+      await page.evaluate(h=>{location.hash=h;},pg);await page.waitForTimeout(300);
+      const found=await page.evaluate(()=>{
+        const out=[],visible=el=>!!(el.offsetWidth||el.offsetHeight||el.getClientRects().length)&&getComputedStyle(el).visibility!=='hidden';
+        const name=el=>(el.getAttribute('aria-label')||el.getAttribute('aria-labelledby')&&document.getElementById(el.getAttribute('aria-labelledby'))?.textContent||el.textContent||el.getAttribute('title')||'').trim();
+        document.querySelectorAll('button,a[href],[role=button]').forEach(el=>{if(visible(el)&&!name(el))out.push('no accessible name: '+el.outerHTML.slice(0,80));});
+        document.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(el=>{if(!visible(el))return;const labelled=el.labels?.length||el.getAttribute('aria-label')||el.getAttribute('aria-labelledby');if(!labelled)out.push('unlabelled field: '+el.outerHTML.slice(0,80));});
+        document.querySelectorAll('img').forEach(el=>{if(!el.hasAttribute('alt'))out.push('image without alt: '+el.outerHTML.slice(0,80));});
+        const ids=[...document.querySelectorAll('[id]')].map(e=>e.id),dup=ids.filter((v,i)=>ids.indexOf(v)!==i);if(dup.length)out.push('duplicate ids: '+[...new Set(dup)].join(','));
+        const h1=[...document.querySelectorAll('h1')].filter(visible);if(h1.length!==1)out.push(`expected one visible h1, found ${h1.length}`);
+        if(document.documentElement.lang!=='en')out.push('html lang is '+document.documentElement.lang);
+        return out;
+      });
+      problems.push(...found.map(f=>`#${pg}: ${f}`));
+    }
+    await close(s);
+    assert.deepEqual(problems,[],'accessibility problems');
+  });
+
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');
