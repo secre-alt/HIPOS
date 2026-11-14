@@ -33,14 +33,15 @@ h1{font-family:Georgia,serif;font-weight:400;line-height:1.15;font-size:clamp(32
 label{display:block;margin:16px 0 8px;font-weight:600;font-size:16px;overflow-wrap:anywhere}input,select,textarea{min-height:48px;width:100%;max-width:100%;min-width:0;border:1px solid #a6b8a9;border-radius:8px;padding:12px;background:var(--surface);color:#203a30}textarea{min-height:120px;resize:vertical}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .pill,.approval-label{display:inline-block;padding:4px 8px;background:#e7eddb;color:#3b5c37;border-radius:4px;font-size:14px;margin-bottom:12px;max-width:100%;overflow-wrap:anywhere}.pill.unsafe,.approval-label{color:#75451f;background:#f2e6d4}.report-description{white-space:pre-wrap;overflow-wrap:anywhere}
 .stats{display:flex;flex-wrap:wrap;gap:24px;margin:24px 0}.stats strong{display:block;font-family:Georgia,serif;font-size:28px;font-weight:400}.stats span{font-size:14px;color:var(--muted)}.empty{padding:24px 0;color:var(--muted)}.empty-state{border-style:dashed;background:transparent}.empty-state p{max-width:520px}.empty-state button{margin-top:8px}
-footer{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding:24px 0;margin-top:32px}
-.footer-info{min-width:0}.footer-info p{margin:0 0 8px;overflow-wrap:anywhere}
-.footer-actions{display:flex;align-items:center;gap:8px 24px;flex-wrap:wrap}
-footer a{min-height:44px;min-width:44px;display:inline-flex;align-items:center;gap:8px;border-radius:4px;overflow-wrap:anywhere}
-.developer-credit{display:flex;align-items:center;justify-content:flex-end;gap:4px 8px;flex-wrap:wrap;flex-shrink:0}
-.credit-label{display:inline-flex;align-items:center;gap:4px}.credit-heart{color:#a65340;flex-shrink:0}
-.developer-credit a{font-weight:600;text-decoration:none}.developer-credit a:hover{text-decoration:underline}.developer-credit a svg{flex-shrink:0}
-@media(max-width:760px){footer{flex-direction:column;gap:20px}.footer-actions{align-items:flex-start;flex-direction:column;gap:4px}.developer-credit{justify-content:flex-start;flex-shrink:1}}
+footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 24px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding:20px 0 8px;margin-top:32px}
+.footer-info{display:contents}.footer-info p{grid-column:1 / -1;margin:0 0 4px;max-width:60ch;overflow-wrap:anywhere}
+.footer-actions{display:flex;align-items:center;gap:4px 20px;flex-wrap:wrap;min-width:0}
+footer a{min-height:44px;min-width:44px;display:inline-flex;align-items:center;gap:8px;border-radius:4px;overflow-wrap:anywhere;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.developer-credit{display:flex;align-items:center;justify-content:flex-end;gap:4px 8px;flex-wrap:wrap;font-size:.8125rem}
+.credit-label{display:inline-flex;align-items:center}
+.developer-credit a{font-weight:500;color:var(--muted)}.developer-credit a:hover{color:var(--green)}.developer-credit a svg{width:14px;height:14px;flex-shrink:0}
+@media(max-width:760px){footer{grid-template-columns:minmax(0,1fr);gap:0;padding-top:16px}.footer-actions{gap:0 16px}.developer-credit{justify-content:flex-start}}
 #notice:not(:empty),.feedback{padding:16px;border:1px solid #bdccba;background:#edf1e5;border-radius:8px;margin-top:16px;overflow-wrap:anywhere}.feedback p:last-child{margin-bottom:0}.error-feedback{background:#f9eee3;border-color:#d6bca0;color:#6d3b20}.error-feedback strong{display:block;margin-bottom:8px}
 dialog{border:1px solid var(--line);border-radius:16px;padding:24px;max-width:520px;width:calc(100% - 32px);max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface);color:#203a30}dialog::backdrop{background:#102f27aa}dialog form[method=dialog]{margin-top:20px}dialog .actions{display:grid;grid-template-columns:1fr}canvas.qr{width:100%;height:auto;image-rendering:pixelated}video{width:100%;max-height:320px;background:#142a23;border-radius:8px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
 .skip{position:absolute;left:8px;top:-64px;background:white;padding:12px;min-height:44px;z-index:10}.skip:focus{top:8px}[hidden]{display:none!important}
