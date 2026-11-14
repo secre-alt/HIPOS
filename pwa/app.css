@@ -1,4 +1,4 @@
-:root{font-family:"Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.55;color:#203a30;background:#f7f6f0;font-synthesis:none;--green:#123f32;--muted:#56685c;--line:#d9dfd4;--surface:#fffef9}
+:root{font-family:"Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.65;color:#203a30;background:#f7f6f0;font-synthesis:none;--green:#123f32;--muted:#56685c;--line:#d9dfd4;--surface:#fffef9;--font-body:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;--font-display:Georgia,"Times New Roman",serif;--type-small:.875rem;--type-body:1rem;--type-title:1.25rem;--type-section:1.5rem}
 html{overflow-anchor:none}
 .menu-close,#menu-toggle[aria-expanded=true] .menu-bars{display:none}
 #menu-toggle[aria-expanded=true] .menu-close{display:block}
@@ -185,4 +185,34 @@ aside a:focus-visible, #menu-toggle:focus-visible { outline: 2px solid #e1edb8; 
  .home-next{margin-top:32px}.home-guides{grid-template-columns:1fr;gap:12px}.guide-number{margin-bottom:12px}
  .concern-strip{display:block;margin-top:24px}.concern-strip a{margin-top:16px;width:100%}
  .install-banner-inner{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:12px}.install-banner-copy{grid-column:1;grid-row:1}#dismiss-install{grid-column:2;grid-row:1}#install{grid-column:1 / -1;grid-row:2;width:100%}
+}
+/* Typography: offline system fonts, a readable body, and a restrained display face. */
+body{font-family:var(--font-body)}
+h1,h2,h3{overflow-wrap:break-word}
+h1{font-family:var(--font-display);font-size:clamp(2rem,1.5rem + 2vw,3rem);font-weight:400;line-height:1.12;letter-spacing:-.02em;max-width:20ch}
+h2{font-size:var(--type-section);font-weight:600;line-height:1.25;letter-spacing:0;text-wrap:balance}
+h3{font-size:var(--type-title);font-weight:600;line-height:1.35;letter-spacing:0;text-wrap:pretty}
+p{max-width:65ch;text-wrap:pretty}
+.home-intro h1{font-size:clamp(2.75rem,2rem + 3vw,4rem);line-height:1.08;letter-spacing:-.025em}
+.home-intro>p:not(.eyebrow),.intro p{font-size:1.0625rem;line-height:1.65;max-width:48ch}
+.home-intro .eyebrow,.guide-number,.quiz-step{font-size:var(--type-small);font-weight:500;line-height:1.5;letter-spacing:0}
+.home-activities p,.home-guides p,.concern-strip p,.checker-heading p{font-size:var(--type-body);line-height:1.65}
+.home-guides h3,.concern-strip h2{font-size:var(--type-title);line-height:1.3}
+.checker-heading h2{font-size:var(--type-section);line-height:1.25}
+.waste-choice{font-size:var(--type-small);line-height:1.4}
+button,.button-link,label{line-height:1.4;letter-spacing:0}
+.quiz-options button{font-size:var(--type-body);font-weight:500}
+.daily-items label{font-size:var(--type-body);line-height:1.5}
+small,.note,.pill,.approval-label,.result-label,.guide-link,.home-report,.waste-result a,.checker-heading>a{font-size:var(--type-small);line-height:1.5}
+input,select,textarea{font-size:var(--type-body);line-height:1.5}
+textarea{line-height:1.65}
+.stats strong,#daily-progress,.quiz-step,#quiz-summary{font-variant-numeric:tabular-nums}
+.stats strong{font-family:var(--font-body);font-weight:600;line-height:1.2}
+#footer-install{font-size:var(--type-small);font-weight:500;letter-spacing:0;text-transform:none;line-height:1.5}
+footer{font-size:var(--type-small);line-height:1.6}
+@media(max-width:760px){
+ h1{font-size:clamp(2rem,1.5rem + 2vw,2.5rem)}
+ .home-intro h1{font-size:clamp(2.5rem,1.75rem + 4vw,3rem)}
+ .checker-heading h2,.home-activities h2,.home-next>h2{font-size:1.375rem;line-height:1.3}
+ .mobile-bottom-nav a,.mobile-bottom-nav a:last-child{font-size:.8125rem;line-height:1.3}
 }
