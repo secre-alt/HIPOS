@@ -424,9 +424,7 @@ footer{border-top-color:#d3ddc8}
 }
 
 /* ---- Entrance motion (page-level only, never re-fires on small updates) - */
-#view>:not(#weekly-activity){animation:hipos-rise .5s var(--ease) backwards}
-#view>:nth-child(2){animation-delay:.06s}#view>:nth-child(3){animation-delay:.12s}
-#view>:nth-child(4){animation-delay:.18s}#view>:nth-child(n+5){animation-delay:.22s}
+/* Page and scroll entrances are handled by motion.js (see the scroll motion block below). */
 
 /* ---- Responsive ------------------------------------------------------- */
 @media(max-width:1000px){.hero-deco{opacity:.35;width:62%;right:-70px}.waste-choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -504,3 +502,21 @@ nav.mobile-bottom-nav{background:#0f1f19ee;box-shadow:0 -8px 28px #0008}
   nav a.active{background:var(--leaf-soft);color:#fff}nav a.active::after{background:var(--leaf)}
 }
 }
+
+/* ---- Scroll motion ------------------------------------------------------ */
+/* Content rises into view; tiles and week cells pop in with a stagger. */
+.rv{transition:opacity .6s var(--ease) var(--rv-delay,0s),transform .7s var(--ease) var(--rv-delay,0s)}
+.rv:not(.in){opacity:0;transform:translateY(28px)}
+.waste-choice.rv:not(.in){transform:translateY(22px) scale(.9)}
+.week-days li.rv:not(.in){transform:translateY(14px) scale(.92)}
+.home-guides>.card.rv:not(.in){transform:translateY(36px)}
+.home-guides>.card:nth-child(2).rv{--rv-delay:.09s}.home-guides>.card:nth-child(3).rv{--rv-delay:.18s}
+
+/* Hero art lags behind the page as it scrolls, which reads as depth. */
+.hero-deco{translate:0 calc(var(--sy,0)*.14px);will-change:translate}
+
+/* Reading-progress line along the bottom edge of the top bar. */
+aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:0 3px 3px 0;background:linear-gradient(90deg,var(--leaf),#f0ffc4);transform:scaleX(var(--progress,0));transform-origin:0 50%;pointer-events:none}
+
+@media print{.rv{opacity:1!important;transform:none!important;transition:none!important}aside::after{display:none}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}.hero-deco{translate:none}}
