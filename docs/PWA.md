@@ -18,6 +18,8 @@ Student and staff records use `localStorage` under `hipos.pwa.v1`. Storage write
 
 The old standalone browser preview's demo storage is separate and is not automatically migrated. Android SQLite storage is also separate; use HIPOS1 QR transfer for individual records. Data belongs to a browser profile and origin; changing the hosting domain does not move records. Browser storage is not a backup and may be cleared or evicted.
 
+**Back up and restore.** My Concerns has **Download backup** and **Restore from backup**. A backup is a readable, unencrypted JSON file (`type: HIPOS-BACKUP`, `version: 1`) holding only the student's own reports; the staff PIN verifier and imported reports are never included. Restore re-validates every report with the same rules as QR import, discards unknown fields, skips reports already on the device (by `id`), and reports how many could not be read. On phones the backup uses the share sheet so it can be saved to Files or Drive. After the first saved report the app also asks the browser for persistent storage and shows whether it was granted; the request is best-effort and does not replace backups.
+
 Staff PINs use a randomly salted PBKDF2-SHA-256 verifier with 210,000 iterations. The lock is a local UI convenience and does not authenticate school staff or encrypt records. Staff access is kept in memory and locks on reload or backgrounding. The in-memory retry delay applies after five incorrect attempts; it is not a server security boundary.
 
 Camera frames are decoded locally using bundled jsQR, with no dependency on browser BarcodeDetector support. Camera access requires permission and a secure context; manual transfer-text import remains available if permission is denied. Both paths require an explicit import confirmation.
@@ -25,5 +27,11 @@ Camera frames are decoded locally using bundled jsQR, with no dependency on brow
 ## Hosting
 
 Run `npm run build` and deploy the **contents of `dist/`** to a static HTTPS host. Relative asset URLs, manifest scope, and service worker registration support deployment in a subdirectory. Serve `.webmanifest` as `application/manifest+json` and `.js` as JavaScript. Avoid long-lived HTTP caching of `index.html` and `sw.js`; use revalidation. No SPA rewrite rule is needed because navigation uses URL fragments.
+
+`vercel.json` sets the production response headers: a strict Content-Security-Policy (same-origin scripts, styles, images and connections only, with no inline code), `Permissions-Policy` limiting the camera to this site, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and revalidation for `index.html`, `sw.js` and the manifest. Keep the app free of inline `style=` attributes, inline event handlers and `eval`, or the policy will block them. `npm run dev` and the browser tests serve `dist/` with these same headers, so a policy problem shows up locally. Do not add long-lived caching to files listed in the service worker's precache: the worker would then cache stale copies.
+
+## Tests
+
+`npm test` runs the unit tests (including backup and restore parsing). `npm run test:browser` runs the browser suites against a local server: `tests/browser.mjs` (navigation, install, reports, staff review) and `tests/features.browser.mjs` (production headers and CSP, dark mode, scroll motion, Filipino completeness on every page, back up and restore, and the update banner flow). Browsers use bundled Chromium; set `PW_CHANNEL=msedge` to use Edge. GitHub Actions (`.github/workflows/ci.yml`) runs all of this on every push and pull request.
 
 Do not serve the workspace root: it contains Android source and machine-specific configuration. The local development server serves only `dist/` and binds to loopback. Phone access needs a hosted HTTPS URL; `http://<computer-LAN-IP>` does not provide the secure context needed for the full PWA.

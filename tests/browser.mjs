@@ -7,7 +7,7 @@ const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{stdio:'pipe',wind
 let browser;
 try{
   await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.stderr.on('data',d=>process.stderr.write(d));server.once('exit',code=>reject(Error(`Preview server exited: ${code}`)));setTimeout(()=>reject(Error('Preview server timed out')),20000).unref();});
-  browser=await chromium.launch({channel:'msedge',headless:true});
+  browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});
   const context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto('http://localhost:4174');
