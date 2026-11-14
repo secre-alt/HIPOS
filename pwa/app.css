@@ -126,3 +126,63 @@ aside a:focus-visible, #menu-toggle:focus-visible { outline: 2px solid #e1edb8; 
   nav a:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
 }
 @media (prefers-reduced-motion: reduce) { nav, nav a { transition: none; } }
+
+/* School-day field guide: illustrations carry the color, controls stay quiet.
+   Direction informed by unslop by Damir Sokolovsky (CC BY 4.0), heydamir.design/unslop. */
+.home-intro{padding:40px 0 32px;max-width:640px}
+.home-intro .eyebrow{color:var(--muted);font-size:14px;margin-bottom:12px}
+.home-intro h1{font-size:clamp(40px,5vw,64px);margin-bottom:16px}
+.home-intro>p:last-child{color:var(--muted);max-width:440px;margin:0}
+.home-intro>p:not(.eyebrow){color:var(--muted);max-width:440px;margin:0}
+.home-report{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;font-size:14px;font-weight:600}
+.home-activities{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px}
+.home-activities>.card{margin:0}.home-activities p{font-size:14px}
+.daily-items label{display:flex;align-items:center;gap:12px;min-height:48px;margin:0;padding:8px 0;font-weight:400}
+.daily-items input{width:44px;height:44px;min-height:44px;flex-shrink:0;accent-color:var(--green);cursor:pointer}
+.daily-items label:has(:checked) span{text-decoration:line-through;color:var(--muted)}
+#daily-progress{margin:16px 0 0;font-weight:600}.quiz-step{margin:20px 0 8px;color:var(--muted)}
+.quiz-options{display:grid;gap:8px;margin-top:16px}.quiz-options button{text-align:left;font-size:14px}
+.quiz-options button:disabled{cursor:default;opacity:.65}.quiz-panel [data-quiz-next]{margin-top:12px}
+#quiz-feedback:not(:empty){border-top:1px solid var(--line);padding-top:16px;margin-top:16px}#quiz-feedback p{margin:0}
+.reuse-art{float:right;width:96px;height:96px;margin:0 0 16px 24px;color:var(--green)}
+.visual-waste-card{display:flow-root}.waste-guide-art{float:right;width:80px;height:80px;margin:0 0 16px 20px;color:var(--green)}
+.mobile-bottom-nav{display:none}
+@media(max-width:760px){
+ .home-activities{grid-template-columns:1fr;gap:16px;margin-top:24px}
+ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+ nav.mobile-bottom-nav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:25;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));max-height:none;overflow:visible;border:0;border-top:1px solid var(--line);border-radius:0;background:var(--surface);box-shadow:none;opacity:1;visibility:visible;pointer-events:auto}
+ .mobile-bottom-nav a,.mobile-bottom-nav a:last-child{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:56px;padding:4px;margin:0;border:0;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;white-space:normal}
+ .mobile-bottom-nav a[aria-current=page]{background:#e7eddb;color:var(--green)}
+ .mobile-bottom-nav a::after{display:none}.mobile-bottom-nav a svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+ .mobile-bottom-nav a:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+ .reuse-art{width:80px;height:80px;margin-left:16px}
+}
+.waste-checker{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--surface)}
+.checker-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}
+.checker-heading h2{margin-bottom:8px}.checker-heading p{color:var(--muted);font-size:14px;margin:0}
+.checker-heading>a{font-size:14px;min-height:44px;display:flex;align-items:center;flex-shrink:0}
+.waste-choices{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.waste-choice{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 8px;color:var(--green);background:#f7f6f0;border:1px solid transparent;border-radius:12px;font-size:14px;font-weight:500;transition:background-color 120ms ease-out,border-color 120ms ease-out}
+.waste-choice:hover{background:#eef0e6;border-color:#a6b8a9}
+.waste-choice[aria-pressed=true]{background:#e7eddb;border-color:var(--green)}
+.item-art{display:block;width:80px;height:80px}.item-art svg{display:block;width:100%;height:100%}
+.waste-result{margin-top:24px;border-top:1px solid var(--line);padding-top:20px}
+.waste-result>p{color:var(--muted);margin:0}.waste-result h3{margin:8px 0}
+.waste-result a{display:inline-flex;align-items:center;min-height:44px;font-size:14px;margin-top:8px}
+.result-label{font-size:14px;font-weight:600;color:var(--green)}.needs-care .result-label{color:#75451f}
+.home-next{margin-top:40px}.home-guides{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.home-guides .card{margin:0}.guide-number{display:block;color:var(--muted);font-size:14px;margin-bottom:20px}
+.home-guides h3{font-size:20px}.home-guides p{font-size:14px}
+.concern-strip{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:32px;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.concern-strip h2{font-size:20px;margin-bottom:8px}.concern-strip p{color:var(--muted);font-size:14px;margin:0}.concern-strip a{flex-shrink:0}
+.install-banner{position:static;width:auto;max-width:none;max-height:none;margin:24px 0 0;border-radius:12px;box-shadow:none;overflow:visible}
+.install-banner-inner{display:flex;align-items:center;gap:16px;padding:16px}.install-banner-copy{flex:1}.install-banner-copy p{font-size:14px}
+#install{width:auto;min-width:88px;flex-shrink:0;padding:12px 16px}#dismiss-install{border-radius:8px}.install-banner-icon{display:none}
+@media(max-width:760px){
+ .home-intro{padding:24px 0}.home-intro h1{font-size:44px}
+ .waste-checker{padding:16px}.checker-heading{display:block;margin-bottom:16px}.checker-heading h2{font-size:22px}.checker-heading>a{margin-top:4px}
+ .waste-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.waste-choice{padding:8px 4px;font-size:13px}.item-art{width:64px;height:64px}
+ .home-next{margin-top:32px}.home-guides{grid-template-columns:1fr;gap:12px}.guide-number{margin-bottom:12px}
+ .concern-strip{display:block;margin-top:24px}.concern-strip a{margin-top:16px;width:100%}
+ .install-banner-inner{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:12px}.install-banner-copy{grid-column:1;grid-row:1}#dismiss-install{grid-column:2;grid-row:1}#install{grid-column:1 / -1;grid-row:2;width:100%}
+}

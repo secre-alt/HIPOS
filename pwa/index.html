@@ -13,14 +13,6 @@
 </head>
 <body>
   <a class="skip" href="#view">Skip to content</a>
-  <section id="install-banner" class="install-banner" aria-label="Install HIPOS" hidden>
-    <div class="install-banner-inner">
-      <span class="install-banner-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg></span>
-      <div class="install-banner-copy"><strong>Install HIPOS</strong><p>Quick access from your home screen. Works offline after your first visit.</p></div>
-      <button id="install">Install</button>
-      <button id="dismiss-install" class="secondary" aria-label="Dismiss install banner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
-    </div>
-  </section>
   <div class="app">
     <aside>
       <div class="brand-row"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">H</span> HIPOS</a><button id="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path class="menu-bars" d="M4 6h16M4 12h16M4 18h16"/><path class="menu-close" d="m6 6 12 12M18 6 6 18"/></svg></button></div>
@@ -32,6 +24,14 @@
       <header><span id="page-label">Your daily guide</span><div class="header-actions"><span id="connection" role="status">Preparing offline access…</span></div></header>
       <div id="notice" role="status" aria-live="polite"></div>
       <div id="view" tabindex="-1"></div>
+  <section id="install-banner" class="install-banner" aria-label="Install HIPOS" hidden>
+    <div class="install-banner-inner">
+      <span class="install-banner-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg></span>
+      <div class="install-banner-copy"><strong>Install HIPOS</strong><p>Keep your waste guide close. Add HIPOS to your home screen.</p></div>
+      <button id="install">Install</button>
+      <button id="dismiss-install" class="secondary" aria-label="Dismiss install banner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+  </section>
       <footer>
         <div class="footer-info">
           <p>Reports stay on this device until you choose to share.</p>
@@ -47,6 +47,11 @@
       </footer>
     </main>
   </div>
+  <nav class="mobile-bottom-nav" aria-label="Quick navigation">
+    <a href="#home" aria-label="Home page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8"/></svg><span>Home</span></a>
+    <a href="#classify" aria-label="Waste Guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h12l4 4v14H4zM16 3v5h4M8 12h8M8 16h6"/></svg><span>Waste Guide</span></a>
+    <a href="#reports" aria-label="My Concerns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16v14H9l-5 4zM8 7h8M8 11h6"/></svg><span>My Concerns</span></a>
+  </nav>
   <dialog id="dialog"><div id="dialog-body"></div><form method="dialog"><button class="secondary">Close</button></form></dialog>
   <script type="module" src="./app.js"></script>
 </body>

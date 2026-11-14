@@ -30,6 +30,10 @@ This change is implemented locally; no hosted site has been published.
 
 ## Student and staff workflows
 
+- The home waste checker shows illustrated choices and item-specific handling guidance.
+- A three-question sorting quiz gives immediate explanations and a final score; it works offline and can be restarted.
+- An optional daily checklist saves bottle, lunchbox, and utensil reminders on this device. It resets by the device's local calendar day and makes no environmental impact estimates.
+- Mobile quick navigation keeps Home, Waste Guide, and My Concerns within reach. Installation appears in the page flow without covering guides.
 - Students browse prevention, reuse, classification, and carry-out guides, then optionally save a nonidentifying concern and show its QR.
 - Staff open **Staff review**, create a local PIN, scan a student's QR or paste its transfer text, review the contents, and confirm import.
 - Imported concerns start **New** and can move to **Under Review** or **Reviewed**. Duplicate report IDs are rejected.
