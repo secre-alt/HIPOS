@@ -554,3 +554,35 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 .staff-filters .actions{margin-top:8px}
 @media(max-width:760px){.filter-grid{grid-template-columns:1fr}.staff-filters{padding:16px}}
 @media(prefers-color-scheme:dark){.staff-filters{background:var(--surface)}}
+
+/* ---- Streak, badges, celebration -------------------------------------- */
+.streak{display:flex;align-items:center;gap:16px;margin:20px 0 4px;padding:16px 20px;border-radius:20px;background:var(--leaf-soft)}
+.streak-flame{display:grid;place-items:center;flex:0 0 52px;height:52px;border-radius:50%;background:#fff;color:#b9c4b4;box-shadow:inset 0 0 0 2px #e0e8d8}
+.streak-flame svg{width:28px;height:28px}
+.streak-flame.lit{color:var(--coral);background:#fff3ec;box-shadow:inset 0 0 0 2px #ffd3c4}
+.streak-copy{display:grid;gap:2px;min-width:0}
+.streak-count{font-family:var(--font-display);font-size:1.375rem;font-weight:800;line-height:1.2;color:var(--heading,var(--green-deep))}
+.streak-note,.streak-best{font-size:var(--type-small);color:var(--muted)}
+.streak-best{font-weight:700;color:var(--green-mid)}
+.badges-heading{margin:24px 0 8px;font-size:1.0625rem}
+.badges{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.badge{display:grid;gap:2px;padding:12px 14px;border-radius:16px;background:#f1f4e9;color:var(--muted)}
+.badge-name{font-weight:700;color:var(--heading,var(--green-deep));opacity:.7}
+.badge-desc{font-size:var(--type-small);line-height:1.4}
+.badge-state{margin-top:4px;font-size:.8125rem;font-weight:700;letter-spacing:.02em}
+.badge.earned{background:var(--leaf);color:#274a1a;box-shadow:0 3px 0 #6fb23a}
+.badge.earned .badge-name{opacity:1;color:var(--green-deep)}
+.badge.earned .badge-state{color:var(--green-deep)}
+#weekly-activity .actions{margin-top:20px}
+.celebrate{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.confetti{position:absolute;left:50%;top:42%;width:10px;height:16px;border-radius:3px;background:var(--c,#b9f26b)}
+@media(max-width:760px){.badges{grid-template-columns:1fr}.streak{padding:14px 16px}}
+@media(prefers-color-scheme:dark){
+  .streak{background:var(--leaf-soft)}
+  .streak-flame{background:#0f1f19;color:#4a6357;box-shadow:inset 0 0 0 2px #27433a}
+  .streak-flame.lit{background:#3a211b;color:#ff9a80;box-shadow:inset 0 0 0 2px #6a3b2f}
+  .streak-best{color:#bfe69a}
+  .badge{background:#17302a}
+  .badge.earned{background:var(--leaf)}
+}
+@media print{.celebrate{display:none}}

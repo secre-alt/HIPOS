@@ -1,6 +1,8 @@
 import {escapeHTML as e} from './core.js';
 import {localDay} from './activities.js';
 import {schoolInfo} from './school-info.js';
+import {currentStreak,bestRun,badges as badgeList,isActive} from './streak.js';
+import {celebrate} from './motion.js';
 
 const key='hipos.activity.v1';
 const challenges=[
@@ -25,6 +27,7 @@ function read(){
 function write(data){
   const cutoff=new Date();cutoff.setDate(cutoff.getDate()-35);
   data.days=Object.fromEntries(Object.entries(data.days).filter(([day])=>day>=localDay(cutoff)));
+  data.best=Math.max(Number(data.best)||0,bestRun(data.days));
   localStorage.setItem(key,JSON.stringify(data));
 }
 export function recordChecklist(checked,previous){
@@ -45,22 +48,37 @@ export function updateChallenge(button){
   try{
     const data=read(),day=localDay(),state=button.dataset.challenge;
     if(!['','done','skipped'].includes(state))return;
+    const before=data.days[day]?.challenge;
     data.days[day]={...data.days[day],challenge:state};write(data);
+    if(state==='done'&&before!=='done')celebrate();
     panel.querySelectorAll('[data-challenge]').forEach(el=>{el.setAttribute('aria-pressed',String(el.dataset.challenge===state));if(el.dataset.challenge==='')el.hidden=!state;});
     panel.querySelector('#challenge-feedback').textContent=challengeFeedback(state);refreshWeekly();
   }catch{panel.querySelector('#challenge-feedback').textContent='Could not save your change. Browser storage may be unavailable. Try again.';}
 }
-export function weekly(){
-  let data;try{data=read();}catch{return '<section id="weekly-activity" class="card"><h2>Your last seven days</h2><p>Activity history could not be read. Try again after checking browser storage.</p></section>';}
-  const today=new Date(),days=[];
+function weekData(){
+  const data=read(),today=new Date(),days=[];
   // Include the old daily key so previously saved checklist work is not lost.
   try{const old=JSON.parse(localStorage.getItem('hipos.daily.v1')||'null');if(old&&Array.isArray(old.checked)&&/^\d{4}-\d{2}-\d{2}$/.test(old.day)&&data.days[old.day]?.habits===undefined)data.days[old.day]={...data.days[old.day],habits:old.checked.slice(0,3).filter(v=>v===true).length};}catch{}
   for(let offset=6;offset>=0;offset--){
-    const day=new Date(today);day.setDate(today.getDate()-offset);
-    const id=localDay(day),entry=data.days[id],active=entry?.habits>0||entry?.challenge==='done';
-    days.push(`<li class="${active?'activity-done':''}"><time datetime="${id}">${day.getMonth()+1}/${day.getDate()}</time><span>${active?'Completed an action':entry?.challenge==='skipped'?'Challenge skipped':'No actions recorded'}</span></li>`);
+    const date=new Date(today);date.setDate(today.getDate()-offset);
+    const id=localDay(date),entry=data.days[id];
+    days.push({id,date,entry,active:isActive(entry)});
   }
-  return `<section id="weekly-activity" class="card" aria-labelledby="weekly-heading"><h2 id="weekly-heading">Your last seven days</h2><p>A private record of your choices on this device. Missing a day is okay.</p><ul class="week-days">${days.join('')}</ul><p class="note">This records completed actions, not environmental impact.</p></section>`;
+  const streak=currentStreak(data.days,today),best=Math.max(Number(data.best)||0,bestRun(data.days),streak.count);
+  return {days,streak,best,badges:badgeList(data.days,best)};
+}
+// Used by the "save my week as an image" card.
+export function weekSummary(){return weekData();}
+const flame='<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><path d="M12 2c.8 3.6 5.2 5.6 5.2 10.6A5.2 5.2 0 0 1 12 18a5.2 5.2 0 0 1-5.2-5.4c0-2 .9-3.3 2.2-4.4.1 1.7.9 2.8 2 3C10.4 8.2 10.8 4.6 12 2Z" fill="currentColor"/></svg>';
+export function weekly(){
+  let week;try{week=weekData();}catch{return '<section id="weekly-activity" class="card"><h2>Your last seven days</h2><p>Activity history could not be read. Try again after checking browser storage.</p></section>';}
+  const cells=week.days.map(({id,date,entry,active})=>`<li class="${active?'activity-done':''}"><time datetime="${id}">${date.getMonth()+1}/${date.getDate()}</time><span>${active?'Completed an action':entry?.challenge==='skipped'?'Challenge skipped':'No actions recorded'}</span></li>`);
+  const {count,todayDone}=week.streak;
+  const streakText=count?`${count} day streak`:'No streak yet';
+  const streakNote=!count?'Do one small action today to start a streak.':todayDone?'Today is done. See you tomorrow!':'Do one small action today to keep it going.';
+  const bestLine=week.best>=2?`<span class="streak-best">Best: ${week.best} days</span>`:'';
+  const badgeItems=week.badges.map(b=>`<li class="badge${b.earned?' earned':''}"><span class="badge-name">${e(b.name)}</span><span class="badge-desc">${e(b.description)}</span><span class="badge-state">${b.earned?'Earned':'Locked'}</span></li>`).join('');
+  return `<section id="weekly-activity" class="card" aria-labelledby="weekly-heading"><h2 id="weekly-heading">Your last seven days</h2><p>A private record of your choices on this device. Missing a day is okay.</p><div class="streak"><span class="streak-flame${count?' lit':''}">${flame}</span><div class="streak-copy"><strong class="streak-count">${streakText}</strong><span class="streak-note">${streakNote}</span>${bestLine}</div></div><ul class="week-days">${cells.join('')}</ul><h3 class="badges-heading">Badges</h3><ul class="badges">${badgeItems}</ul><div class="actions"><button class="secondary" data-action="share-week">Save my week as an image</button></div><p class="note">The image has no name or personal details. This records completed actions, not environmental impact.</p></section>`;
 }
 export function refreshWeekly(){const panel=document.querySelector('#weekly-activity');if(panel)panel.outerHTML=weekly();}
 const guides={prevent:'Prevent',reuse:'Reuse',classify:'Classify',carry:'Carry out'};

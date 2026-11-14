@@ -1,5 +1,6 @@
 import {escapeHTML as e} from './core.js';
 import {recordChecklist,refreshWeekly} from './engagement.js';
+import {celebrate} from './motion.js';
 
 const checklistKey='hipos.daily.v1';
 const habits=['Packed my clean bottle','Brought my lunchbox','Brought reusable utensils'];
@@ -28,6 +29,8 @@ export function updateHabit(input){
     daily.checked[index]=input.checked;
     localStorage.setItem(checklistKey,JSON.stringify(daily));
     document.querySelector('#daily-progress').textContent=progress(daily.checked);
+    const wasAll=previous?.day===daily.day&&Array.isArray(previous.checked)&&previous.checked.length===habits.length&&previous.checked.every(v=>v===true);
+    if(daily.checked.every(Boolean)&&!wasAll)celebrate();
     try{recordChecklist(daily.checked,previous);refreshWeekly();}catch{document.querySelector('#daily-progress').append(' · Checklist saved, but weekly history could not be updated.');}
   }catch{
     input.checked=!input.checked;

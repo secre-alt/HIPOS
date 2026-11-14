@@ -195,6 +195,26 @@ try{
     await close(s);
   });
 
+  await check('streak, badges and the weekly image: earn, show, save a real PNG, Filipino',async()=>{
+    const s=await open({viewport:{width:390,height:844},reducedMotion:'reduce'}),{page}=s;
+    assert.match(await page.locator('.streak').innerText(),/No streak yet/);
+    await page.locator('[data-habit="0"]').check();
+    await page.waitForFunction(()=>/1 day streak/.test(document.querySelector('.streak')?.textContent||''),null,{timeout:5000});
+    const earned=await page.locator('.badge.earned .badge-name').allInnerTexts();assert.deepEqual(earned,['First step']);
+    for(const i of [1,2])await page.locator(`[data-habit="${i}"]`).check();
+    await page.waitForFunction(()=>document.querySelectorAll('.badge.earned').length>=2,null,{timeout:5000});
+    const [download]=await Promise.all([page.waitForEvent('download',{timeout:10000}),page.locator('[data-action="share-week"]').click()]);
+    assert.match(download.suggestedFilename(),/^hipos-week-\d{4}-\d{2}-\d{2}\.png$/);
+    const path=join(work,'week.png');await download.saveAs(path);const png=await readFile(path);
+    assert.equal(png.subarray(1,4).toString(),'PNG');assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1350);
+    await noticeHas(page,'Your week image is ready.');
+    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.getByText(/offline/i).first().waitFor();
+    assert.match(await page.locator('.streak').innerText(),/1 araw na tuloy-tuloy/);
+    assert.match(await page.locator('[data-action="share-week"]').innerText(),/I-save ang linggo ko/);
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
+    await close(s);
+  });
+
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');
