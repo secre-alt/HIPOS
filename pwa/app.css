@@ -520,3 +520,8 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 
 @media print{.rv{opacity:1!important;transform:none!important;transition:none!important}aside::after{display:none}}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}.hero-deco{translate:none}}
+
+/* ---- Back up and restore ----------------------------------------------- */
+.backup-card{margin-top:32px}
+.backup-card h2{font-size:1.25rem}
+.backup-card .note{padding:0;margin:0 0 4px}
