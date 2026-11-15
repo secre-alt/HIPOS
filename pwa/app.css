@@ -801,3 +801,25 @@ input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
 .sort-bin-icon svg{width:24px;height:24px}
 .sort-bin small{font-size:.75rem;line-height:1.25}
 @media(max-width:760px){.sort-game{padding:16px}.sort-game>h2{font-size:1.25rem}}
+
+/* ==== Buddy dock: the buddy and its greeting stay on screen while you scroll ==== */
+#avatar-link{position:fixed;z-index:45;left:12px;bottom:calc(88px + env(safe-area-inset-bottom));display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;min-width:0;min-height:0;max-width:calc(100vw - 24px);padding:6px 14px 6px 6px;border-radius:999px;background:var(--surface);border:2px solid var(--leaf);box-shadow:var(--shadow-md);text-decoration:none;color:var(--ink)}
+#avatar-link:hover{background:var(--surface);transform:translateY(-2px)}
+#avatar-link .hipos-avatar{flex:0 0 auto;width:56px;height:56px}
+#avatar-link .buddy-bubble{max-width:150px;padding:0;background:transparent;color:var(--green-deep);font-size:.8125rem;line-height:1.25;white-space:normal;overflow:visible;text-overflow:clip}
+#avatar-link .buddy-bubble::before{display:none}
+.buddy-say{bottom:calc(168px + env(safe-area-inset-bottom))}
+@media(min-width:1001px){
+  #avatar-link{left:20px;bottom:20px;gap:12px;padding:8px 20px 8px 8px}
+  #avatar-link .hipos-avatar{width:96px;height:96px}
+  #avatar-link .buddy-bubble{max-width:190px;font-size:1rem}
+  .buddy-say{left:20px;bottom:140px}
+}
+@media(min-width:1600px){
+  #avatar-link{top:112px;bottom:auto;left:max(16px,calc((100vw - 1184px)/2 - 232px));width:208px;flex-direction:column;gap:10px;padding:18px 16px 16px;border-radius:36px;text-align:center}
+  #avatar-link .hipos-avatar{width:152px;height:152px}
+  #avatar-link .buddy-bubble{max-width:100%;font-size:1.0625rem}
+  .buddy-say{top:392px;bottom:auto;left:max(16px,calc((100vw - 1184px)/2 - 232px));max-width:208px}
+}
+@media(prefers-color-scheme:dark){#avatar-link{background:#12251e;color:var(--ink)}#avatar-link .buddy-bubble{color:#cdeeb0}}
+@media print{#avatar-link{display:none}}

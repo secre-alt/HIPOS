@@ -334,6 +334,23 @@ try{
     await close(s);
   });
 
+  await check('buddy dock: buddy and greeting stay visible while scrolling; large on desktop, in the left margin on wide screens',async()=>{
+    for(const [width,height,minAvatar] of [[390,844,48],[1280,800,90],[1900,950,140]]){
+      const s=await open({viewport:{width,height},reducedMotion:'reduce'}),{page}=s;
+      const dock=page.locator('#avatar-link');
+      for(const y of [0,1200]){
+        await page.evaluate(v=>scrollTo(0,v),y);await page.waitForTimeout(150);
+        const box=await dock.boundingBox();
+        assert.ok(box&&box.y>=0&&box.y+box.height<=height&&box.x>=0&&box.x+box.width<=width,`buddy fully on screen at ${width}px after scrolling to ${y}`);
+        assert.ok(((await page.locator('#avatar-link .buddy-bubble').innerText()).length)>3,'greeting is shown');
+      }
+      const art=await page.locator('#avatar-link .hipos-avatar').boundingBox();assert.ok(art.width>=minAvatar,`buddy is ${art.width}px wide at ${width}px`);
+      if(width>=1600){const main=await page.locator('main').boundingBox(),box=await dock.boundingBox();assert.ok(box.x+box.width<=main.x+main.width&&box.x+box.width<=main.x+32,'dock sits in the left margin');}
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
+      await close(s);
+    }
+  });
+
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');
