@@ -124,7 +124,7 @@ try{
     // Filipino
     const more={...good,id:randomUUID(),description:'Isa pang concern mula sa ibang phone.'};
     const fil=join(work,'fil.json');await writeFile(fil,JSON.stringify({type:'HIPOS-BACKUP',version:1,exportedAt:new Date().toISOString(),reports:[more]}));
-    await page.selectOption('#language','fil');await page.getByRole('button',{name:'Ibalik mula sa backup'}).waitFor();
+    await page.locator('#settings-toggle').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.getByRole('button',{name:'Ibalik mula sa backup'}).waitFor();
     await page.setInputFiles('#restore-file',fil);await noticeHas(page,'Naibalik ang 1 ulat.');
     await close(s);
   });
@@ -145,7 +145,7 @@ try{
     assert.equal((await shown()).length,8);
     assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.visual-waste-card')].filter(c=>!c.hidden).every(c=>c.dataset.kind==='no')),'only keep-out items');
     await page.getByRole('button',{name:'All',exact:true}).click();assert.equal((await shown()).length,16);
-    await page.selectOption('#language','fil');await page.waitForTimeout(400);
+    await page.locator('#settings-toggle').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
     assert.equal(await page.locator('label[for=guide-search]').innerText(),'Hanapin sa gabay');
     await page.fill('#guide-search','karton');assert.match(await page.locator('#guide-count').innerText(),/^\d+ sa 16 aytem$/);
     await close(s);
@@ -188,7 +188,7 @@ try{
     assert.ok(rows.some(r=>r[3]==='Lots of wrappers, in the bin "by the door".'),'quotes and commas round-trip');
     assert.deepEqual(rows[0],['Status','Category','School area','Description','Created','Report ID']);
     // Filipino
-    await page.selectOption('#language','fil');await page.waitForTimeout(500);
+    await page.locator('#settings-toggle').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(500);
     assert.equal(await page.getByRole('button',{name:'I-export ang CSV'}).count(),1);
     assert.equal(await count(),'Ipinapakita ang 3 sa 3 ulat');
     assert.equal(await page.locator('#filter-heading').innerText(),'I-filter ang mga ulat');
@@ -219,7 +219,7 @@ try{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
     const size=()=>page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.home-intro p:not(.eyebrow)')).fontSize));
     const base=await size();
-    await page.selectOption('#textsize','xlarge');
+    await page.locator('#settings-toggle').click();await page.selectOption('#textsize','xlarge');await page.keyboard.press('Escape');
     assert.ok(await size()>base*1.2,'type grows with Extra large');
     await page.reload();await page.getByText(/offline/i).first().waitFor();
     assert.equal(await page.inputValue('#textsize'),'xlarge');assert.ok(await size()>base*1.2,'choice is remembered');

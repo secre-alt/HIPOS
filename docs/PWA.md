@@ -40,7 +40,7 @@ Staff review can filter imported reports by status, category and school area, an
 
 The Weekly activity card shows a streak (days in a row with at least one habit checked or the daily challenge completed), the best streak, four badges, and **Save my week as an image**. Everything is computed on the device from the activity log (`pwa/streak.js`). The image is drawn on a canvas (`pwa/summary-card.js`) in the chosen language, contains no name or personal details, and is saved or shared as a PNG. It records completed actions, not environmental impact. Confetti respects reduced-motion settings.
 
-The **Text size** control (Standard, Large, Extra large) is stored in `hipos.textsize` and sets `data-text` on the root element. All type is in `rem`, so it scales with this control and with the phone's own font setting. The browser tests check that nothing overflows horizontally at Extra large from 360 to 1920 px wide, and run basic accessibility checks (names, labels, one `h1`, unique ids) on every page.
+The **Text size** control (in **Settings**, the gear in the header) (Standard, Large, Extra large) is stored in `hipos.textsize` and sets `data-text` on the root element. All type is in `rem`, so it scales with this control and with the phone's own font setting. The browser tests check that nothing overflows horizontally at Extra large from 360 to 1920 px wide, and run basic accessibility checks (names, labels, one `h1`, unique ids) on every page.
 
 ## Tests
 
