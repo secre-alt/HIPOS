@@ -195,6 +195,65 @@ export const ACCESSORIES = [
     draw: () =>
       `<g transform="translate(100 96)"><path d="M-6 -3 L-10 13 L-3 10 L0 15 L3 -3Z" fill="#FF7FA5" stroke="#E85C89" stroke-width="1.2" stroke-linejoin="round"/><path d="M6 -3 L10 13 L3 10 L0 15 L-3 -3Z" fill="#FF9CBB" stroke="#E85C89" stroke-width="1.2" stroke-linejoin="round"/><circle r="9.5" fill="#FFD25A" stroke="#E0A800" stroke-width="1.6"/>${star(0, 0, 0.8, '#FFFFFF')}</g>`,
   },
+  {
+    id: 'scarf',
+    name: 'Cozy scarf',
+    unlock: 'sort1',
+    hint: 'Finish a sorting game round.',
+    draw: ({ faceY }) => {
+      const y = faceY + 24;
+      return `<path d="M32 ${y} Q60 ${y + 11} 88 ${y} L86 ${y + 10} Q60 ${y + 21} 34 ${y + 10} Z" fill="#FF8A5B" stroke="#E0663A" stroke-width="1.2" stroke-linejoin="round"/>` +
+        `<path d="M76 ${y + 9} L84 ${y + 26} L74 ${y + 24} L70 ${y + 12} Z" fill="#FF8A5B" stroke="#E0663A" stroke-width="1.2" stroke-linejoin="round"/><path d="M45 ${y + 6} v8 M58 ${y + 9} v8" stroke="#FFD2B8" stroke-width="2" stroke-linecap="round"/>`;
+    },
+  },
+  {
+    id: 'backpack',
+    name: 'Little backpack',
+    unlock: 'sort5',
+    hint: 'Finish five sorting game rounds.',
+    draw: () =>
+      `<g transform="translate(97 72)"><rect x="-8" y="-12" width="16" height="26" rx="6" fill="#6C8EF5" stroke="#4A6BD6" stroke-width="1.4"/><rect x="-5" y="-4" width="10" height="8" rx="3" fill="#9DB4FA" stroke="#4A6BD6" stroke-width="1"/><path d="M-8 -6 Q-14 -4 -13 8" fill="none" stroke="#4A6BD6" stroke-width="2.4" stroke-linecap="round"/></g>`,
+  },
+  {
+    id: 'charm',
+    name: 'Bottle charm',
+    unlock: 'treat10',
+    hint: 'Share ten treats with your buddy by checking off habits.',
+    draw: () =>
+      `<g transform="translate(18 94) rotate(-12)"><rect x="-4" y="-14" width="8" height="5" rx="1.5" fill="#6C8EF5"/><path d="M-6 -9 h12 v20 a3 3 0 0 1 -3 3 h-6 a3 3 0 0 1 -3 -3 z" fill="#CFE3F7" stroke="#6C8EF5" stroke-width="1.4"/><path d="M-6 0 h12" stroke="#6C8EF5" stroke-width="1.2"/><path d="M0 -14 Q0 -20 6 -22" fill="none" stroke="#6C8EF5" stroke-width="1.2" stroke-linecap="round"/></g>`,
+  },
+  {
+    id: 'partyhat',
+    name: 'Party hat',
+    unlock: 'tap10',
+    hint: 'Tap your buddy ten times.',
+    draw: ({ top }) =>
+      `<g transform="translate(${top.x} ${top.y + 3}) rotate(8)"><path d="M-12 0 L0 -28 L12 0 Z" fill="#B28CFF" stroke="#8A63E0" stroke-width="1.3" stroke-linejoin="round"/><path d="M-7 -10 L7 -10 M-10 -4 L10 -4" stroke="#FFD25A" stroke-width="2.2" stroke-linecap="round"/><circle cy="-29" r="3.4" fill="#FFD25A"/></g>`,
+  },
+  {
+    id: 'santa',
+    name: 'Festive hat',
+    unlock: 'season-christmas',
+    hint: 'Try the Christmas theme in Settings.',
+    draw: ({ top }) =>
+      `<g transform="translate(${top.x} ${top.y + 4}) rotate(-6)"><path d="M-15 0 Q-12 -22 6 -24 Q16 -22 18 -8 Q8 -14 15 0 Z" fill="#E5484D" stroke="#C0272D" stroke-width="1.3" stroke-linejoin="round"/><rect x="-17" y="-3" width="34" height="7" rx="3.5" fill="#fff" stroke="#E4E4E4" stroke-width="1"/><circle cx="18" cy="-9" r="4.2" fill="#fff" stroke="#E4E4E4" stroke-width="1"/></g>`,
+  },
+  {
+    id: 'globe',
+    name: 'Earth pin',
+    unlock: 'season-earth',
+    hint: 'Try the Earth Day theme in Settings.',
+    draw: ({ corner }) =>
+      `<g transform="translate(${corner.x - 2} ${corner.y + 2})"><circle r="10" fill="#6EB6F0" stroke="#3E8FD0" stroke-width="1.4"/><path d="M-6 -3 Q-2 -8 3 -5 Q1 -1 -3 0 Q-7 2 -6 -3 Z M2 3 Q7 1 8 5 Q4 8 2 3 Z" fill="#7BCB6B"/></g>`,
+  },
+  {
+    id: 'salakot',
+    name: 'Salakot',
+    unlock: 'season-wika',
+    hint: 'Try the Buwan ng Wika theme in Settings.',
+    draw: ({ top }) =>
+      `<g transform="translate(${top.x} ${top.y + 5})"><path d="M-27 0 Q0 -30 27 0 Q0 7 -27 0 Z" fill="#E6C27A" stroke="#B88F3E" stroke-width="1.4" stroke-linejoin="round"/><path d="M-18 -4 Q0 -2 18 -4 M-10 -10 Q0 -8 10 -10" fill="none" stroke="#B88F3E" stroke-width="1.1" stroke-linecap="round"/><circle cy="-17" r="2.4" fill="#C9973E"/></g>`,
+  },
 ];
 
 export const BACKGROUNDS = ['#E7EDDB', '#D1DFBE', '#F6E6D2', '#DCE8F4', '#F3DEE6'];
@@ -228,6 +287,7 @@ export const isLocked = (accessory, unlocked = getUnlocked()) => Boolean(accesso
 export function syncUnlocks(summary) {
   const earned = new Set((summary?.badges || []).filter((b) => b.earned).map((b) => b.key));
   if ((summary?.challengeDays || 0) >= 3) earned.add('challenge3');
+  (summary?.extra || []).forEach((key) => earned.add(key));
   const have = getUnlocked();
   const fresh = ACCESSORIES.filter((a) => a.unlock && earned.has(a.unlock) && !have.has(a.id));
   if (fresh.length) {
@@ -329,6 +389,7 @@ export function greeting(now = new Date()) {
 // One cached config per page load; loadAvatar() only runs on first use.
 let current = null;
 const getConfig = () => current || (current = loadAvatar());
+export const currentConfig = () => getConfig();
 
 const chip = (key, value, label, override, cfg) =>
   `<button type="button" class="buddy-chip" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${String(cfg[key]) === String(value)}">${renderAvatar(override, { size: 56, decorative: true })}<span>${label}</span></button>`;
@@ -348,7 +409,7 @@ export function avatarEditor() {
   const cfg = getConfig();
   const ch = CHARACTERS.find((c) => c.id === cfg.character);
   return `<div id="avatar-editor" class="buddy-editor">
-  <section class="card buddy-stage" aria-label="Your buddy">${renderAvatar(cfg, { size: 200 })}<div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
+  <section class="card buddy-stage" aria-label="Your buddy"><button type="button" class="buddy-stage-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(cfg, { size: 200, decorative: true })}</button><div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
   <section class="card buddy-options">
     <div class="buddy-group"><h2>Buddy</h2><div class="buddy-row">${CHARACTERS.map((c) => chip('character', c.id, c.name, { ...cfg, character: c.id, color: 0 }, cfg)).join('')}</div></div>
     <div class="buddy-group"><h2>Color</h2><div class="buddy-row">${ch.colors.map((hex, i) => swatch('color', i, hex, `Color ${i + 1}`, cfg)).join('')}</div></div>
@@ -359,17 +420,20 @@ export function avatarEditor() {
 </div>`;
 }
 
-export function buddyStrip() {
-  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><a class="buddy-strip-art" href="#avatar" tabindex="-1" aria-hidden="true">${renderAvatar(getConfig(), { size: 72, decorative: true })}</a><div><h2 id="buddy-heading">Your buddy</h2><p>Make it yours. It stays on this device.</p></div><a class="button-link secondary" href="#avatar">Customize buddy</a></section>`;
+export function buddyStrip(treats = 0) {
+  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><button type="button" class="buddy-strip-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(getConfig(), { size: 72, decorative: true })}</button><div><h2 id="buddy-heading">Your buddy</h2><p class="buddy-mood">Hi! Tap me for a tip.</p><p class="buddy-treats">Treats shared: ${treats}</p></div><div class="buddy-strip-actions"><a class="button-link secondary" href="#avatar">Customize buddy</a><a class="button-link secondary" href="#sort">Play sorting game</a></div></section>`;
 }
 
 // Redraws the header avatar and the Home strip. Safe to call when neither is on the page.
 export function refreshAvatars() {
   const cfg = getConfig();
   const link = document.querySelector('#avatar-link');
-  if (link) link.innerHTML = renderAvatar(cfg, { size: 40, decorative: true }) + `<span class="buddy-bubble">${greeting()}</span>`;
+  if (link) link.innerHTML = renderAvatar(cfg, { size: 120, decorative: true }) + `<span class="buddy-bubble">${greeting()}</span>`;
   const art = document.querySelector('.buddy-strip-art');
   if (art) art.innerHTML = renderAvatar(cfg, { size: 72, decorative: true });
+  document.querySelectorAll('.mini-buddy-art').forEach((el) => (el.innerHTML = renderAvatar(cfg, { size: 40, decorative: true })));
+  const stage = document.querySelector('.buddy-stage-art');
+  if (stage) stage.innerHTML = renderAvatar(cfg, { size: 200, decorative: true });
 }
 
 // Handles a tap on any editor button (character, color, face, extra, background, Surprise me, Reset).

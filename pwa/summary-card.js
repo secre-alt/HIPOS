@@ -1,6 +1,7 @@
 // Draws the shareable "my week" picture on this device. Nothing is uploaded, and the picture has no
 // name or personal details: just the streak, seven day dots, and any badges earned.
 import {translate,getLanguage} from './i18n.js';
+import {renderAvatar,currentConfig} from './avatar.js';
 const FONT='ui-rounded,"SF Pro Rounded","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif';
 const LIME='#b9f26b',DEEP='#0b2f25';
 
@@ -18,6 +19,13 @@ export async function weekCardBlob(week){
   rounded(80,70,84,84,28);ctx.fillStyle=LIME;ctx.fill();text('H',122,130,{size:56,weight:800,color:DEEP,align:'center',max:60});
   text('HIPOS',186,132,{size:58,weight:800});
 
+  // the student's buddy (a drawing chosen on this device; never a name or photo)
+  try{
+    const url=URL.createObjectURL(new Blob([renderAvatar(currentConfig(),{size:240,decorative:true})],{type:'image/svg+xml;charset=utf-8'}));
+    const img=new Image();img.src=url;await img.decode();
+    ctx.save();rounded(840,40,170,170,40);ctx.clip();ctx.drawImage(img,840,40,170,170);ctx.restore();URL.revokeObjectURL(url);
+  }catch{/* the card is still complete without the buddy */}
+
   // title + date range
   text(translate('My week with HIPOS'),80,310,{size:80,weight:800});
   const fmt=new Intl.DateTimeFormat(locale,{month:'short',day:'numeric'}),first=week.days[0].date,last=week.days[week.days.length-1].date;
@@ -26,7 +34,7 @@ export async function weekCardBlob(week){
   // panel
   rounded(60,440,960,700,56);ctx.fillStyle='rgba(255,255,255,.1)';ctx.fill();
   text(String(week.streak.count),W/2,700,{size:270,weight:800,color:LIME,align:'center'});
-  text(translate('days in a row'),W/2,780,{size:50,weight:600,align:'center'});
+  text(translate(week.streak.count===1?'day in a row':'days in a row'),W/2,780,{size:50,weight:600,align:'center'});
 
   // seven days
   const weekday=new Intl.DateTimeFormat(locale,{weekday:'short'}),activeDays=week.days.filter(d=>d.active).length;

@@ -46,7 +46,7 @@ const badge=(key,earned=true)=>({key,earned});
 const noBadges=['first','habits','streak3','streak7'].map(k=>badge(k,false));
 test('extras start locked and a locked extra cannot be equipped',()=>{
   const locked=ACCESSORIES.filter(a=>a.unlock);
-  assert.equal(locked.length,5);
+  assert.equal(locked.length,12);
   for(const a of locked){assert.equal(isLocked(a,[]),true);assert.equal(normalizeConfig({accessory:a.id},[]).accessory,'none');assert.equal(normalizeConfig({accessory:a.id},[a.id]).accessory,a.id);}
   for(const a of ACCESSORIES.filter(a=>!a.unlock))assert.equal(isLocked(a,[]),false);
 });
@@ -89,4 +89,10 @@ test('the buddy greets by time of day and the line is stable within a day',()=>{
 });
 test('avatar tiles carry a background index so dark mode can soften them',()=>{
   assert.match(renderAvatar({bg:3}),/class="av-bg" data-bg="3"/);
+});
+test('sorting, treat, tap and season extras unlock from extra keys',()=>{
+  globalThis.localStorage=memoryStorage();loadUnlocks();
+  assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1','tap10','season-wika']}).map(a=>a.id).sort(),['partyhat','salakot','scarf']);
+  assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1','sort5','treat10','season-christmas','season-earth']}).map(a=>a.id).sort(),['backpack','charm','globe','santa']);
+  assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1']}),[]);
 });

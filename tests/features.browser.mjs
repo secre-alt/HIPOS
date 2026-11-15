@@ -258,6 +258,99 @@ try{
     assert.deepEqual(problems,[],'accessibility problems');
   });
 
+  await check('buddy: tap reactions, habit treats and cheers, mini helper, sticker book, moods',async()=>{
+    const s=await open({viewport:{width:390,height:844}}),{page}=s;
+    assert.equal(await page.locator('.buddy-strip-art').count(),1);
+    await page.locator('.buddy-strip-art').click();
+    await page.waitForFunction(()=>!document.querySelector('#buddy-say').hidden,null,{timeout:3000});
+    assert.ok((await page.locator('.buddy-say-text').innerText()).length>3,'buddy says something when tapped');
+    assert.ok(await page.locator('#buddy-say').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'bubble never blocks taps');
+    await page.locator('[data-habit="0"]').check();
+    await page.waitForFunction(()=>/Yum!/.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
+    assert.match(await page.locator('.buddy-treats').innerText(),/Treats shared: 1/);
+    await page.locator('[data-habit="0"]').uncheck();await page.locator('[data-habit="0"]').check();
+    assert.match(await page.locator('.buddy-treats').innerText(),/Treats shared: 1/,'no extra treat for ticking again');
+    const mini=await page.locator('.mini-buddy').count();assert.ok(mini>=3,'helper buddies in the checklist, challenge and quiz cards');
+    await page.locator('.quiz-panel .mini-buddy').click();
+    await page.waitForFunction(()=>/clean|Wet|tip/i.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
+    // cheers off: no bubble
+    await page.locator('.settings-toggle:visible').click();await page.selectOption('#cheers','off');await page.keyboard.press('Escape');
+    await page.locator('.buddy-strip-art').click();await page.waitForTimeout(300);
+    assert.ok(await page.locator('#buddy-say').isHidden(),'cheers off hides the bubble');
+    await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
+    assert.ok(await page.locator('.sticker.earned').count()>=1,'first step sticker earned');
+    assert.equal(await page.locator('.sticker').count(),11);
+    assert.ok(await page.locator('[data-mood]').count()>=1,'buddy has a mood');
+    // Filipino
+    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
+    assert.match(await page.locator('.sticker-book h2').innerText(),/Aklat ng sticker/);
+    await close(s);
+  });
+
+  await check('sorting game: tap or drag, feedback, a full round, result, play again, Filipino, no overflow',async()=>{
+    const s=await open({viewport:{width:360,height:640},reducedMotion:'reduce'}),{page}=s;
+    await page.evaluate(()=>{location.hash='sort';});await page.locator('#sort-game').waitFor();
+    assert.equal(await page.locator('h1').count(),1);
+    for(let i=1;i<=6;i++){
+      assert.match(await page.locator('.sort-progress').innerText(),new RegExp(`Item ${i} of 6`));
+      await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+      const viewport=page.viewportSize(),bins=await page.locator('.sort-bins').boundingBox();
+      assert.ok(bins.y+bins.height<=viewport.height,`both bins are on screen (bottom ${Math.round(bins.y+bins.height)} of ${viewport.height})`);
+      if(i===2){ // drag the item onto the "ask staff" bin with the pointer
+        const item=await page.locator('#sort-item').boundingBox(),bin=await page.locator('.sort-no').boundingBox();
+        await page.mouse.move(item.x+item.width/2,item.y+item.height/2);await page.mouse.down();
+        await page.mouse.move(bin.x+bin.width/2,bin.y+bin.height/2,{steps:8});await page.mouse.up();
+      }else await page.locator(i%2?'.sort-yes':'.sort-no').click();
+      await page.locator('#sort-feedback').waitFor({state:'visible'});
+      assert.ok(await page.locator('#sort-feedback').innerText().then(t=>/Yes!|Not quite\./.test(t)),'feedback explains the answer');
+      assert.ok(await page.locator('[data-sort-bin]').first().isDisabled(),'bins lock until Next');
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
+      await page.locator('#sort-next').click();
+    }
+    assert.match(await page.locator('.sort-done h3').innerText(),/You sorted \d of 6 right\./);
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}').sorts===1);
+    await page.locator('[data-sort-again]').click();assert.match(await page.locator('.sort-progress').innerText(),/Item 1 of 6/);
+    await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
+    assert.ok(await page.locator('.sticker.earned .sticker-name',{hasText:'Sorting star'}).count()===1,'sorting star sticker earned');
+    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');
+    await page.evaluate(()=>{location.hash='sort';});await page.locator('#sort-game').waitFor();await page.waitForTimeout(400);
+    assert.match(await page.locator('.sort-progress').innerText(),/Aytem 1 sa 6/);
+    assert.match(await page.locator('.sort-bins').innerText(),/Pouch para sa tuyong basura/);
+    await close(s);
+  });
+
+  await check('settings: theme and sound persist; seasonal theme unlocks its extra',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
+    await page.locator('.settings-toggle:visible').click();
+    await page.selectOption('#season','christmas');await page.selectOption('#sound','on');await page.keyboard.press('Escape');
+    assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),'christmas');
+    await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+    assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),'christmas','theme is remembered');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.sound')),'on');
+    await page.evaluate(()=>{location.hash='avatar';});await page.locator('.buddy-chip',{hasText:'Festive hat'}).waitFor();
+    assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Festive hat'}).count(),0,'festive hat unlocked by trying the theme');
+    await page.locator('.settings-toggle:visible').click();await page.selectOption('#season','default');await page.keyboard.press('Escape');
+    assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),undefined);
+    await close(s);
+  });
+
+  await check('buddy dock: buddy and greeting stay visible while scrolling; large on desktop, in the left margin on wide screens',async()=>{
+    for(const [width,height,minAvatar] of [[390,844,48],[1280,800,90],[1900,950,140]]){
+      const s=await open({viewport:{width,height},reducedMotion:'reduce'}),{page}=s;
+      const dock=page.locator('#avatar-link');
+      for(const y of [0,1200]){
+        await page.evaluate(v=>scrollTo(0,v),y);await page.waitForTimeout(150);
+        const box=await dock.boundingBox();
+        assert.ok(box&&box.y>=0&&box.y+box.height<=height&&box.x>=0&&box.x+box.width<=width,`buddy fully on screen at ${width}px after scrolling to ${y}`);
+        assert.ok(((await page.locator('#avatar-link .buddy-bubble').innerText()).length)>3,'greeting is shown');
+      }
+      const art=await page.locator('#avatar-link .hipos-avatar').boundingBox();assert.ok(art.width>=minAvatar,`buddy is ${art.width}px wide at ${width}px`);
+      if(width>=1600){const main=await page.locator('main').boundingBox(),box=await dock.boundingBox();assert.ok(box.x+box.width<=main.x+main.width&&box.x+box.width<=main.x+32,'dock sits in the left margin');}
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
+      await close(s);
+    }
+  });
+
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');
