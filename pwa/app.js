@@ -4,7 +4,7 @@ import {weekCardBlob} from './summary-card.js';
 import {initTextSize} from './textsize.js';
 import {avatarEditor,avatarClick,refreshAvatars,syncUnlocks} from './avatar.js';
 import {buddySay,tapBuddy,applyMood,animate,sparkle,buzz,sound,giveTreat,syncStickers,earnedKeys,stats,stickerBook,initBuddySettings} from './buddy-fx.js';
-import {sortGame,sortClick,sortPointerDown,sortPointerMove,sortPointerUp} from './sortgame.js';
+import {sortGame,fitGame,sortClick,sortPointerDown,sortPointerMove,sortPointerUp} from './sortgame.js';
 import {answerQuiz,nextQuestion,restartQuiz,updateHabit,localDay,checklist} from './activities.js';
 import {home,selectWaste,reuseArt,wasteArt} from './home.js';
 import {revealOnScroll,initScrollEffects} from './motion.js';
@@ -134,6 +134,7 @@ if(page==='sort')view.innerHTML=intro('Sorting game','A quick, friendly game. No
 if(page==='privacy')view.innerHTML=intro('Private by choice. Local by default.','HIPOS is an offline-first school project prototype.')+card('Offline access','Open once online and wait for “Ready offline”. Install from the browser menu or the Install app button. On iPhone or iPad, use Safari → Share → Add to Home Screen. The first visit needs a connection; later visits use cached files.')+card('Storage and sharing','Reports and the staff PIN verifier are stored only in this browser, on this origin. Browser data can be cleared or evicted. Reports do not sync between devices. QR data is readable by anyone who scans it and is not encrypted. Back up important fictional test reports with transfer text.')+card('Your activity on this device','Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server or shared through report QR codes. Browser storage may be cleared or unavailable.')+card('Staff access','The local PIN is a convenience lock, not school authentication. It does not encrypt stored reports. Staff mode locks when the app is hidden. Use only fictional data for testing.')+card('Permissions','The camera is used only when you start scanning. Frames are processed on this device and not uploaded. Denying permission leaves manual text import available.')+card('Moving from Android','The PWA does not automatically access an Android app’s SQLite database. HIPOS1 QR reports can be transferred individually. There is no server or automatic submission.')+card('Installation and hosting','Installation, camera access, and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved records.')+versionCard();
 revealOnScroll();if(page==='reports')updateStorageStatus();
 view.classList.remove('page-in');void view.offsetWidth;view.classList.add('page-in');
+if(page==='sort')fitGame();
 checkBuddyUnlocks();
 if(!firstRender&&PAGE_LINES[page]&&!greeted.has(page)){greeted.add(page);buddySay(PAGE_LINES[page]);animate('hop');}
 firstRender=false;

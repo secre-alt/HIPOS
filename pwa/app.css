@@ -789,3 +789,15 @@ input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
 .sort-bin.secondary:hover:not(:disabled){transform:scale(1.03)}
 .sort-item .item-art{background:var(--leaf-soft);box-shadow:none;position:relative;overflow:hidden}
 .sort-item .item-art::before,.sort-item .item-art::after{display:none}
+
+/* compact sorting game so the item and both bins fit on small phones */
+.sort-game .note{margin:0 0 4px;font-size:.875rem}
+.sort-progress{margin:0}
+.sort-stage{min-height:0;margin:8px 0;padding:10px}
+.sort-item{padding:10px 20px}
+.sort-item .item-art{width:72px;height:72px;margin-bottom:0}
+.sort-item strong{font-size:1rem;line-height:1.3}
+.sort-bin.secondary{min-height:76px;padding:10px 8px;gap:2px}
+.sort-bin-icon svg{width:24px;height:24px}
+.sort-bin small{font-size:.75rem;line-height:1.25}
+@media(max-width:760px){.sort-game{padding:16px}.sort-game>h2{font-size:1.25rem}}

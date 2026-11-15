@@ -288,11 +288,13 @@ try{
   });
 
   await check('sorting game: tap or drag, feedback, a full round, result, play again, Filipino, no overflow',async()=>{
-    const s=await open({viewport:{width:390,height:844},reducedMotion:'reduce'}),{page}=s;
+    const s=await open({viewport:{width:360,height:640},reducedMotion:'reduce'}),{page}=s;
     await page.evaluate(()=>{location.hash='sort';});await page.locator('#sort-game').waitFor();
     assert.equal(await page.locator('h1').count(),1);
     for(let i=1;i<=6;i++){
       assert.match(await page.locator('.sort-progress').innerText(),new RegExp(`Item ${i} of 6`));
+      const viewport=page.viewportSize(),bins=await page.locator('.sort-bins').boundingBox();
+      assert.ok(bins.y+bins.height<=viewport.height,`both bins are on screen (bottom ${Math.round(bins.y+bins.height)} of ${viewport.height})`);
       if(i===2){ // drag the item onto the "ask staff" bin with the pointer
         const item=await page.locator('#sort-item').boundingBox(),bin=await page.locator('.sort-no').boundingBox();
         await page.mouse.move(item.x+item.width/2,item.y+item.height/2);await page.mouse.down();

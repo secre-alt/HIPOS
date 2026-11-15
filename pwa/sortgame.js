@@ -64,13 +64,24 @@ function advance(){
     box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});
     return true; // round finished: the caller refreshes stickers
   }
-  document.querySelector('#sort-item')?.focus?.({preventScroll:true});
+  fitGame();
 }
 // ---- input: click on bins/next/again, and pointer dragging of the item ----
 export function sortClick(button){
   if(button.hasAttribute('data-sort-bin'))return answer(button.dataset.sortBin)??'answered';
   if(button.hasAttribute('data-sort-next'))return advance()?'finished':'next';
-  if(button.hasAttribute('data-sort-again')){start();document.querySelector('#sort-body').innerHTML=body();return 'again';}
+  if(button.hasAttribute('data-sort-again')){start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
+}
+// Keep the item and both bins on screen (above the bottom bar) so dragging always has a target.
+export function fitGame(){
+  const card=document.querySelector('#sort-game');if(!card)return;
+  requestAnimationFrame(()=>{
+    const bins=card.querySelector('.sort-bins');if(!bins)return;
+    const room=innerHeight-(matchMedia('(max-width:1000px)').matches?96:16),over=bins.getBoundingClientRect().bottom-room;
+    if(over>0)scrollBy({top:over+8,behavior:'auto'});
+    const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
+    if(top!==undefined&&top<70)scrollBy({top:top-80,behavior:'auto'});
+  });
 }
 let drag=null;
 export function sortPointerDown(event){
