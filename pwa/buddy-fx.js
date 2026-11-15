@@ -3,10 +3,10 @@
 // No text here is ever part of a report, and nothing is sent anywhere.
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate} from './i18n.js';
-import {playSfx,music} from './audio.js';
+import {playSfx,music,MUSIC_STYLES} from './audio.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol';
+const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol',MUSICSTYLE='hipos.musicstyle';
 
 // ---------- Settings (cheers, sound, season) ----------
 const read=(key,fallback)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
@@ -15,6 +15,7 @@ export const cheersOn=()=>read(CHEERS,'on')!=='off';
 export const soundOn=()=>read(SOUND,'off')==='on';
 export const musicOn=()=>read(MUSIC,'off')==='on';
 export const musicLevel=()=>{const v=Number(read(MUSICVOL,'50'));return Number.isFinite(v)?Math.min(100,Math.max(0,v)):50;};
+export const musicStyle=()=>{const v=read(MUSICSTYLE,'lofi');return MUSIC_STYLES.includes(v)?v:'lofi';};
 export const SEASONS=['default','christmas','earth','wika'];
 export const season=()=>{const v=read(SEASON,'default');return SEASONS.includes(v)?v:'default';};
 
@@ -33,6 +34,7 @@ export function initBuddySettings(){
   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
   bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{if(v==='on')music.start();else music.stop();});
+  bind('#musicstyle',musicStyle,MUSICSTYLE,MUSIC_STYLES,v=>music.setStyle(v));
   bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
   const volume=document.querySelector('#musicvol');
   if(volume){const paint=()=>{volume.style.setProperty('--volume',volume.value+'%');volume.setAttribute('aria-valuetext',volume.value+'%');};volume.value=String(musicLevel());paint();volume.addEventListener('input',()=>{paint();write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
@@ -40,7 +42,7 @@ export function initBuddySettings(){
 }
 // Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.
 function initMusic(){
-  music.setTheme(season());music.setLevel(musicLevel()/100);
+  music.setTheme(season());music.setStyle(musicStyle());music.setLevel(musicLevel()/100);
   if(musicOn()){
     const go=()=>{if(musicOn())music.start();};
     addEventListener('pointerdown',go,{once:true});addEventListener('keydown',go,{once:true});

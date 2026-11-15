@@ -1035,3 +1035,7 @@ main>header{height:0;min-height:0;padding:0}
 .buddy-dock{top:calc(96px + env(safe-area-inset-top))}
 #view{padding-top:68px}
 }
+
+/* Match the space on either side of the mobile buddy row. */
+@media(max-width:1000px){.buddy-dock{top:calc(80px + env(safe-area-inset-top))}#view{padding-top:40px}}
+@media(max-width:760px){#view{padding-top:56px}}

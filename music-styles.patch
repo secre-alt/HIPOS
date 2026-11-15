@@ -1,0 +1,339 @@
+diff --git a/pwa/audio.js b/pwa/audio.js
+index bea9801..cc87a60 100644
+--- a/pwa/audio.js
++++ b/pwa/audio.js
+@@ -1,7 +1,7 @@
+-// Game-style audio for HIPOS: synthesized sound effects and a gentle generative music loop.
++// Game-style audio for HIPOS: synthesized sound effects and a choice of generative background music styles (lofi anime by default).
+ // Everything is generated with the Web Audio API, so there are no audio files to cache or license,
+ // it works offline, and nothing is sent anywhere. Safe to import where Web Audio does not exist.
+-let ctx=null,sfxBus=null,musicBus=null,echo=null;
++let ctx=null,sfxBus=null,musicBus=null,echo=null,mix=null,wobble=null,noiseBuf=null;
+ const levels={sfx:.85,music:.5};
+ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+ const hz=m=>440*Math.pow(2,(m-69)/12);
+@@ -13,17 +13,26 @@ function ensure(){
+   const master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination);
+   sfxBus=ctx.createGain();sfxBus.gain.value=levels.sfx;sfxBus.connect(master);
+   musicBus=ctx.createGain();musicBus.gain.value=0;musicBus.connect(master);
+-  // Soft sparkly echo that only the music uses.
++  // Lofi chain for music: instruments -> mix -> dull "tape" lowpass -> gentle compressor -> musicBus.
++  const comp=ctx.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=3;comp.connect(musicBus);
++  const tape=ctx.createBiquadFilter();tape.type='lowpass';tape.frequency.value=4200;tape.Q.value=.4;tape.connect(comp);
++  mix=ctx.createGain();mix.connect(tape);
++  // Soft dotted-eighth echo that only the music uses.
+   const delay=ctx.createDelay(1),feedback=ctx.createGain(),lowpass=ctx.createBiquadFilter();
+-  delay.delayTime.value=.3;feedback.gain.value=.3;lowpass.type='lowpass';lowpass.frequency.value=2200;
+-  echo=ctx.createGain();echo.gain.value=.35;
+-  echo.connect(delay);delay.connect(lowpass);lowpass.connect(feedback);feedback.connect(delay);lowpass.connect(musicBus);
++  delay.delayTime.value=.4;feedback.gain.value=.32;lowpass.type='lowpass';lowpass.frequency.value=1800;
++  echo=ctx.createGain();echo.gain.value=.4;
++  echo.connect(delay);delay.connect(lowpass);lowpass.connect(feedback);feedback.connect(delay);lowpass.connect(tape);
++  // Slow tape wobble: a tiny pitch drift shared by every music voice.
++  const lfo=ctx.createOscillator();wobble=ctx.createGain();lfo.frequency.value=.35;wobble.gain.value=9;lfo.connect(wobble);lfo.start();
++  // One second of white noise for hats, snares and vinyl crackle.
++  noiseBuf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
++  const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+   return ctx;
+ }
+ 
+ function tone(bus,{f,t=0,len=.15,type='sine',vol=.2,to,send=false,attack=.008}){
+   const start=ctx.currentTime+t,osc=ctx.createOscillator(),gain=ctx.createGain();
+-  osc.type=type;osc.frequency.setValueAtTime(f,start);
++  osc.type=type;osc.frequency.setValueAtTime(f,start);if(bus===mix&&wobble)wobble.connect(osc.detune);
+   if(to)osc.frequency.exponentialRampToValueAtTime(to,start+len);
+   gain.gain.setValueAtTime(.0001,start);
+   gain.gain.exponentialRampToValueAtTime(vol,start+Math.min(attack,len/2));
+@@ -55,31 +64,179 @@ export function playSfx(name){
+   for(const n of (SFX[name]||SFX.pop)())tone(sfxBus,n);
+ }
+ 
+-// ---------- Music: a gentle music-box loop that never repeats exactly ----------
+-const C=[48,[60,64,67,72]],Am=[45,[57,60,64,69]],F=[41,[57,60,65,69]],G=[43,[59,62,67,71]];
+-const THEMES={
+-  default:{bpm:92,prog:[C,Am,F,G]},
+-  earth:{bpm:84,prog:[C,G,Am,F]},
+-  christmas:{bpm:104,prog:[C,F,G,C]},
+-  wika:{bpm:100,prog:[C,F,Am,G]},
++// ---------- Music: several generative styles ----------
++// Styles: lofi (anime), sakura, arcade, rain, city, musicbox. Chords are [bass note, voicing].
++// The season theme still recolors the progressions of the "lofi" and "musicbox" styles.
++const FM9=[41,[57,60,64,67]],G9=[43,[59,62,65,69]],Em9=[40,[55,59,62,66]],Am9=[45,[55,59,60,64]],CM9=[48,[59,62,64,67]],Dm9=[50,[60,64,65,69]];
++const C3=[48,[60,64,67]],G3=[43,[59,62,67]],Am3=[45,[57,60,64]],F3=[41,[57,60,65]];
++const LOFI_THEMES={
++  default:{bpm:74,prog:[FM9,G9,Em9,Am9]},
++  earth:{bpm:70,prog:[CM9,Am9,Dm9,G9]},
++  christmas:{bpm:78,prog:[FM9,Em9,Dm9,CM9]},
++  wika:{bpm:72,prog:[Am9,Dm9,G9,CM9]},
+ };
+-const PENTA=[72,74,76,79,81,84],PATTERN=[0,2,1,3,2,3,1,2];
+-let theme='default',playing=false,timer=null,nextTime=0,step=0,melody=2;
++const BC=[48,[60,64,67,72]],BAm=[45,[57,60,64,69]],BF=[41,[57,60,65,69]],BG=[43,[59,62,67,71]];
++const BOX_THEMES={
++  default:{bpm:92,prog:[BC,BAm,BF,BG]},
++  earth:{bpm:84,prog:[BC,BG,BAm,BF]},
++  christmas:{bpm:104,prog:[BC,BF,BG,BC]},
++  wika:{bpm:100,prog:[BC,BF,BAm,BG]},
++};
++const HIRA=[64,65,69,71,72,76,77,81];   // hirajoshi on A (E F A B C E F A)
++const PENTA=[72,74,76,79,81,84];        // C major pentatonic
++const BOX_PATTERN=[0,2,1,3,2,3,1,2];
++let style='lofi',theme='default',playing=false,timer=null,nextTime=0,step=0,melody=2;
++
++const pick=a=>a[Math.floor(Math.random()*a.length)];
++const walk=(len,moves=[-2,-1,0,1,2])=>{melody=clamp(melody+pick(moves),0,len-1);return melody;};
++
++function noise(dest,{t=0,len=.1,vol=.1,type='highpass',freq=6000,q=.7,attack=.002}){
++  const start=ctx.currentTime+t,src=ctx.createBufferSource(),filt=ctx.createBiquadFilter(),gain=ctx.createGain();
++  src.buffer=noiseBuf;src.loop=true;filt.type=type;filt.frequency.value=freq;filt.Q.value=q;
++  gain.gain.setValueAtTime(.0001,start);
++  gain.gain.exponentialRampToValueAtTime(vol,start+attack);
++  gain.gain.exponentialRampToValueAtTime(.0001,start+len);
++  src.connect(filt);filt.connect(gain);gain.connect(dest);
++  src.start(start,Math.random()*.5);src.stop(start+len+.03);
++}
++// Koto-style pluck: bright saw that closes into a soft lowpass, with a tiny pitch dip on the attack.
++function pluck({f,t=0,len=1,vol=.09}){
++  const start=ctx.currentTime+Math.max(0,t),osc=ctx.createOscillator(),filt=ctx.createBiquadFilter(),gain=ctx.createGain();
++  osc.type='sawtooth';osc.frequency.setValueAtTime(f*1.012,start);osc.frequency.exponentialRampToValueAtTime(f,start+.05);
++  if(wobble)wobble.connect(osc.detune);
++  filt.type='lowpass';filt.Q.value=2;
++  filt.frequency.setValueAtTime(3200,start);filt.frequency.exponentialRampToValueAtTime(420,start+.28);
++  gain.gain.setValueAtTime(.0001,start);
++  gain.gain.exponentialRampToValueAtTime(vol,start+.004);
++  gain.gain.exponentialRampToValueAtTime(.0001,start+len);
++  osc.connect(filt);filt.connect(gain);gain.connect(mix);if(echo)gain.connect(echo);
++  osc.start(start);osc.stop(start+len+.03);
++}
++// Rhodes-ish key: soft sine body plus a quick "tine" overtone.
++function key(f,t,len,vol,send=false){
++  tone(mix,{f,t,len,vol,attack:.012,send});
++  tone(mix,{f:f*2,t,len:len*.45,type:'triangle',vol:vol*.18,attack:.006});
++  tone(mix,{f:f*4,t,len:.18,vol:vol*.1,attack:.004});
++}
++function chord(notes,t,len,vol){notes.forEach((m,i)=>key(hz(m),t+i*.014,len,vol));}
++// Slow soft pad.
++function pad(notes,t,len,vol){
++  const attack=Math.min(.7,len/2);
++  notes.forEach(m=>{
++    tone(mix,{f:hz(m),t,len,vol,attack});
++    tone(mix,{f:hz(m)*1.004,t,len,type:'triangle',vol:vol*.5,attack});
++  });
++}
++// Music-box bell.
++function bell(f,t,len,vol){
++  tone(mix,{f,t,len,vol,send:true});
++  tone(mix,{f:f*3,t,len:len*.3,vol:vol*.15});
++}
++const kick=(t,vol=.5)=>tone(mix,{f:130,to:42,t,len:.2,vol,attack:.003});
++
++// ----- Lofi Anime: swung beat, Rhodes chords, koto plucks, vinyl crackle -----
++function lofiStep(s,t,stepLen,[bass,notes]){
++  if(s===0)chord(notes,t,2.1,.075);
++  else if(s===3&&Math.random()<.75)chord(notes,t,.55,.045);
++  else if(s===6&&Math.random()<.45)chord(notes,t,.4,.04);
++  if(s===0)tone(mix,{f:hz(bass),t,len:1.3,vol:.26,attack:.02});
++  if(s===5&&Math.random()<.6)tone(mix,{f:hz(bass+12),t,len:.5,vol:.16,attack:.02});
++  if(s===0||(s===5&&Math.random()<.7)||(s===3&&Math.random()<.25))kick(t);
++  if(s===2||s===6){
++    noise(mix,{t:t+.01,len:.17,vol:.14,type:'bandpass',freq:1900,q:.8});
++    tone(mix,{f:200,to:140,t:t+.01,len:.1,type:'triangle',vol:.1});
++  }
++  noise(mix,{t,len:s===7&&Math.random()<.2?.18:.04,vol:s%2?.02:.035,freq:7000});
++  if(s%2===0&&Math.random()<.32){
++    const m=walk(HIRA.length,[-2,-1,-1,0,1,1,2]);
++    if(Math.random()<.2&&m<HIRA.length-1)pluck({f:hz(HIRA[m+1]),t:t-.06,len:.18,vol:.05});
++    pluck({f:hz(HIRA[m]),t,len:1.1,vol:.085});
++  }
++  const clicks=Math.random()<.5?1+Math.floor(Math.random()*3):0;
++  for(let k=0;k<clicks;k++)noise(musicBus,{t:t+Math.random()*stepLen,len:.006,vol:.02+Math.random()*.03,freq:2500,attack:.0005});
++}
+ 
+-function scheduleStep(i,when){
+-  const [bass,notes]=THEMES[theme].prog[Math.floor(i/8)%4],s=i%8,t=when-ctx.currentTime;
+-  tone(musicBus,{f:hz(notes[PATTERN[s]]),t,len:.55,vol:.15,send:true});
+-  if(s===0||s===4)tone(musicBus,{f:hz(bass),t,len:.9,type:'triangle',vol:.2});
+-  if(s===0)tone(musicBus,{f:hz(notes[0]-12),t,len:1.6,type:'sine',vol:.08});
+-  if(s%2===0&&Math.random()<.6){
+-    melody=clamp(melody+[-2,-1,0,1,2][Math.floor(Math.random()*5)],0,PENTA.length-1);
+-    tone(musicBus,{f:hz(PENTA[melody]),t,len:.4,type:'triangle',vol:.11,send:true});
++// ----- Sakura Garden: slow, drumless, koto and a breathy flute over a soft pad -----
++function sakuraStep(s,t,stepLen,[bass,notes]){
++  if(s===0){pad(notes,t,stepLen*8,.045);tone(mix,{f:hz(bass),t,len:3.2,vol:.2,attack:.05});}
++  if(Math.random()<(s%2?.12:.45)){
++    const m=walk(HIRA.length);
++    pluck({f:hz(HIRA[m]),t,len:1.6,vol:.09});
+   }
++  if(s===0&&Math.random()<.5)tone(mix,{f:hz(HIRA[clamp(melody+3,0,HIRA.length-1)]),t:t+.05,len:2.6,vol:.045,attack:.35,send:true});
++  if(s===4&&Math.random()<.35)pluck({f:hz(notes[0]-12),t,len:1.4,vol:.1});
++}
++
++// ----- Pixel Adventure: chiptune square waves, bouncy bass, arcade JRPG feel -----
++function arcadeStep(s,t,stepLen,[bass,notes]){
++  const sq=(m,len,vol,send=false)=>tone(mix,{f:hz(m),t,len,type:'square',vol,send,attack:.004});
++  tone(mix,{f:hz(s%2?bass+12:bass),t,len:stepLen*.9,type:'triangle',vol:.22,attack:.004});
++  sq(notes[s%notes.length]+12,stepLen*.6,.035);
++  if(s%2===0&&Math.random()<.6)sq(PENTA[walk(PENTA.length)],stepLen*1.6,.05,true);
++  if(s===0||s===4)tone(mix,{f:150,to:45,t,len:.14,vol:.4,attack:.002});
++  if(s===2||s===6)noise(mix,{t,len:.1,vol:.07,type:'bandpass',freq:2400,q:.8});
++  if(s%2)noise(mix,{t,len:.03,vol:.03,freq:7500});
++}
++
++// ----- Rainy Study: slow and quiet, soft chords, a few bells, rain texture -----
++function rainStep(s,t,stepLen,[bass,notes]){
++  if(s===0){chord(notes,t,3.2,.055);tone(mix,{f:hz(bass),t,len:2.4,vol:.22,attack:.03});}
++  if(s===4&&Math.random()<.6)chord(notes,t,1.3,.035);
++  if((s===0&&Math.random()<.5)||(s===5&&Math.random()<.25))kick(t,.3);
++  if(s===2||s===6)noise(mix,{t,len:.05,vol:.03,type:'bandpass',freq:1800,q:1});
++  if(s%2===0&&Math.random()<.18)bell(hz(PENTA[walk(PENTA.length)]),t,1.4,.07);
++  noise(musicBus,{t,len:stepLen*2.2,vol:.03,type:'bandpass',freq:3500,q:.4,attack:.25});
++  if(Math.random()<.3)noise(musicBus,{t,len:stepLen*2.2,vol:.05,type:'lowpass',freq:500,attack:.3});
++}
++
++// ----- City Night: 80s city-pop groove, funky bass, staccato keys -----
++function cityStep(s,t,stepLen,[bass,notes]){
++  if(s===0)chord(notes,t,1.6,.07);
++  if((s===3||s===5)&&Math.random()<.85)chord(notes,t,.28,.045);
++  if(s===7&&Math.random()<.4)chord(notes,t,.3,.04);
++  if(s===0)tone(mix,{f:hz(bass),t,len:.4,type:'triangle',vol:.24,attack:.01});
++  if(s===3)tone(mix,{f:hz(bass+12),t,len:.2,type:'triangle',vol:.2,attack:.01});
++  if(s===5)tone(mix,{f:hz(bass+7),t,len:.25,type:'triangle',vol:.2,attack:.01});
++  if(s===6&&Math.random()<.6)tone(mix,{f:hz(bass),t,len:.2,type:'triangle',vol:.18,attack:.01});
++  if(s===0||s===4||(s===3&&Math.random()<.3))kick(t,.45);
++  if(s===2||s===6){
++    noise(mix,{t,len:.13,vol:.18,type:'bandpass',freq:2200,q:.8});
++    tone(mix,{f:210,to:150,t,len:.09,type:'triangle',vol:.1});
++  }
++  noise(mix,{t,len:s%4===3?.14:.035,vol:s%2?.02:.03,freq:7000});
++  if(s%2===0&&Math.random()<.38)key(hz(PENTA[walk(PENTA.length)]),t,.55,.07,true);
++}
++
++// ----- Music Box (the original): gentle arpeggio that never repeats exactly -----
++function boxStep(s,t,stepLen,[bass,notes]){
++  tone(mix,{f:hz(notes[BOX_PATTERN[s]]),t,len:.55,vol:.15,send:true});
++  if(s===0||s===4)tone(mix,{f:hz(bass),t,len:.9,type:'triangle',vol:.2});
++  if(s===0)tone(mix,{f:hz(notes[0]-12),t,len:1.6,vol:.08});
++  if(s%2===0&&Math.random()<.6)tone(mix,{f:hz(PENTA[walk(PENTA.length)]),t,len:.4,type:'triangle',vol:.11,send:true});
++}
++
++const STYLES={
++  lofi:{label:'Lofi Anime',swing:.2,themes:LOFI_THEMES,play:lofiStep},
++  sakura:{label:'Sakura Garden',swing:0,bpm:62,prog:[Am9,FM9,CM9,G9],play:sakuraStep},
++  arcade:{label:'Pixel Adventure',swing:0,human:.002,bpm:112,prog:[C3,G3,Am3,F3],play:arcadeStep},
++  rain:{label:'Rainy Study',swing:.1,bpm:60,prog:[Dm9,G9,CM9,Am9],play:rainStep},
++  city:{label:'City Night',swing:.12,bpm:96,prog:[Dm9,G9,CM9,FM9],play:cityStep},
++  musicbox:{label:'Music Box',swing:0,themes:BOX_THEMES,play:boxStep},
++};
++export const MUSIC_STYLES=Object.keys(STYLES);
++export const MUSIC_STYLE_LABELS=Object.fromEntries(MUSIC_STYLES.map(id=>[id,STYLES[id].label]));
++const cfg=()=>{const st=STYLES[style];return st.themes?(st.themes[theme]||st.themes.default):st;};
++
++function scheduleStep(i,when,stepLen){
++  const st=STYLES[style],chordAt=cfg().prog[Math.floor(i/8)%4],s=i%8;
++  // Swing the off-beats and humanize the timing a little.
++  const t=when-ctx.currentTime+(s%2?stepLen*st.swing:0)+(Math.random()-.5)*(st.human??.012);
++  st.play(s,t,stepLen,chordAt);
+ }
+ function pump(){
+   if(!playing||!ctx)return;
+-  const stepLen=60/THEMES[theme].bpm/2;
+-  while(nextTime<ctx.currentTime+.4){scheduleStep(step++,nextTime);nextTime+=stepLen;}
++  const stepLen=60/cfg().bpm/2;
++  while(nextTime<ctx.currentTime+.4){scheduleStep(step++,nextTime,stepLen);nextTime+=stepLen;}
+   timer=setTimeout(pump,100);
+ }
+ export const music={
+@@ -94,6 +251,9 @@ export const music={
+     if(ctx)musicBus.gain.setTargetAtTime(0,ctx.currentTime,.15);
+   },
+   get playing(){return playing;},
++  get style(){return style;},
+   setLevel(v){levels.music=clamp(Number(v)||0,0,1);if(ctx&&playing)musicBus.gain.setTargetAtTime(levels.music,ctx.currentTime,.05);},
+-  setTheme(name){theme=THEMES[name]?name:'default';},
++  setTheme(name){theme=LOFI_THEMES[name]?name:'default';},
++  // Switching style starts the new one on the next beat (notes already scheduled finish naturally).
++  setStyle(name){style=STYLES[name]?name:'lofi';step=0;melody=2;if(playing&&ctx)nextTime=ctx.currentTime+.1;},
+ };
+diff --git a/pwa/buddy-fx.js b/pwa/buddy-fx.js
+index d41a65f..d9c3b45 100644
+--- a/pwa/buddy-fx.js
++++ b/pwa/buddy-fx.js
+@@ -3,10 +3,10 @@
+ // No text here is ever part of a report, and nothing is sent anywhere.
+ import {renderAvatar,currentConfig} from './avatar.js';
+ import {translate} from './i18n.js';
+-import {playSfx,music} from './audio.js';
++import {playSfx,music,MUSIC_STYLES} from './audio.js';
+ 
+ const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+-const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol';
++const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol',MUSICSTYLE='hipos.musicstyle';
+ 
+ // ---------- Settings (cheers, sound, season) ----------
+ const read=(key,fallback)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
+@@ -15,6 +15,7 @@ export const cheersOn=()=>read(CHEERS,'on')!=='off';
+ export const soundOn=()=>read(SOUND,'off')==='on';
+ export const musicOn=()=>read(MUSIC,'off')==='on';
+ export const musicLevel=()=>{const v=Number(read(MUSICVOL,'50'));return Number.isFinite(v)?Math.min(100,Math.max(0,v)):50;};
++export const musicStyle=()=>{const v=read(MUSICSTYLE,'lofi');return MUSIC_STYLES.includes(v)?v:'lofi';};
+ export const SEASONS=['default','christmas','earth','wika'];
+ export const season=()=>{const v=read(SEASON,'default');return SEASONS.includes(v)?v:'default';};
+ 
+@@ -33,6 +34,7 @@ export function initBuddySettings(){
+   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
+   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
+   bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{if(v==='on')music.start();else music.stop();});
++  bind('#musicstyle',musicStyle,MUSICSTYLE,MUSIC_STYLES,v=>music.setStyle(v));
+   bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
+   const volume=document.querySelector('#musicvol');
+   if(volume){const paint=()=>{volume.style.setProperty('--volume',volume.value+'%');volume.setAttribute('aria-valuetext',volume.value+'%');};volume.value=String(musicLevel());paint();volume.addEventListener('input',()=>{paint();write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
+@@ -40,7 +42,7 @@ export function initBuddySettings(){
+ }
+ // Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.
+ function initMusic(){
+-  music.setTheme(season());music.setLevel(musicLevel()/100);
++  music.setTheme(season());music.setStyle(musicStyle());music.setLevel(musicLevel()/100);
+   if(musicOn()){
+     const go=()=>{if(musicOn())music.start();};
+     addEventListener('pointerdown',go,{once:true});addEventListener('keydown',go,{once:true});
+diff --git a/pwa/i18n.js b/pwa/i18n.js
+index 5ffe968..5cfc23c 100644
+--- a/pwa/i18n.js
++++ b/pwa/i18n.js
+@@ -154,7 +154,7 @@ pairs.push(
+ );
+ 
+ pairs.push(['Language','Wika'],['Text & readability','Teksto at pagbabasa'],['Personalization','Personal na ayos'],['Sound & reactions','Tunog at mga reaksiyon'],['Sound effects','Mga tunog'],['App & offline','App at offline'],['Change','Palitan']);
+-pairs.push(['Background music','Musika sa background'],['Music volume','Lakas ng musika']);
++pairs.push(['Background music','Musika sa background'],['Music volume','Lakas ng musika'],['Music style','Estilo ng musika']);
+ pairs.push(['Section','Seksyon'],['Settings categories','Mga kategorya ng setting'],['Close settings','Isara ang mga setting']);
+ const dictionary=new Map(pairs);
+ let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
+diff --git a/pwa/index.html b/pwa/index.html
+index 944b259..b8d58c6 100644
+--- a/pwa/index.html
++++ b/pwa/index.html
+@@ -59,7 +59,7 @@
+     <a href="#classify" aria-label="Waste Guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h12l4 4v14H4zM16 3v5h4M8 12h8M8 16h6"/></svg><span>Waste Guide</span></a>
+     <a href="#reports" aria-label="My Concerns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16v14H9l-5 4zM8 7h8M8 11h6"/></svg><span>My Concerns</span></a>
+   </nav>
+-  <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="settings-heading"><h2 id="settings-title">Settings</h2><form method="dialog"><button class="settings-close secondary" aria-label="Close settings">Close</button></form></div><div class="settings-layout"><div class="settings-categories" role="group" aria-label="Settings categories"><button type="button" data-settings-category="language" aria-controls="settings-panel-language" aria-pressed="true">Language</button><button type="button" data-settings-category="text" aria-controls="settings-panel-text" aria-pressed="false">Text &amp; readability</button><button type="button" data-settings-category="personal" aria-controls="settings-panel-personal" aria-pressed="false">Personalization</button><button type="button" data-settings-category="sound" aria-controls="settings-panel-sound" aria-pressed="false">Sound &amp; reactions</button><button type="button" data-settings-category="app" aria-controls="settings-panel-app" aria-pressed="false">App &amp; offline</button></div><label class="settings-category-mobile" for="settings-category">Section<select id="settings-category"><option value="language">Language</option><option value="text">Text &amp; readability</option><option value="personal">Personalization</option><option value="sound">Sound &amp; reactions</option><option value="app">App &amp; offline</option></select></label><div class="settings-body"><section class="settings-section" id="settings-panel-language" aria-labelledby="settings-language"><h3 id="settings-language">Language</h3><label class="language-control" for="language">Language / Wika<select id="language"><option value="en">English</option><option value="fil">Filipino</option></select></label></section><section class="settings-section" id="settings-panel-text" hidden aria-labelledby="settings-text"><h3 id="settings-text">Text &amp; readability</h3><label class="language-control textsize-control" for="textsize">Text size<select id="textsize"><option value="standard">Standard</option><option value="large">Large</option><option value="xlarge">Extra large</option></select></label><div class="font-setting" role="group" aria-labelledby="font-label"><details class="font-picker"><summary><span id="font-label">Font style</span><span class="font-current" data-no-translate>Default</span><span class="font-change">Change</span></summary><div id="font-options" class="font-options"><button type="button" class="font-chip" data-font="default" aria-pressed="true"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Default</span></button><button type="button" class="font-chip" data-font="lilita" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Lilita One</span></button><button type="button" class="font-chip" data-font="titan" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Titan One</span></button><button type="button" class="font-chip" data-font="grandstander" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Grandstander</span></button><button type="button" class="font-chip" data-font="fredoka" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Fredoka</span></button><button type="button" class="font-chip" data-font="pixelify" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Pixelify Sans</span></button></div></details><label class="font-all"><input type="checkbox" id="font-all" disabled><span>Use this font for all text</span></label><p class="font-note">Some game fonts are harder to read in long text.</p></div></section><section class="settings-section" id="settings-panel-personal" hidden aria-labelledby="settings-personal"><h3 id="settings-personal">Personalization</h3><a class="settings-buddy-link" href="#avatar">Customize buddy <span aria-hidden="true">&rarr;</span></a><label class="language-control" for="season">Theme<select id="season"><option value="default">Default</option><option value="christmas">Christmas</option><option value="earth">Earth Day</option><option value="wika">Buwan ng Wika</option></select></label></section><section class="settings-section" id="settings-panel-sound" hidden aria-labelledby="settings-sound"><h3 id="settings-sound">Sound &amp; reactions</h3><label class="settings-switch" for="sound"><span>Sound effects</span><input id="sound" type="checkbox" role="switch"></label><label class="settings-switch" for="music"><span>Background music</span><input id="music" type="checkbox" role="switch"></label><label class="music-volume" for="musicvol"><span>Music volume</span><input id="musicvol" type="range" min="0" max="100" step="5"></label><label class="settings-switch" for="cheers"><span>Buddy cheers</span><input id="cheers" type="checkbox" role="switch"></label></section><section class="settings-section" id="settings-panel-app" hidden aria-labelledby="settings-app"><h3 id="settings-app">App &amp; offline</h3><div class="settings-status"><span>App status</span><span id="connection" role="status">Preparing offline access&hellip;</span></div><p class="settings-version" data-no-translate></p><button class="secondary" type="button" data-action="check-update">Check for updates</button></section></div></div></dialog>
++  <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="settings-heading"><h2 id="settings-title">Settings</h2><form method="dialog"><button class="settings-close secondary" aria-label="Close settings">Close</button></form></div><div class="settings-layout"><div class="settings-categories" role="group" aria-label="Settings categories"><button type="button" data-settings-category="language" aria-controls="settings-panel-language" aria-pressed="true">Language</button><button type="button" data-settings-category="text" aria-controls="settings-panel-text" aria-pressed="false">Text &amp; readability</button><button type="button" data-settings-category="personal" aria-controls="settings-panel-personal" aria-pressed="false">Personalization</button><button type="button" data-settings-category="sound" aria-controls="settings-panel-sound" aria-pressed="false">Sound &amp; reactions</button><button type="button" data-settings-category="app" aria-controls="settings-panel-app" aria-pressed="false">App &amp; offline</button></div><label class="settings-category-mobile" for="settings-category">Section<select id="settings-category"><option value="language">Language</option><option value="text">Text &amp; readability</option><option value="personal">Personalization</option><option value="sound">Sound &amp; reactions</option><option value="app">App &amp; offline</option></select></label><div class="settings-body"><section class="settings-section" id="settings-panel-language" aria-labelledby="settings-language"><h3 id="settings-language">Language</h3><label class="language-control" for="language">Language / Wika<select id="language"><option value="en">English</option><option value="fil">Filipino</option></select></label></section><section class="settings-section" id="settings-panel-text" hidden aria-labelledby="settings-text"><h3 id="settings-text">Text &amp; readability</h3><label class="language-control textsize-control" for="textsize">Text size<select id="textsize"><option value="standard">Standard</option><option value="large">Large</option><option value="xlarge">Extra large</option></select></label><div class="font-setting" role="group" aria-labelledby="font-label"><details class="font-picker"><summary><span id="font-label">Font style</span><span class="font-current" data-no-translate>Default</span><span class="font-change">Change</span></summary><div id="font-options" class="font-options"><button type="button" class="font-chip" data-font="default" aria-pressed="true"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Default</span></button><button type="button" class="font-chip" data-font="lilita" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Lilita One</span></button><button type="button" class="font-chip" data-font="titan" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Titan One</span></button><button type="button" class="font-chip" data-font="grandstander" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Grandstander</span></button><button type="button" class="font-chip" data-font="fredoka" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Fredoka</span></button><button type="button" class="font-chip" data-font="pixelify" aria-pressed="false"><span class="font-sample" aria-hidden="true">Aa</span><span class="font-name">Pixelify Sans</span></button></div></details><label class="font-all"><input type="checkbox" id="font-all" disabled><span>Use this font for all text</span></label><p class="font-note">Some game fonts are harder to read in long text.</p></div></section><section class="settings-section" id="settings-panel-personal" hidden aria-labelledby="settings-personal"><h3 id="settings-personal">Personalization</h3><a class="settings-buddy-link" href="#avatar">Customize buddy <span aria-hidden="true">&rarr;</span></a><label class="language-control" for="season">Theme<select id="season"><option value="default">Default</option><option value="christmas">Christmas</option><option value="earth">Earth Day</option><option value="wika">Buwan ng Wika</option></select></label></section><section class="settings-section" id="settings-panel-sound" hidden aria-labelledby="settings-sound"><h3 id="settings-sound">Sound &amp; reactions</h3><label class="settings-switch" for="sound"><span>Sound effects</span><input id="sound" type="checkbox" role="switch"></label><label class="settings-switch" for="music"><span>Background music</span><input id="music" type="checkbox" role="switch"></label><label class="language-control" for="musicstyle">Music style<select id="musicstyle" data-no-translate><option value="lofi">Lofi Anime</option><option value="sakura">Sakura Garden</option><option value="arcade">Pixel Adventure</option><option value="rain">Rainy Study</option><option value="city">City Night</option><option value="musicbox">Music Box</option></select></label><label class="music-volume" for="musicvol"><span>Music volume</span><input id="musicvol" type="range" min="0" max="100" step="5"></label><label class="settings-switch" for="cheers"><span>Buddy cheers</span><input id="cheers" type="checkbox" role="switch"></label></section><section class="settings-section" id="settings-panel-app" hidden aria-labelledby="settings-app"><h3 id="settings-app">App &amp; offline</h3><div class="settings-status"><span>App status</span><span id="connection" role="status">Preparing offline access&hellip;</span></div><p class="settings-version" data-no-translate></p><button class="secondary" type="button" data-action="check-update">Check for updates</button></section></div></div></dialog>
+   <dialog id="dialog"><div id="dialog-body"></div><form method="dialog"><button class="secondary">Close</button></form></dialog>
+   <script type="module" src="./app.js"></script>
+ </body>
+diff --git a/tests/buddy-fx.test.mjs b/tests/buddy-fx.test.mjs
+index 970cc38..950a652 100644
+--- a/tests/buddy-fx.test.mjs
++++ b/tests/buddy-fx.test.mjs
+@@ -61,3 +61,10 @@ test('audio engine imports safely without Web Audio and ignores sounds there',as
+   assert.ok(audio.SFX_NAMES.includes('win')&&audio.SFX_NAMES.includes('pop'));
+   audio.playSfx('pop');audio.music.start();assert.equal(audio.music.playing,false);
+ });
++
++test('music styles are listed, selectable and safe to switch without Web Audio',async()=>{
++  const audio=await import('../pwa/audio.js');
++  for(const id of ['lofi','sakura','arcade','rain','city','musicbox'])assert.ok(audio.MUSIC_STYLES.includes(id),id);
++  audio.music.setStyle('arcade');assert.equal(audio.music.style,'arcade');
++  audio.music.setStyle('nope');assert.equal(audio.music.style,'lofi');
++});

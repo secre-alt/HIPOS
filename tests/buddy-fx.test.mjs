@@ -61,3 +61,10 @@ test('audio engine imports safely without Web Audio and ignores sounds there',as
   assert.ok(audio.SFX_NAMES.includes('win')&&audio.SFX_NAMES.includes('pop'));
   audio.playSfx('pop');audio.music.start();assert.equal(audio.music.playing,false);
 });
+
+test('music styles are listed, selectable and safe to switch without Web Audio',async()=>{
+  const audio=await import('../pwa/audio.js');
+  for(const id of ['lofi','sakura','arcade','rain','city','musicbox'])assert.ok(audio.MUSIC_STYLES.includes(id),id);
+  audio.music.setStyle('arcade');assert.equal(audio.music.style,'arcade');
+  audio.music.setStyle('nope');assert.equal(audio.music.style,'lofi');
+});

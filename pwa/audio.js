@@ -1,4 +1,4 @@
-// Game-style audio for HIPOS: synthesized sound effects and a lofi Japanese-anime-game style generative music loop.
+// Game-style audio for HIPOS: synthesized sound effects and a choice of generative background music styles (lofi anime by default).
 // Everything is generated with the Web Audio API, so there are no audio files to cache or license,
 // it works offline, and nothing is sent anywhere. Safe to import where Web Audio does not exist.
 let ctx=null,sfxBus=null,musicBus=null,echo=null,mix=null,wobble=null,noiseBuf=null;
@@ -64,23 +64,35 @@ export function playSfx(name){
   for(const n of (SFX[name]||SFX.pop)())tone(sfxBus,n);
 }
 
-// ---------- Music: lofi Japanese anime game style ----------
-// Swung beat, warm Rhodes-style 9th chords, koto-style plucks in the hirajoshi scale, tape wobble and vinyl crackle.
-// Chords are [bass note, voicing]. Progressions use the J-pop "royal road" shape and jazzy ii-V turnarounds.
+// ---------- Music: several generative styles ----------
+// Styles: lofi (anime), sakura, arcade, rain, city, musicbox. Chords are [bass note, voicing].
+// The season theme still recolors the progressions of the "lofi" and "musicbox" styles.
 const FM9=[41,[57,60,64,67]],G9=[43,[59,62,65,69]],Em9=[40,[55,59,62,66]],Am9=[45,[55,59,60,64]],CM9=[48,[59,62,64,67]],Dm9=[50,[60,64,65,69]];
-const THEMES={
+const C3=[48,[60,64,67]],G3=[43,[59,62,67]],Am3=[45,[57,60,64]],F3=[41,[57,60,65]];
+const LOFI_THEMES={
   default:{bpm:74,prog:[FM9,G9,Em9,Am9]},
   earth:{bpm:70,prog:[CM9,Am9,Dm9,G9]},
   christmas:{bpm:78,prog:[FM9,Em9,Dm9,CM9]},
   wika:{bpm:72,prog:[Am9,Dm9,G9,CM9]},
 };
-const HIRA=[64,65,69,71,72,76,77,81]; // E F A B C E F A: hirajoshi on A, fits all the chords above
-const SWING=.2;
-let theme='default',playing=false,timer=null,nextTime=0,step=0,melody=3;
+const BC=[48,[60,64,67,72]],BAm=[45,[57,60,64,69]],BF=[41,[57,60,65,69]],BG=[43,[59,62,67,71]];
+const BOX_THEMES={
+  default:{bpm:92,prog:[BC,BAm,BF,BG]},
+  earth:{bpm:84,prog:[BC,BG,BAm,BF]},
+  christmas:{bpm:104,prog:[BC,BF,BG,BC]},
+  wika:{bpm:100,prog:[BC,BF,BAm,BG]},
+};
+const HIRA=[64,65,69,71,72,76,77,81];   // hirajoshi on A (E F A B C E F A)
+const PENTA=[72,74,76,79,81,84];        // C major pentatonic
+const BOX_PATTERN=[0,2,1,3,2,3,1,2];
+let style='lofi',theme='default',playing=false,timer=null,nextTime=0,step=0,melody=2;
+
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const walk=(len,moves=[-2,-1,0,1,2])=>{melody=clamp(melody+pick(moves),0,len-1);return melody;};
 
 function noise(dest,{t=0,len=.1,vol=.1,type='highpass',freq=6000,q=.7,attack=.002}){
   const start=ctx.currentTime+t,src=ctx.createBufferSource(),filt=ctx.createBiquadFilter(),gain=ctx.createGain();
-  src.buffer=noiseBuf;filt.type=type;filt.frequency.value=freq;filt.Q.value=q;
+  src.buffer=noiseBuf;src.loop=true;filt.type=type;filt.frequency.value=freq;filt.Q.value=q;
   gain.gain.setValueAtTime(.0001,start);
   gain.gain.exponentialRampToValueAtTime(vol,start+attack);
   gain.gain.exponentialRampToValueAtTime(.0001,start+len);
@@ -100,52 +112,130 @@ function pluck({f,t=0,len=1,vol=.09}){
   osc.connect(filt);filt.connect(gain);gain.connect(mix);if(echo)gain.connect(echo);
   osc.start(start);osc.stop(start+len+.03);
 }
-// Rhodes-ish key: soft sine body plus a quick "tine" overtone, lightly strummed.
-function chord(notes,t,len,vol){
-  notes.forEach((m,i)=>{
-    const f=hz(m),at=t+i*.014;
-    tone(mix,{f,t:at,len,vol,attack:.012});
-    tone(mix,{f:f*2,t:at,len:len*.45,type:'triangle',vol:vol*.18,attack:.006});
-    tone(mix,{f:f*4,t:at,len:.18,vol:vol*.1,attack:.004});
+// Rhodes-ish key: soft sine body plus a quick "tine" overtone.
+function key(f,t,len,vol,send=false){
+  tone(mix,{f,t,len,vol,attack:.012,send});
+  tone(mix,{f:f*2,t,len:len*.45,type:'triangle',vol:vol*.18,attack:.006});
+  tone(mix,{f:f*4,t,len:.18,vol:vol*.1,attack:.004});
+}
+function chord(notes,t,len,vol){notes.forEach((m,i)=>key(hz(m),t+i*.014,len,vol));}
+// Slow soft pad.
+function pad(notes,t,len,vol){
+  const attack=Math.min(.7,len/2);
+  notes.forEach(m=>{
+    tone(mix,{f:hz(m),t,len,vol,attack});
+    tone(mix,{f:hz(m)*1.004,t,len,type:'triangle',vol:vol*.5,attack});
   });
 }
+// Music-box bell.
+function bell(f,t,len,vol){
+  tone(mix,{f,t,len,vol,send:true});
+  tone(mix,{f:f*3,t,len:len*.3,vol:vol*.15});
+}
+const kick=(t,vol=.5)=>tone(mix,{f:130,to:42,t,len:.2,vol,attack:.003});
 
-function scheduleStep(i,when,stepLen){
-  const [bass,notes]=THEMES[theme].prog[Math.floor(i/8)%4],s=i%8;
-  // Swing the off-beats and humanize the timing a little.
-  const t=when-ctx.currentTime+(s%2?stepLen*SWING:0)+(Math.random()-.5)*.012;
-
-  // Chords: a long hit on the downbeat, soft off-beat stabs.
+// ----- Lofi Anime: swung beat, Rhodes chords, koto plucks, vinyl crackle -----
+function lofiStep(s,t,stepLen,[bass,notes]){
   if(s===0)chord(notes,t,2.1,.075);
   else if(s===3&&Math.random()<.75)chord(notes,t,.55,.045);
   else if(s===6&&Math.random()<.45)chord(notes,t,.4,.04);
-
-  // Bass: warm sine on the root, octave bounce later in the bar.
   if(s===0)tone(mix,{f:hz(bass),t,len:1.3,vol:.26,attack:.02});
   if(s===5&&Math.random()<.6)tone(mix,{f:hz(bass+12),t,len:.5,vol:.16,attack:.02});
-
-  // Drums: lazy kick, laid-back snare on 2 and 4, dusty hats.
-  if(s===0||(s===5&&Math.random()<.7)||(s===3&&Math.random()<.25))tone(mix,{f:130,to:42,t,len:.2,vol:.5,attack:.003});
+  if(s===0||(s===5&&Math.random()<.7)||(s===3&&Math.random()<.25))kick(t);
   if(s===2||s===6){
     noise(mix,{t:t+.01,len:.17,vol:.14,type:'bandpass',freq:1900,q:.8});
     tone(mix,{f:200,to:140,t:t+.01,len:.1,type:'triangle',vol:.1});
   }
   noise(mix,{t,len:s===7&&Math.random()<.2?.18:.04,vol:s%2?.02:.035,freq:7000});
-
-  // Koto-style melody: sparse random walk through the hirajoshi scale, sometimes with a grace note.
   if(s%2===0&&Math.random()<.32){
-    melody=clamp(melody+[-2,-1,-1,0,1,1,2][Math.floor(Math.random()*7)],0,HIRA.length-1);
-    if(Math.random()<.2&&melody<HIRA.length-1)pluck({f:hz(HIRA[melody+1]),t:t-.06,len:.18,vol:.05});
-    pluck({f:hz(HIRA[melody]),t,len:1.1,vol:.085});
+    const m=walk(HIRA.length,[-2,-1,-1,0,1,1,2]);
+    if(Math.random()<.2&&m<HIRA.length-1)pluck({f:hz(HIRA[m+1]),t:t-.06,len:.18,vol:.05});
+    pluck({f:hz(HIRA[m]),t,len:1.1,vol:.085});
   }
-
-  // Vinyl crackle: a few tiny clicks per step.
   const clicks=Math.random()<.5?1+Math.floor(Math.random()*3):0;
   for(let k=0;k<clicks;k++)noise(musicBus,{t:t+Math.random()*stepLen,len:.006,vol:.02+Math.random()*.03,freq:2500,attack:.0005});
 }
+
+// ----- Sakura Garden: slow, drumless, koto and a breathy flute over a soft pad -----
+function sakuraStep(s,t,stepLen,[bass,notes]){
+  if(s===0){pad(notes,t,stepLen*8,.045);tone(mix,{f:hz(bass),t,len:3.2,vol:.2,attack:.05});}
+  if(Math.random()<(s%2?.12:.45)){
+    const m=walk(HIRA.length);
+    pluck({f:hz(HIRA[m]),t,len:1.6,vol:.09});
+  }
+  if(s===0&&Math.random()<.5)tone(mix,{f:hz(HIRA[clamp(melody+3,0,HIRA.length-1)]),t:t+.05,len:2.6,vol:.045,attack:.35,send:true});
+  if(s===4&&Math.random()<.35)pluck({f:hz(notes[0]-12),t,len:1.4,vol:.1});
+}
+
+// ----- Pixel Adventure: chiptune square waves, bouncy bass, arcade JRPG feel -----
+function arcadeStep(s,t,stepLen,[bass,notes]){
+  const sq=(m,len,vol,send=false)=>tone(mix,{f:hz(m),t,len,type:'square',vol,send,attack:.004});
+  tone(mix,{f:hz(s%2?bass+12:bass),t,len:stepLen*.9,type:'triangle',vol:.22,attack:.004});
+  sq(notes[s%notes.length]+12,stepLen*.6,.035);
+  if(s%2===0&&Math.random()<.6)sq(PENTA[walk(PENTA.length)],stepLen*1.6,.05,true);
+  if(s===0||s===4)tone(mix,{f:150,to:45,t,len:.14,vol:.4,attack:.002});
+  if(s===2||s===6)noise(mix,{t,len:.1,vol:.07,type:'bandpass',freq:2400,q:.8});
+  if(s%2)noise(mix,{t,len:.03,vol:.03,freq:7500});
+}
+
+// ----- Rainy Study: slow and quiet, soft chords, a few bells, rain texture -----
+function rainStep(s,t,stepLen,[bass,notes]){
+  if(s===0){chord(notes,t,3.2,.055);tone(mix,{f:hz(bass),t,len:2.4,vol:.22,attack:.03});}
+  if(s===4&&Math.random()<.6)chord(notes,t,1.3,.035);
+  if((s===0&&Math.random()<.5)||(s===5&&Math.random()<.25))kick(t,.3);
+  if(s===2||s===6)noise(mix,{t,len:.05,vol:.03,type:'bandpass',freq:1800,q:1});
+  if(s%2===0&&Math.random()<.18)bell(hz(PENTA[walk(PENTA.length)]),t,1.4,.07);
+  noise(musicBus,{t,len:stepLen*2.2,vol:.03,type:'bandpass',freq:3500,q:.4,attack:.25});
+  if(Math.random()<.3)noise(musicBus,{t,len:stepLen*2.2,vol:.05,type:'lowpass',freq:500,attack:.3});
+}
+
+// ----- City Night: 80s city-pop groove, funky bass, staccato keys -----
+function cityStep(s,t,stepLen,[bass,notes]){
+  if(s===0)chord(notes,t,1.6,.07);
+  if((s===3||s===5)&&Math.random()<.85)chord(notes,t,.28,.045);
+  if(s===7&&Math.random()<.4)chord(notes,t,.3,.04);
+  if(s===0)tone(mix,{f:hz(bass),t,len:.4,type:'triangle',vol:.24,attack:.01});
+  if(s===3)tone(mix,{f:hz(bass+12),t,len:.2,type:'triangle',vol:.2,attack:.01});
+  if(s===5)tone(mix,{f:hz(bass+7),t,len:.25,type:'triangle',vol:.2,attack:.01});
+  if(s===6&&Math.random()<.6)tone(mix,{f:hz(bass),t,len:.2,type:'triangle',vol:.18,attack:.01});
+  if(s===0||s===4||(s===3&&Math.random()<.3))kick(t,.45);
+  if(s===2||s===6){
+    noise(mix,{t,len:.13,vol:.18,type:'bandpass',freq:2200,q:.8});
+    tone(mix,{f:210,to:150,t,len:.09,type:'triangle',vol:.1});
+  }
+  noise(mix,{t,len:s%4===3?.14:.035,vol:s%2?.02:.03,freq:7000});
+  if(s%2===0&&Math.random()<.38)key(hz(PENTA[walk(PENTA.length)]),t,.55,.07,true);
+}
+
+// ----- Music Box (the original): gentle arpeggio that never repeats exactly -----
+function boxStep(s,t,stepLen,[bass,notes]){
+  tone(mix,{f:hz(notes[BOX_PATTERN[s]]),t,len:.55,vol:.15,send:true});
+  if(s===0||s===4)tone(mix,{f:hz(bass),t,len:.9,type:'triangle',vol:.2});
+  if(s===0)tone(mix,{f:hz(notes[0]-12),t,len:1.6,vol:.08});
+  if(s%2===0&&Math.random()<.6)tone(mix,{f:hz(PENTA[walk(PENTA.length)]),t,len:.4,type:'triangle',vol:.11,send:true});
+}
+
+const STYLES={
+  lofi:{label:'Lofi Anime',swing:.2,themes:LOFI_THEMES,play:lofiStep},
+  sakura:{label:'Sakura Garden',swing:0,bpm:62,prog:[Am9,FM9,CM9,G9],play:sakuraStep},
+  arcade:{label:'Pixel Adventure',swing:0,human:.002,bpm:112,prog:[C3,G3,Am3,F3],play:arcadeStep},
+  rain:{label:'Rainy Study',swing:.1,bpm:60,prog:[Dm9,G9,CM9,Am9],play:rainStep},
+  city:{label:'City Night',swing:.12,bpm:96,prog:[Dm9,G9,CM9,FM9],play:cityStep},
+  musicbox:{label:'Music Box',swing:0,themes:BOX_THEMES,play:boxStep},
+};
+export const MUSIC_STYLES=Object.keys(STYLES);
+export const MUSIC_STYLE_LABELS=Object.fromEntries(MUSIC_STYLES.map(id=>[id,STYLES[id].label]));
+const cfg=()=>{const st=STYLES[style];return st.themes?(st.themes[theme]||st.themes.default):st;};
+
+function scheduleStep(i,when,stepLen){
+  const st=STYLES[style],chordAt=cfg().prog[Math.floor(i/8)%4],s=i%8;
+  // Swing the off-beats and humanize the timing a little.
+  const t=when-ctx.currentTime+(s%2?stepLen*st.swing:0)+(Math.random()-.5)*(st.human??.012);
+  st.play(s,t,stepLen,chordAt);
+}
 function pump(){
   if(!playing||!ctx)return;
-  const stepLen=60/THEMES[theme].bpm/2;
+  const stepLen=60/cfg().bpm/2;
   while(nextTime<ctx.currentTime+.4){scheduleStep(step++,nextTime,stepLen);nextTime+=stepLen;}
   timer=setTimeout(pump,100);
 }
@@ -161,6 +251,9 @@ export const music={
     if(ctx)musicBus.gain.setTargetAtTime(0,ctx.currentTime,.15);
   },
   get playing(){return playing;},
+  get style(){return style;},
   setLevel(v){levels.music=clamp(Number(v)||0,0,1);if(ctx&&playing)musicBus.gain.setTargetAtTime(levels.music,ctx.currentTime,.05);},
-  setTheme(name){theme=THEMES[name]?name:'default';},
+  setTheme(name){theme=LOFI_THEMES[name]?name:'default';},
+  // Switching style starts the new one on the next beat (notes already scheduled finish naturally).
+  setStyle(name){style=STYLES[name]?name:'lofi';step=0;melody=2;if(playing&&ctx)nextTime=ctx.currentTime+.1;},
 };
