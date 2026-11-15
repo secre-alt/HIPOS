@@ -656,3 +656,35 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 .av-bg[data-bg="0"]{fill:#2C4237}.av-bg[data-bg="1"]{fill:#3A4B2F}.av-bg[data-bg="2"]{fill:#4B4034}.av-bg[data-bg="3"]{fill:#2E4052}.av-bg[data-bg="4"]{fill:#4B3541}
 .hipos-avatar .av-shadow{opacity:.3}
 }
+
+/* Font style (Settings): bundled game-style fonts, applied with data attributes on <html>. */
+@font-face{font-family:"HIPOS Lilita One";src:url(fonts/lilita-one.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"HIPOS Titan One";src:url(fonts/titan-one.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"HIPOS Grandstander";src:url(fonts/grandstander.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"HIPOS Fredoka";src:url(fonts/fredoka.woff2) format("woff2");font-weight:300 700;font-style:normal;font-display:swap}
+@font-face{font-family:"HIPOS Pixelify Sans";src:url(fonts/pixelify-sans.woff2) format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+html[data-font=lilita]{--font-display:"HIPOS Lilita One",ui-rounded,"Segoe UI",system-ui,sans-serif}
+html[data-font=titan]{--font-display:"HIPOS Titan One",ui-rounded,"Segoe UI",system-ui,sans-serif}
+html[data-font=grandstander]{--font-display:"HIPOS Grandstander",ui-rounded,"Segoe UI",system-ui,sans-serif}
+html[data-font=fredoka]{--font-display:"HIPOS Fredoka",ui-rounded,"Segoe UI",system-ui,sans-serif}
+html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-rounded,"Segoe UI",system-ui,sans-serif}
+html[data-font-all]{--font-body:var(--font-display)}
+html[data-font] :is(button,.button-link,.buddy-bubble,#connection){font-family:var(--font-display)}
+html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
+.settings-label{display:block;margin:20px 0 8px;font-weight:600}
+.font-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.font-chip{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:transparent;color:var(--ink,#143026);text-align:left}
+.font-chip:hover{background:var(--leaf-soft,#eef2e3)}
+.font-chip[aria-pressed="true"]{border-color:var(--ring,#2f8a57);box-shadow:0 0 0 2px var(--ring,#2f8a57)}
+.font-sample{font-size:1.5rem;line-height:1}
+.font-name{font-family:"Segoe UI",system-ui,sans-serif;font-size:.8125rem;font-weight:600}
+.font-chip[data-font=lilita] .font-sample{font-family:"HIPOS Lilita One",system-ui,sans-serif}
+.font-chip[data-font=titan] .font-sample{font-family:"HIPOS Titan One",system-ui,sans-serif}
+.font-chip[data-font=grandstander] .font-sample{font-family:"HIPOS Grandstander",system-ui,sans-serif;font-weight:800}
+.font-chip[data-font=fredoka] .font-sample{font-family:"HIPOS Fredoka",system-ui,sans-serif;font-weight:700}
+.font-chip[data-font=pixelify] .font-sample{font-family:"HIPOS Pixelify Sans",system-ui,sans-serif;font-weight:700}
+.font-all{display:flex;align-items:center;gap:10px;margin-top:14px;font-weight:600}
+.font-all input{width:22px;height:22px;flex-shrink:0;accent-color:#2f8a57}
+.font-all input:disabled+span{opacity:.55}
+.font-note{margin:6px 0 0;color:var(--muted);font-size:.8125rem}
+@media(prefers-color-scheme:dark){.font-chip{color:var(--ink);--ring:#a9e57b}.font-all input{accent-color:#a9e57b}}

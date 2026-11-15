@@ -25,7 +25,7 @@ async function open(options={}){
   page.on('pageerror',e=>consoleErrors.push(String(e)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});
   page.harvest=async()=>{cspViolations.push(...await page.evaluate(()=>window.__csp||[]).catch(()=>[]));};
-  await page.goto(base);await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
+  await page.goto(base);await page.getByText('Ready offline',{exact:true}).waitFor({timeout:20000});
   return {ctx,page};
 }
 async function close({ctx,page}){await page.harvest();await ctx.close();}
@@ -77,7 +77,7 @@ try{
     const pages=['home','prevent','reuse','classify','carry','reports','privacy'],allowed=new Set(['Language / Wika','Rencruxx']);
     async function collect(lang){
       const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'});
-      await s.page.evaluate(l=>localStorage.setItem('hipos.language',l),lang);await s.page.reload();await s.page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+      await s.page.evaluate(l=>localStorage.setItem('hipos.language',l),lang);await s.page.reload();await s.page.getByText(/offline/i).first().waitFor();
       const out={};
       for(const pg of pages){
         await s.page.evaluate(h=>{location.hash=h;},pg);await s.page.waitForTimeout(450);
@@ -208,7 +208,7 @@ try{
     const path=join(work,'week.png');await download.saveAs(path);const png=await readFile(path);
     assert.equal(png.subarray(1,4).toString(),'PNG');assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1350);
     await noticeHas(page,'Your week image is ready.');
-    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.getByText(/offline/i).first().waitFor();
     assert.match(await page.locator('.streak').innerText(),/1 araw na tuloy-tuloy/);
     assert.match(await page.locator('[data-action="share-week"]').innerText(),/I-save ang linggo ko/);
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
@@ -221,7 +221,7 @@ try{
     const base=await size();
     await page.locator('.settings-toggle:visible').click();await page.selectOption('#textsize','xlarge');await page.keyboard.press('Escape');
     assert.ok(await size()>base*1.2,'type grows with Extra large');
-    await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+    await page.reload();await page.getByText(/offline/i).first().waitFor();
     assert.equal(await page.inputValue('#textsize'),'xlarge');assert.ok(await size()>base*1.2,'choice is remembered');
     for(const width of [360,390,768,1001,1280,1920]){
       await page.setViewportSize({width,height:900});
@@ -231,7 +231,7 @@ try{
         assert.ok(over<=0,`horizontal overflow of ${over}px on #${pg} at ${width}px wide with Extra large text`);
       }
     }
-    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+    await page.evaluate(()=>localStorage.setItem('hipos.language','fil'));await page.reload();await page.getByText(/offline/i).first().waitFor();
     assert.match(await page.locator('.textsize-control').innerText(),/Laki ng teksto/);
     assert.deepEqual(await page.locator('#textsize option').allInnerTexts(),['Karaniwan','Malaki','Napakalaki']);
     await close(s);
@@ -244,7 +244,7 @@ try{
       const found=await page.evaluate(()=>{
         const out=[],visible=el=>!!(el.offsetWidth||el.offsetHeight||el.getClientRects().length)&&getComputedStyle(el).visibility!=='hidden';
         const name=el=>(el.getAttribute('aria-label')||el.getAttribute('aria-labelledby')&&document.getElementById(el.getAttribute('aria-labelledby'))?.textContent||el.textContent||el.getAttribute('title')||'').trim();
-        document.querySelectorAll('button,a[href],[role=button]').forEach(el=>{if(visible(el)&&!el.closest('[aria-hidden=true]')&&!name(el))out.push('no accessible name: '+el.outerHTML.slice(0,80));});
+        document.querySelectorAll('button,a[href],[role=button]').forEach(el=>{if(visible(el)&&!name(el))out.push('no accessible name: '+el.outerHTML.slice(0,80));});
         document.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(el=>{if(!visible(el))return;const labelled=el.labels?.length||el.getAttribute('aria-label')||el.getAttribute('aria-labelledby');if(!labelled)out.push('unlabelled field: '+el.outerHTML.slice(0,80));});
         document.querySelectorAll('img').forEach(el=>{if(!el.hasAttribute('alt'))out.push('image without alt: '+el.outerHTML.slice(0,80));});
         const ids=[...document.querySelectorAll('[id]')].map(e=>e.id),dup=ids.filter((v,i)=>ids.indexOf(v)!==i);if(dup.length)out.push('duplicate ids: '+[...new Set(dup)].join(','));
@@ -255,7 +255,7 @@ try{
       problems.push(...found.map(f=>`#${pg}: ${f}`));
     }
     await close(s);
-    assert.deepEqual(problems,[],'accessibility problems: '+JSON.stringify(problems));
+    assert.deepEqual(problems,[],'accessibility problems');
   });
 
   await check('no CSP violations or console errors across all pages and features',async()=>{
@@ -279,7 +279,7 @@ try{
     await page.locator('#dismiss-update').click();assert.ok(await page.locator('#update-banner').isHidden(),'Later hides the banner');
     await page.evaluate(()=>{document.querySelector('#update-banner').hidden=false;});
     const reloaded=page.waitForEvent('load',{timeout:20000});await page.locator('#apply-update').click();await reloaded;
-    await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
+    await page.getByText('Ready offline',{exact:true}).waitFor({timeout:20000});
     const now=await page.evaluate(()=>fetch('./app.css').then(r=>r.text()));assert.ok(now.includes('hipos-test-v2'),'new version is running');
     assert.ok(await page.locator('#update-banner').isHidden(),'banner is gone after updating');
     await close(s);

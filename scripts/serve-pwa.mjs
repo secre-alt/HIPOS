@@ -3,7 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import './build-pwa.mjs';
 const root=resolve(process.env.HIPOS_ROOT||'dist'),port=Number(process.env.PORT||4173);
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webmanifest':'application/manifest+json','.png':'image/png','.json':'application/json'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webmanifest':'application/manifest+json','.png':'image/png','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8','.json':'application/json'};
 // Apply the same response headers as production (vercel.json), so local runs and tests see the real
 // security policy and caching rules. Later rules override earlier ones, like Vercel.
 const config=JSON.parse(await readFile('vercel.json','utf8').catch(()=>'{}'));

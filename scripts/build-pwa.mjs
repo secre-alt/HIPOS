@@ -4,6 +4,8 @@ import {createHash} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 await mkdir('dist/icons',{recursive:true});
 for(const f of ['index.html','app.css','manifest.webmanifest'])await copyFile(`pwa/${f}`,`dist/${f}`);
+await mkdir('dist/fonts',{recursive:true});
+for(const f of await readdir('pwa/fonts').catch(()=>[]))await copyFile(`pwa/fonts/${f}`,`dist/fonts/${f}`);
 await mkdir('dist/screenshots',{recursive:true});
 for(const f of await readdir('pwa/screenshots').catch(()=>[]))await copyFile(`pwa/screenshots/${f}`,`dist/screenshots/${f}`);
 // Build id shown on the Privacy page (Vercel provides the commit; local builds say "dev").
@@ -39,7 +41,7 @@ function icon(size){
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',head),chunk('IDAT',deflateSync(pixels)),chunk('IEND',Buffer.alloc(0))]);
 }
 await writeFile('dist/icons/icon-180.png',icon(180));await writeFile('dist/icons/icon-192.png',icon(192));await writeFile('dist/icons/icon-512.png',icon(512));await writeFile('dist/icons/maskable-512.png',icon(512));
-const assets=['./','./index.html','./app.js','./app.css','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png'];
+const assets=['./','./index.html','./app.js','./app.css','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png',...(await readdir('dist/fonts')).filter(f=>f.endsWith('.woff2')).sort().map(f=>`./fonts/${f}`)];
 const hash=createHash('sha256');for(const f of assets.slice(1))hash.update(await readFile(`dist/${f.slice(2)}`));
 const version=hash.digest('hex').slice(0,16);
 await writeFile('dist/sw.js',`const PREFIX='hipos-shell-'+self.registration.scope;\nconst CACHE=PREFIX+'${version}';\nconst ASSETS=${JSON.stringify(assets)};\nself.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\nself.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!event.request.url.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const hit=event.request.mode==='navigate'?await cache.match('./index.html'):await cache.match(event.request,{ignoreSearch:true});if(hit)return hit;try{return await fetch(event.request);}catch{return new Response('Offline',{status:503,statusText:'Offline',headers:{'content-type':'text/plain'}});}})());});\n`);

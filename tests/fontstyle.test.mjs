@@ -1,0 +1,25 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile,access} from 'node:fs/promises';
+import {FONTS,normalizeFont} from '../pwa/fontstyle.js';
+
+test('unknown or damaged font choices fall back to the default font',()=>{
+  for(const bad of [null,undefined,'',42,{},'comic','LILITA'])assert.equal(normalizeFont(bad),'default');
+  for(const ok of FONTS)assert.equal(normalizeFont(ok),ok);
+});
+test('every font choice has a Settings button, a stack, and a bundled file',async()=>{
+  const [css,html]=await Promise.all([readFile('pwa/app.css','utf8'),readFile('pwa/index.html','utf8')]);
+  for(const id of FONTS){
+    assert.ok(html.includes(`data-font="${id}"`),`${id} button`);
+    if(id==='default')continue;
+    assert.ok(css.includes(`html[data-font=${id}]{--font-display:`),`${id} font stack`);
+    assert.ok(css.includes(`[data-font=${id}] .font-sample`),`${id} sample`);
+  }
+  for(const m of css.matchAll(/url\(fonts\/([a-z0-9-]+\.woff2)\)/g))await access(`pwa/fonts/${m[1]}`);
+  assert.equal([...css.matchAll(/@font-face/g)].length,FONTS.length-1);
+});
+test('font licenses ship with the fonts',async()=>{
+  const text=await readFile('pwa/fonts/LICENSES.txt','utf8');
+  for(const name of ['Lilita One','Titan One','Fredoka','Grandstander','Pixelify Sans'])assert.ok(text.includes(name),name);
+  assert.match(text,/SIL OPEN FONT LICENSE/i);
+});
