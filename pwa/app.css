@@ -872,3 +872,17 @@ html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
 .font-chip .font-name{font-size:.8125rem;overflow-wrap:normal;word-break:normal;min-width:0}
 .font-chip .font-sample{flex:0 0 auto}
 @media(max-width:400px){.font-chip{gap:6px;padding-inline:8px}.font-chip .font-name{font-size:.75rem}}
+
+/* Shared card rhythm: align guide content across columns and keep activity insets consistent. */
+.home-guides{column-gap:20px;row-gap:12px}
+.home-guides>.card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:12px;align-content:start}
+.home-guides>.card>:is(.guide-number,h3,p,.guide-link){margin:0}
+.home-guides>.card>.guide-number{justify-self:start;align-self:start}
+.home-guides>.card>.guide-link{align-self:end;padding-top:4px}
+.home-activities>.card{padding:24px}
+@media(max-width:760px){
+.home-guides{gap:16px}
+.home-guides>.card{grid-row:auto;grid-template-rows:auto;gap:12px;padding:28px 20px 20px}
+.home-activities{gap:16px}
+.home-activities>.card{padding:20px}
+}
