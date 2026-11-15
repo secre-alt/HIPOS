@@ -1017,3 +1017,14 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 .font-current{margin-left:0;margin-right:auto}
 #settings-dialog .settings-status{align-items:flex-start;gap:8px}
 }
+
+/* The range track reflects the actual value, without text-field borders or padding. */
+#settings-dialog #musicvol{appearance:none;height:28px;min-height:28px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;--volume-color:#28734e;--volume-track:#c2cfc4}
+#settings-dialog #musicvol:focus{box-shadow:none}
+#settings-dialog #musicvol:focus-visible{outline:2px solid var(--volume-color);outline-offset:4px;border-radius:6px}
+#musicvol::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(to right,var(--volume-color) 0 var(--volume,50%),var(--volume-track) var(--volume,50%) 100%)}
+#musicvol::-webkit-slider-thumb{appearance:none;width:18px;height:18px;margin-top:-6px;border:0;border-radius:50%;background:var(--volume-color)}
+#musicvol::-moz-range-track{height:6px;border-radius:999px;background:var(--volume-track)}
+#musicvol::-moz-range-progress{height:6px;border-radius:999px;background:var(--volume-color)}
+#musicvol::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:var(--volume-color)}
+@media(prefers-color-scheme:dark){#settings-dialog #musicvol{--volume-color:#8ac694;--volume-track:#39564a}}

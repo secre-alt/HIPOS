@@ -35,7 +35,7 @@ export function initBuddySettings(){
   bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{if(v==='on')music.start();else music.stop();});
   bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
   const volume=document.querySelector('#musicvol');
-  if(volume){volume.value=String(musicLevel());volume.addEventListener('input',()=>{write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
+  if(volume){const paint=()=>{volume.style.setProperty('--volume',volume.value+'%');volume.setAttribute('aria-valuetext',volume.value+'%');};volume.value=String(musicLevel());paint();volume.addEventListener('input',()=>{paint();write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
   applySeason();initMusic();
 }
 // Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.
