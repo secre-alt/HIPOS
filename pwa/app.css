@@ -850,8 +850,14 @@ html[data-font=grandstander]{--font-display:"HIPOS Grandstander",ui-rounded,"Seg
 html[data-font=fredoka]{--font-display:"HIPOS Fredoka",ui-rounded,"Segoe UI",system-ui,sans-serif}
 html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-rounded,"Segoe UI",system-ui,sans-serif}
 html[data-font-all]{--font-body:var(--font-display)}
-html[data-font] :is(button,.button-link,.buddy-bubble,#connection){font-family:var(--font-display)}
-html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
+/* Combos: the chosen game font is for headings, the greeting bubble, streak and badge chips and buttons.
+   Body text keeps its friendly reading font (Nunito if it is installed). Pixelify Sans is for small accents only. */
+:root{--font-display-base:ui-rounded,"SF Pro Rounded","Hiragino Maru Gothic ProN","Nunito","Quicksand","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
+html[data-font]:not([data-font-all]){--font-body:"Nunito","Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif}
+html[data-font] :is(.streak-count,.streak-best,.badge-name,.sticker-name,.buddy-say-text,.buddy-bubble,.buddy-mood,.sort-progress,.sort-bin strong,.sort-done h3,.guide-number,.pill,.fp-greeting,.fp-chip,button,.button-link,.home-report,.guide-link,.brand,.fp-title,.fp-button){font-family:var(--font-display)}
+html[data-font=pixelify][data-font] :is(h1,h2,h3,.brand,button,.button-link,.home-report,.guide-link,.fp-title,.fp-button){font-family:var(--font-display-base)}
+html[data-font=pixelify] :is(.streak-count,.badge-name,.buddy-bubble,.fp-chip,.fp-greeting){font-size:.95em}
+html[data-font=pixelify][data-font] :is(h1,h2,h3,.brand){letter-spacing:0}
 .settings-label{display:block;margin:20px 0 8px;font-weight:600}
 .font-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
 .font-chip{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:transparent;color:var(--ink,#143026);text-align:left}
@@ -1039,3 +1045,14 @@ main>header{height:0;min-height:0;padding:0}
 /* Match the space on either side of the mobile buddy row. */
 @media(max-width:1000px){.buddy-dock{top:calc(80px + env(safe-area-inset-top))}#view{padding-top:40px}}
 @media(max-width:760px){#view{padding-top:56px}}
+/* Font preview in Settings: shows the combo with the real classes, so it updates live. */
+.font-preview{display:grid;gap:8px;margin-top:14px;padding:14px;border-radius:18px;background:var(--leaf-soft,#eef2e3)}
+.fp-greeting{justify-self:start;padding:4px 12px;border-radius:999px;background:var(--surface);color:var(--green-deep);font-weight:700;font-size:.875rem}
+.fp-title{margin:0;font-size:1.375rem;line-height:1.2;color:var(--heading,var(--green-deep))}
+.fp-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.fp-chip{padding:4px 12px;border-radius:999px;background:var(--leaf);color:var(--green-deep);font-weight:800;font-size:.875rem}
+.fp-button{padding:8px 16px;border-radius:14px;background:var(--green);color:#fff;font-weight:700;font-size:.9375rem;box-shadow:0 3px 0 #0a2a20}
+.fp-body{margin:0;font-size:.875rem;line-height:1.5;color:var(--muted)}
+.font-use{margin:10px 0 0;font-weight:600;font-size:.875rem}
+.font-preview *{max-width:100%}
+@media(prefers-color-scheme:dark){.fp-greeting{background:#12251e;color:#cdeeb0}.font-preview{background:#17342a}}

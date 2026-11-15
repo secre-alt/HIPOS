@@ -4,7 +4,8 @@ import {spawn} from 'node:child_process';
 import {mkdir} from 'node:fs/promises';
 import QRCode from 'qrcode';
 const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{stdio:'pipe',windowsHide:true,env:{...process.env,PORT:'4174'}});
-let browser;
+let browser;const openSettings=async(pg,cat)=>{await pg.locator('.settings-toggle:visible').click();const b=pg.locator(`[data-settings-category="${cat}"]`);if(await b.isVisible())await b.click();else await pg.selectOption('#settings-category',cat);};
+
 try{
   await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.stderr.on('data',d=>process.stderr.write(d));server.once('exit',code=>reject(Error(`Preview server exited: ${code}`)));setTimeout(()=>reject(Error('Preview server timed out')),20000).unref();});
   browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});
@@ -287,7 +288,7 @@ try{
     await expect(p.locator('#challenge-feedback')).toContainText('Skipped today');
     await p.getByRole('button',{name:'Undo',exact:true}).click();
     await expect(p.locator('#challenge-feedback')).toBeEmpty();
-    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
+    await openSettings(p,'language');await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','fil');
     await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
     await p.reload();await expect(p.locator('#language')).toHaveValue('fil');
@@ -308,7 +309,7 @@ try{
     await expect(p.locator('.report-description').first()).toHaveText('Clean paper');
     const bilingualReport=await p.evaluate(()=>JSON.parse(localStorage.getItem('hipos.pwa.v1')).reports[0]);
     assert.equal(bilingualReport.category,'Excessive packaging');
-    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
+    await openSettings(p,'language');await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','en');
     await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
@@ -320,7 +321,7 @@ try{
     await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','false');
     await p.locator('[data-answer]').first().click();
     await expect(p.locator('#quiz-storage')).toContainText('could not be saved');
-    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
+    await openSettings(p,'language');await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('#language')).toHaveValue('en');
     await expect(p.locator('#notice')).toContainText('Could not save language');
     await p.reload();

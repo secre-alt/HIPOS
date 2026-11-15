@@ -42,6 +42,8 @@ The Weekly activity card shows a streak (days in a row with at least one habit c
 
 The **Text size** control (in **Settings**, the gear in the header) (Standard, Large, Extra large) is stored in `hipos.textsize` and sets `data-text` on the root element. All type is in `rem`, so it scales with this control and with the phone's own font setting. The browser tests check that nothing overflows horizontally at Extra large from 360 to 1920 px wide, and run basic accessibility checks (names, labels, one `h1`, unique ids) on every page.
 
+The **Font style** picker (Settings → Text & readability) uses bundled game fonts as combos: the chosen font styles headings, the buddy greeting bubble, streak and badge chips and buttons, while body text keeps Nunito (falling back to Segoe UI or the system font if Nunito is not installed). Pixelify Sans is limited to small accents. "Use this font for all text" applies it everywhere. A live preview in Settings shows the combo.
+
 ## Buddy personality, sorting game and stickers
 
 Everything here is cosmetic, optional and stays on the device. The code is in `pwa/buddy-fx.js` (reactions, moods, stickers, sounds), `pwa/sortgame.js` and `pwa/avatar.js`; progress is saved in `hipos.buddy.v1`.

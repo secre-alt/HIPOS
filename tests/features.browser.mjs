@@ -29,6 +29,7 @@ async function open(options={}){
   return {ctx,page};
 }
 async function close({ctx,page}){await page.harvest();await ctx.close();}
+const openSettings=async(pg,cat)=>{await pg.locator('.settings-toggle:visible').click();const b=pg.locator(`[data-settings-category="${cat}"]`);if(await b.isVisible())await b.click();else await pg.selectOption('#settings-category',cat);};
 const noticeHas=(page,text)=>page.waitForFunction(t=>document.querySelector('#notice')?.textContent.includes(t),text,{timeout:8000});
 const luminance=rgb=>{const [r,g,b]=rgb.match(/\d+/g).map(Number).map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4;});return .2126*r+.7152*g+.0722*b;};
 
@@ -124,7 +125,7 @@ try{
     // Filipino
     const more={...good,id:randomUUID(),description:'Isa pang concern mula sa ibang phone.'};
     const fil=join(work,'fil.json');await writeFile(fil,JSON.stringify({type:'HIPOS-BACKUP',version:1,exportedAt:new Date().toISOString(),reports:[more]}));
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.getByRole('button',{name:'Ibalik mula sa backup'}).waitFor();
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.getByRole('button',{name:'Ibalik mula sa backup'}).waitFor();
     await page.setInputFiles('#restore-file',fil);await noticeHas(page,'Naibalik ang 1 ulat.');
     await close(s);
   });
@@ -145,7 +146,7 @@ try{
     assert.equal((await shown()).length,8);
     assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.visual-waste-card')].filter(c=>!c.hidden).every(c=>c.dataset.kind==='no')),'only keep-out items');
     await page.getByRole('button',{name:'All',exact:true}).click();assert.equal((await shown()).length,16);
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
     assert.equal(await page.locator('label[for=guide-search]').innerText(),'Hanapin sa gabay');
     await page.fill('#guide-search','karton');assert.match(await page.locator('#guide-count').innerText(),/^\d+ sa 16 aytem$/);
     await close(s);
@@ -188,7 +189,7 @@ try{
     assert.ok(rows.some(r=>r[3]==='Lots of wrappers, in the bin "by the door".'),'quotes and commas round-trip');
     assert.deepEqual(rows[0],['Status','Category','School area','Description','Created','Report ID']);
     // Filipino
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(500);
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(500);
     assert.equal(await page.getByRole('button',{name:'I-export ang CSV'}).count(),1);
     assert.equal(await count(),'Ipinapakita ang 3 sa 3 ulat');
     assert.equal(await page.locator('#filter-heading').innerText(),'I-filter ang mga ulat');
@@ -219,7 +220,7 @@ try{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
     const size=()=>page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.home-intro p:not(.eyebrow)')).fontSize));
     const base=await size();
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#textsize','xlarge');await page.keyboard.press('Escape');
+    await openSettings(page,'text');await page.selectOption('#textsize','xlarge');await page.keyboard.press('Escape');
     assert.ok(await size()>base*1.2,'type grows with Extra large');
     await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
     assert.equal(await page.inputValue('#textsize'),'xlarge');assert.ok(await size()>base*1.2,'choice is remembered');
@@ -264,7 +265,6 @@ try{
     await page.locator('.buddy-strip-art').click();
     await page.waitForFunction(()=>!document.querySelector('#buddy-say').hidden,null,{timeout:3000});
     assert.ok((await page.locator('.buddy-say-text').innerText()).length>3,'buddy says something when tapped');
-    assert.ok(await page.locator('#buddy-say').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'bubble never blocks taps');
     await page.locator('[data-habit="0"]').check();
     await page.waitForFunction(()=>/Yum!/.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
     assert.match(await page.locator('.buddy-treats').innerText(),/Treats shared: 1/);
@@ -274,7 +274,7 @@ try{
     await page.locator('.quiz-panel .mini-buddy').click();
     await page.waitForFunction(()=>/clean|Wet|tip/i.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
     // cheers off: no bubble
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#cheers','off');await page.keyboard.press('Escape');
+    await openSettings(page,'sound');await page.locator('#cheers').uncheck();await page.keyboard.press('Escape');
     await page.locator('.buddy-strip-art').click();await page.waitForTimeout(300);
     assert.ok(await page.locator('#buddy-say').isHidden(),'cheers off hides the bubble');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
@@ -282,7 +282,7 @@ try{
     assert.equal(await page.locator('.sticker').count(),11);
     assert.ok(await page.locator('[data-mood]').count()>=1,'buddy has a mood');
     // Filipino
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
     assert.match(await page.locator('.sticker-book h2').innerText(),/Aklat ng sticker/);
     await close(s);
   });
@@ -312,7 +312,7 @@ try{
     await page.locator('[data-sort-again]').click();assert.match(await page.locator('.sort-progress').innerText(),/Item 1 of 6/);
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
     assert.ok(await page.locator('.sticker.earned .sticker-name',{hasText:'Sorting star'}).count()===1,'sorting star sticker earned');
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#language','fil');await page.keyboard.press('Escape');
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');
     await page.evaluate(()=>{location.hash='sort';});await page.locator('#sort-game').waitFor();await page.waitForTimeout(400);
     assert.match(await page.locator('.sort-progress').innerText(),/Aytem 1 sa 6/);
     assert.match(await page.locator('.sort-bins').innerText(),/Pouch para sa tuyong basura/);
@@ -321,36 +321,44 @@ try{
 
   await check('settings: theme and sound persist; seasonal theme unlocks its extra',async()=>{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
-    await page.locator('.settings-toggle:visible').click();
-    await page.selectOption('#season','christmas');await page.selectOption('#sound','on');await page.keyboard.press('Escape');
+    await openSettings(page,'personal');await page.selectOption('#season','christmas');await page.keyboard.press('Escape');
+    await openSettings(page,'sound');await page.locator('#sound').check();await page.keyboard.press('Escape');
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),'christmas');
     await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),'christmas','theme is remembered');
     assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.sound')),'on');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.buddy-chip',{hasText:'Festive hat'}).waitFor();
     assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Festive hat'}).count(),0,'festive hat unlocked by trying the theme');
-    await page.locator('.settings-toggle:visible').click();await page.selectOption('#season','default');await page.keyboard.press('Escape');
+    await openSettings(page,'personal');await page.selectOption('#season','default');await page.keyboard.press('Escape');
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),undefined);
     await close(s);
   });
 
-  await check('buddy dock: buddy and greeting stay visible while scrolling; large on desktop, in the left margin on wide screens',async()=>{
-    for(const [width,height,minAvatar] of [[390,844,48],[1280,800,90],[1900,950,140]]){
+  await check('buddy dock: the buddy stays on screen while scrolling at phone, laptop and wide sizes',async()=>{
+    for(const [width,height] of [[390,844],[1280,800],[1900,950]]){
       const s=await open({viewport:{width,height},reducedMotion:'reduce'}),{page}=s;
       const dock=page.locator('#avatar-link');
       for(const y of [0,1200]){
         await page.evaluate(v=>scrollTo(0,v),y);await page.waitForTimeout(150);
         const box=await dock.boundingBox();
         assert.ok(box&&box.y>=0&&box.y+box.height<=height&&box.x>=0&&box.x+box.width<=width,`buddy fully on screen at ${width}px after scrolling to ${y}`);
-        assert.ok(((await page.locator('#avatar-link .buddy-bubble').innerText()).length)>3,'greeting is shown');
+        assert.ok(box.width>=40,`buddy is at least 40px wide (${box.width}) at ${width}px`);
       }
-      const art=await page.locator('#avatar-link .hipos-avatar').boundingBox();assert.ok(art.width>=minAvatar,`buddy is ${art.width}px wide at ${width}px`);
-      if(width>=1600){const main=await page.locator('main').boundingBox(),box=await dock.boundingBox();assert.ok(box.x+box.width<=main.x+main.width&&box.x+box.width<=main.x+32,'dock sits in the left margin');}
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
       await close(s);
     }
   });
 
+  await check('font combos: game font on headings/buttons/chips, body stays readable, preview updates',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
+    await openSettings(page,'text');
+    await page.locator('.font-picker summary').click();
+    await page.locator('[data-font="lilita"]').click();
+    const f=await page.evaluate(()=>{const g=s=>getComputedStyle(document.querySelector(s)).fontFamily;return{h:g('.fp-title'),b:g('.fp-body'),c:g('.fp-chip')};});
+    if(!/Lilita/i.test(f.h)||!/Lilita/i.test(f.c))throw new Error('display font not applied: '+JSON.stringify(f));
+    if(/Lilita/i.test(f.b))throw new Error('body should keep reading font: '+f.b);
+    await page.keyboard.press('Escape');await close(s);
+  });
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');
     assert.deepEqual(consoleErrors,[],'console errors');

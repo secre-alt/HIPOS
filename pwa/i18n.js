@@ -41,6 +41,18 @@ pairs.push(
  ['Could not save your buddy. Browser storage may be unavailable.','Hindi na-save ang buddy mo. Maaaring hindi magamit ang imbakan ng browser.']
 );
 pairs.push(
+ ['7-day streak!','7 araw na tuloy-tuloy!'],
+ ['Pick a character','Pumili ng karakter'],
+ ['Pick a character and make it yours.','Pumili ng karakter at gawin itong sa iyo.'],
+ ['The standard HIPOS look.','Ang karaniwang itsura ng HIPOS.'],
+ ['Bold and chunky: headings, greeting bubble, streak chips and buttons.','Matapang at makapal: mga heading, bubble ng bati, streak chip at mga button.'],
+ ['Even bolder: the logo, headings and big moments.','Mas matapang pa: ang logo, mga heading at malalaking sandali.'],
+ ['Playful and bouncy, still easy to read.','Masigla at masaya, madali pa ring basahin.'],
+ ['Cute but calm. A safe choice if bold feels too loud.','Cute pero kalmado. Ligtas na pagpipilian kung masyadong matapang ang iba.'],
+ ['Retro pixels for small accents only, like the streak and badges.','Retro na pixel para sa maliliit na accent lang, tulad ng streak at badge.']
+);
+
+pairs.push(
  ['Hi! I will cheer you on.','Hi! Ichi-cheer kita.'],
  ['Could not save this setting. Try again.','Hindi na-save ang setting na ito. Subukan muli.'],
  ['Merry! Festive mode is on.','Masaya! Naka-on na ang pang-piyesta.'],
