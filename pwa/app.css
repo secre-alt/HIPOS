@@ -528,7 +528,7 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 .guide-tools label{margin-top:0}
 .guide-tools input[type=search]{-webkit-appearance:none;appearance:none;padding-left:16px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
-.chip{min-height:44px;padding:8px 18px;border-radius:999px;font-weight:700;font-size:var(--type-small)}
+.chip{min-height:45px;padding:8px 18px;border-radius:999px;font-weight:700;font-size:var(--type-small)}
 .chip[aria-pressed=true]{background:var(--leaf);border-color:var(--green-deep);color:var(--green-deep);box-shadow:0 2px 0 #6fb23a}
 .chip[aria-pressed=true]:hover{background:var(--leaf)}
 #guide-count{margin:0;padding:4px 0 0}
