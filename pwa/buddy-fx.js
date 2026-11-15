@@ -160,6 +160,7 @@ export function tapBuddy(el){
 let bubble=null,hideTimer=0;
 function ensureBubble(){
   if(bubble?.isConnected)return bubble;
+  bubble=document.querySelector('#buddy-say');if(bubble)return bubble;
   bubble=document.createElement('div');bubble.id='buddy-say';bubble.className='buddy-say';bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');bubble.hidden=true;
   bubble.innerHTML='<span class="buddy-say-art" aria-hidden="true"></span><span class="buddy-say-text"></span>';
   document.body.append(bubble);return bubble;
@@ -169,7 +170,6 @@ export function buddySay(text,{force=false,ms=4200,delay=0}={}){
   if(!text||(!force&&!cheersOn()))return;
   if(delay){setTimeout(()=>buddySay(text,{force,ms}),delay);return;}
   const box=ensureBubble();
-  box.querySelector('.buddy-say-art').innerHTML=renderAvatar(currentConfig(),{size:36,decorative:true});
   box.querySelector('.buddy-say-text').textContent=translate(text);
   box.hidden=false;box.classList.remove('show');void box.offsetWidth;box.classList.add('show');
   clearTimeout(hideTimer);hideTimer=setTimeout(()=>{box.hidden=true;},ms);

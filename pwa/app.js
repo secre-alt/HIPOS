@@ -3,7 +3,7 @@ import {updateChallenge,rememberGuide,dailyChallenge,refreshWeekly,weekSummary} 
 import {weekCardBlob} from './summary-card.js';
 import {initTextSize} from './textsize.js';
 import {initFontStyle} from './fontstyle.js';
-import {avatarEditor,avatarClick,refreshAvatars,syncUnlocks} from './avatar.js';
+import {avatarEditor,avatarClick,refreshAvatars,syncUnlocks,greeting} from './avatar.js';
 import {buddySay,tapBuddy,applyMood,animate,sparkle,buzz,sound,giveTreat,syncStickers,earnedKeys,stats,stickerBook,initBuddySettings} from './buddy-fx.js';
 import {sortGame,fitGame,sortClick,sortPointerDown,sortPointerMove,sortPointerUp} from './sortgame.js';
 import {answerQuiz,nextQuestion,restartQuiz,updateHabit,localDay,checklist} from './activities.js';
@@ -202,7 +202,8 @@ function updateInstallBanner(){const installed=appInstalled||standalone.matches|
 standalone.addEventListener('change',updateInstallBanner);
 document.querySelector('#dismiss-install').addEventListener('click',()=>{installDismissed=true;try{sessionStorage.setItem('hipos.install.dismissed','true');}catch{}updateInstallBanner();});
 updateInstallBanner();
-render();refreshAvatars();connection();initLanguage();initTextSize();initFontStyle();initBuddySettings();document.addEventListener('pointerdown',sortPointerDown);document.addEventListener('pointermove',sortPointerMove);document.addEventListener('pointerup',sortPointerUp);document.addEventListener('pointercancel',sortPointerUp);document.querySelector('#splash')?.remove();initScrollEffects();
+document.querySelector('#avatar-link').addEventListener('click',()=>buddySay(greeting(),{force:true}));
+render();refreshAvatars();connection();initLanguage();buddySay(greeting(),{ms:5000});initTextSize();initFontStyle();initBuddySettings();document.addEventListener('pointerdown',sortPointerDown);document.addEventListener('pointermove',sortPointerMove);document.addEventListener('pointerup',sortPointerUp);document.addEventListener('pointercancel',sortPointerUp);document.querySelector('#splash')?.remove();initScrollEffects();
 // Update flow: a new service worker waits until the person taps "Update now" (no surprise reloads
 // while they are typing a report). The first install never shows the banner or reloads.
 const updateBanner=document.querySelector('#update-banner'),applyUpdate=document.querySelector('#apply-update');

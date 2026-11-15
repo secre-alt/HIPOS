@@ -428,7 +428,7 @@ export function buddyStrip(treats = 0) {
 export function refreshAvatars() {
   const cfg = getConfig();
   const link = document.querySelector('#avatar-link');
-  if (link) link.innerHTML = renderAvatar(cfg, { size: 120, decorative: true }) + `<span class="buddy-bubble">${greeting()}</span>`;
+  if (link) link.innerHTML = renderAvatar(cfg, { size: 56, decorative: true });
   const art = document.querySelector('.buddy-strip-art');
   if (art) art.innerHTML = renderAvatar(cfg, { size: 72, decorative: true });
   document.querySelectorAll('.mini-buddy-art').forEach((el) => (el.innerHTML = renderAvatar(cfg, { size: 40, decorative: true })));
