@@ -153,6 +153,7 @@ pairs.push(
  ['Ooh, make me look great!','Ooh, gawin mo akong maganda!']
 );
 
+pairs.push(['Language','Wika'],['Text & readability','Teksto at pagbabasa'],['Personalization','Personal na ayos'],['Sound & reactions','Tunog at mga reaksiyon'],['Sound effects','Mga tunog'],['App & offline','App at offline'],['Change','Palitan']);
 const dictionary=new Map(pairs);
 let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
 const originals=new WeakMap(),attributes=new WeakMap();

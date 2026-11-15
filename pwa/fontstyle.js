@@ -13,6 +13,7 @@ export function initFontStyle(){
     if(font==='default')delete root.dataset.font;else root.dataset.font=font;
     if(font!=='default'&&everywhere)root.dataset.fontAll='';else delete root.dataset.fontAll;
     group.querySelectorAll('[data-font]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.font===font)));
+    const current=document.querySelector('.font-current');if(current)current.textContent=group.querySelector('button[data-font="'+font+'"] .font-name')?.textContent||'Default';
     all.checked=everywhere&&font!=='default';all.disabled=font==='default';
   };
   const save=()=>{try{localStorage.setItem(KEY,font);localStorage.setItem(ALL_KEY,everywhere?'1':'0');}catch{document.querySelector('#notice').textContent='Could not save font style. Try again.';}};

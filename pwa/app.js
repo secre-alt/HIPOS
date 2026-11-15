@@ -169,6 +169,8 @@ document.addEventListener('click',async event=>{const b=event.target.closest('bu
 document.addEventListener('input',event=>{if(event.target.id==='guide-search')applyGuideFilter();});
 document.addEventListener('change',event=>{if(event.target.dataset.filter){const key=event.target.dataset.filter,allowed={status:statuses,category:categories,area:areas}[key];if(unlocked&&allowed){staffFilter[key]=allowed.includes(event.target.value)?event.target.value:'';updateStaffList();}return;}if(event.target.id==='restore-file'){const input=event.target,file=input.files[0];input.value='';restoreReports(file).catch(err=>message(err.message));return;}if(event.target.hasAttribute('data-habit')){updateHabit(event.target);onHabit(event.target);checkBuddyUnlocks(true);return;}const id=event.target.dataset.status;if(!id||!unlocked)return;try{const status=event.target.value;if(!statuses.includes(status))return;save({...data,imports:data.imports.map(r=>r.id===id?{...r,status}:r)});render();message('Review status saved.');}catch(err){message(err.message);}});
 const settingsDialog=document.querySelector('#settings-dialog');
+document.querySelector('.settings-version').textContent='Version '+build.version;
+document.querySelector('.settings-buddy-link').addEventListener('click',()=>settingsDialog.close());
 document.querySelectorAll('.settings-toggle').forEach(button=>button.addEventListener('click',()=>{closeMenu();settingsDialog.showModal();}));
 const menuToggle=document.querySelector('#menu-toggle');
 function closeMenu(returnFocus=false){

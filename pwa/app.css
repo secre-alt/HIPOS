@@ -904,3 +904,38 @@ html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
 .buddy-stage .actions>button{width:100%;margin:0}
 @media(min-width:900px){.buddy-editor{grid-template-columns:260px minmax(0,1fr);align-items:start}}
 @media(max-width:760px){.buddy-editor{gap:16px}.buddy-editor>.card{padding:20px}.buddy-stage .actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+/* Keep the sticker book separate from the full customization grid. */
+.buddy-editor+.sticker-book{margin-top:24px}
+@media(max-width:760px){.buddy-editor+.sticker-book{margin-top:16px}}
+
+/* Settings groups keep related choices together without a wall of controls. */
+#settings-dialog{width:560px;max-width:calc(100vw - 32px);padding:24px}
+.settings-body{font-family:"HIPOS Fredoka","Segoe UI",sans-serif}
+.settings-body #settings-title{margin:0 0 24px;font-family:inherit;font-size:1.5rem}
+.settings-section{padding:24px 0;border-top:1px solid var(--line);display:grid;gap:12px;min-width:0}
+.settings-section h3{font-family:"HIPOS Fredoka","Segoe UI",sans-serif;font-size:1rem;font-weight:600;line-height:1.4;margin:0 0 4px}
+.settings-body .settings-section .language-control{margin:0;gap:8px;font-size:.9375rem;font-weight:400}
+.settings-body select{font-family:"HIPOS Fredoka","Segoe UI",sans-serif;font-size:1rem;min-height:44px;padding:10px 12px;border-radius:12px}
+.settings-body .settings-status{margin:0;flex-wrap:wrap;font-size:.9375rem}
+.settings-version{margin:0;font-size:.875rem;color:var(--muted)}
+.settings-section>button{justify-self:start}
+.font-picker summary{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer;list-style:none;font-size:.9375rem}
+.font-picker summary::-webkit-details-marker{display:none}
+.font-current{margin-left:auto;color:var(--muted);font-size:.875rem}
+.font-change{color:var(--green);text-decoration:underline;text-underline-offset:3px}
+.font-picker[open] .font-options{margin-top:12px}
+.settings-body .font-all{margin-top:12px;font-size:.9375rem;font-weight:400;align-items:flex-start}
+.settings-body .font-all input{margin:2px 0 0;flex:0 0 22px}
+.settings-body .font-note{margin:8px 0 0;font-size:.8125rem}
+.settings-buddy-link{display:flex;align-items:center;justify-content:space-between;min-height:44px;font-size:.9375rem;text-decoration:none}
+.settings-switch{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0;min-height:44px;font-size:.9375rem;font-weight:400;cursor:pointer}
+.settings-switch input{appearance:none;position:relative;flex:0 0 44px;width:44px;height:26px;min-height:0;padding:0;margin:0;border:1px solid var(--line);border-radius:999px;background:#84938a;cursor:pointer;box-shadow:none}
+.settings-switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s ease}
+.settings-switch input:checked{background:#28734e;border-color:#28734e;animation:none}
+.settings-switch input:checked::after{transform:translateX(18px)}
+.settings-footer{margin:0;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end}
+.settings-footer button{font-family:"HIPOS Fredoka","Segoe UI",sans-serif;min-width:88px}
+@media(prefers-color-scheme:dark){.font-change{color:#cdeeb0}.settings-switch input:checked{background:#639c70;border-color:#639c70}}
+@media(max-width:400px){#settings-dialog{padding:20px}.font-picker summary{flex-wrap:wrap;gap:8px}.font-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.settings-switch input::after{transition:none}}

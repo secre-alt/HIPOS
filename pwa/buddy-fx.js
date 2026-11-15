@@ -18,11 +18,13 @@ export const season=()=>{const v=read(SEASON,'default');return SEASONS.includes(
 export function initBuddySettings(){
   const bind=(id,get,key,valid,after)=>{
     const select=document.querySelector(id);if(!select)return;
-    select.value=get();
+    const isSwitch=select.type==='checkbox';
+    if(isSwitch)select.checked=get()==='on';else select.value=get();
     select.addEventListener('change',()=>{
-      const next=valid.includes(select.value)?select.value:valid[0];
+      const value=isSwitch?(select.checked?'on':'off'):select.value;
+      const next=valid.includes(value)?value:valid[0];
       if(!write(key,next))document.querySelector('#notice').textContent=translate('Could not save this setting. Try again.');
-      select.value=next;after?.(next);
+      if(isSwitch)select.checked=next==='on';else select.value=next;after?.(next);
     });
   };
   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
