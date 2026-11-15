@@ -970,15 +970,6 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 .font-picker summary{border-radius:8px}
 .font-picker summary:focus-visible{outline:2px solid var(--green-mid,#28734e);outline-offset:4px}
 #settings-dialog .settings-status{align-items:center;font-weight:400}
-@media(max-width:600px){
-.settings-heading{padding:16px 20px}
-.settings-layout{grid-template-columns:minmax(0,1fr);min-height:0}
-.settings-categories{display:none}
-.settings-category-mobile{display:grid;gap:8px;margin:0;padding:16px 20px 0;font:400 .8125rem/1.4 "HIPOS Fredoka","Segoe UI",sans-serif;color:var(--muted)}
-.settings-category-mobile select{min-height:44px;padding:8px 12px;border-radius:10px;font:400 .9375rem/1.4 "HIPOS Fredoka","Segoe UI",sans-serif}
-#settings-dialog .settings-body{padding:24px 20px;max-height:calc(100dvh - 240px)}
-.settings-body .font-options{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
 
 #settings-dialog :is(.settings-categories button,.settings-close,.settings-section>button){font-family:"HIPOS Fredoka","Segoe UI",sans-serif}
 
@@ -1006,9 +997,23 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 #settings-dialog select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b9485' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
 .settings-body .music-volume{display:flex;align-items:center;justify-content:space-between;margin:0;gap:16px}
 .settings-body .music-volume input{width:44%;flex:0 1 160px;min-width:80px;max-width:160px;margin:0}
+/* Keep the desktop sidebar structure on small screens as well. */
 @media(max-width:600px){
+#settings-dialog{max-width:calc(100vw - 24px)}
+.settings-heading{padding:16px}
+.settings-layout{grid-template-columns:104px minmax(0,1fr);min-height:340px}
 .settings-category-mobile{display:none}
-.settings-categories{display:flex;flex-direction:row;gap:8px;padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto;min-width:0;scrollbar-width:thin;scroll-padding-inline:20px}
-.settings-categories button{flex:0 0 auto;white-space:nowrap;min-height:40px;padding:8px 12px;font-size:.875rem}
-#settings-dialog .settings-body{padding:20px;max-height:calc(100dvh - 224px)}
+.settings-categories{display:flex;flex-direction:column;gap:4px;padding:12px 8px;border-right:1px solid var(--line);border-bottom:0;overflow-x:hidden;overflow-y:auto;max-height:calc(100dvh - 140px);scrollbar-width:thin}
+.settings-categories button{flex:0 0 auto;min-height:44px;padding:10px 8px;white-space:normal;overflow-wrap:anywhere;hyphens:auto;font-size:.8125rem;line-height:1.4}
+#settings-dialog .settings-body{padding:16px 12px;max-height:calc(100dvh - 140px)}
+#settings-dialog .settings-section{gap:16px}
+.settings-section h3{font-size:1rem}
+.settings-body .settings-switch,.settings-body .music-volume{font-size:.875rem;gap:8px}
+.settings-body .music-volume input{min-width:56px;width:40%;flex-basis:40%}
+.settings-body .font-options{grid-template-columns:minmax(0,1fr)}
+.settings-body .font-all{align-items:flex-start;font-size:.8125rem}
+.font-picker summary{flex-wrap:wrap;gap:8px}
+.font-picker summary #font-label{flex-basis:100%}
+.font-current{margin-left:0;margin-right:auto}
+#settings-dialog .settings-status{align-items:flex-start;gap:8px}
 }
