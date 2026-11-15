@@ -819,6 +819,7 @@ input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
 @media(prefers-color-scheme:dark){.buddy-dock{--buddy-surface:#203c32;--buddy-border:#3b594a;--buddy-ink:#e1efe4}.buddy-dock .buddy-say{box-shadow:none}}
 @media(prefers-reduced-motion:reduce){.buddy-dock .buddy-say{transition:none}}
 @media(max-width:1000px){
+.app:has(#menu-toggle[aria-expanded="true"]) .buddy-dock{display:none}
 .buddy-dock{top:calc(76px + env(safe-area-inset-top));left:12px;grid-template-columns:44px minmax(0,240px);grid-template-rows:auto;gap:4px 12px;max-width:calc(100vw - 24px)}
 .buddy-dock #avatar-link,.buddy-dock #avatar-link .hipos-avatar{width:44px;height:44px}
 .buddy-dock #avatar-link{border-radius:50%}
