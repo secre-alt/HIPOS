@@ -1028,3 +1028,10 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 #musicvol::-moz-range-progress{height:6px;border-radius:999px;background:var(--volume-color)}
 #musicvol::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:var(--volume-color)}
 @media(prefers-color-scheme:dark){#settings-dialog #musicvol{--volume-color:#8ac694;--volume-track:#39564a}}
+
+/* Balance the desktop buddy row between navigation and the first home card. */
+@media(min-width:1001px){
+main>header{height:0;min-height:0;padding:0}
+.buddy-dock{top:calc(96px + env(safe-area-inset-top))}
+#view{padding-top:68px}
+}
