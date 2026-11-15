@@ -939,3 +939,12 @@ html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
 @media(prefers-color-scheme:dark){.font-change{color:#cdeeb0}.settings-switch input:checked{background:#639c70;border-color:#639c70}}
 @media(max-width:400px){#settings-dialog{padding:20px}.font-picker summary{flex-wrap:wrap;gap:8px}.font-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.settings-switch input::after{transition:none}}
+
+/* Navbar settings and a checkbox that does not inherit text-field dimensions. */
+aside>.settings-toggle-desktop{width:44px;height:44px;color:#fffef9;flex:0 0 44px}
+aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
+.settings-body .font-all{align-items:center;gap:12px;min-height:44px;margin-bottom:0;cursor:pointer}
+.settings-body .font-all input{appearance:auto;box-sizing:border-box;width:22px;height:22px;min-height:22px;max-height:22px;flex:0 0 22px;padding:0;margin:0;border-radius:4px;box-shadow:none;animation:none;cursor:pointer}
+.settings-body .font-all input:focus{box-shadow:none}
+.settings-body .font-all input:focus-visible{outline:2px solid var(--green-mid,#28734e);outline-offset:3px}
+@media(min-width:1001px) and (max-width:1150px){aside{gap:12px}#nav{gap:0}#nav a{padding-inline:8px;font-size:.875rem}#nav a:last-child{margin-left:4px;padding-left:12px}}
