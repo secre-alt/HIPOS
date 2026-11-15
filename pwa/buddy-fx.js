@@ -157,7 +157,7 @@ export function tapBuddy(el){
 }
 
 // ---------- Speech bubble ----------
-let bubble=null,hideTimer=0;
+let bubble=null,hideTimer=0,fadeTimer=0;
 function ensureBubble(){
   if(bubble?.isConnected)return bubble;
   bubble=document.querySelector('#buddy-say');if(bubble)return bubble;
@@ -165,14 +165,15 @@ function ensureBubble(){
   bubble.innerHTML='<span class="buddy-say-art" aria-hidden="true"></span><span class="buddy-say-text"></span>';
   document.body.append(bubble);return bubble;
 }
-export function hideBubble(){clearTimeout(hideTimer);if(bubble)bubble.hidden=true;}
+export function hideBubble(){clearTimeout(hideTimer);clearTimeout(fadeTimer);if(bubble){bubble.hidden=true;bubble.classList.remove("is-leaving");}}
 export function buddySay(text,{force=false,ms=4200,delay=0}={}){
   if(!text||(!force&&!cheersOn()))return;
   if(delay){setTimeout(()=>buddySay(text,{force,ms}),delay);return;}
   const box=ensureBubble();
   box.querySelector('.buddy-say-text').textContent=translate(text);
+  clearTimeout(fadeTimer);box.classList.remove('is-leaving');
   box.hidden=false;box.classList.remove('show');void box.offsetWidth;box.classList.add('show');
-  clearTimeout(hideTimer);hideTimer=setTimeout(()=>{box.hidden=true;},ms);
+  clearTimeout(hideTimer);hideTimer=setTimeout(()=>{box.classList.add("is-leaving");fadeTimer=setTimeout(()=>{box.hidden=true;box.classList.remove("is-leaving");},180);},ms);
 }
 // Small animations on every buddy on the page.
 export function animate(kind){

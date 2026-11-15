@@ -202,8 +202,13 @@ function updateInstallBanner(){const installed=appInstalled||standalone.matches|
 standalone.addEventListener('change',updateInstallBanner);
 document.querySelector('#dismiss-install').addEventListener('click',()=>{installDismissed=true;try{sessionStorage.setItem('hipos.install.dismissed','true');}catch{}updateInstallBanner();});
 updateInstallBanner();
-document.querySelector('#avatar-link').addEventListener('click',()=>buddySay(greeting(),{force:true}));
 render();refreshAvatars();connection();initLanguage();buddySay(greeting(),{ms:5000});initTextSize();initFontStyle();initBuddySettings();document.addEventListener('pointerdown',sortPointerDown);document.addEventListener('pointermove',sortPointerMove);document.addEventListener('pointerup',sortPointerUp);document.addEventListener('pointercancel',sortPointerUp);document.querySelector('#splash')?.remove();initScrollEffects();
+// Repeat greetings during quiet moments without interrupting reactions or form entry.
+setInterval(()=>{
+  if(document.hidden||document.querySelector('#buddy-say:not([hidden])')||document.querySelector('dialog[open]'))return;
+  if(document.activeElement?.matches('input,textarea,select,[contenteditable="true"]'))return;
+  buddySay(greeting(),{ms:5000});
+},24000);
 // Update flow: a new service worker waits until the person taps "Update now" (no surprise reloads
 // while they are typing a report). The first install never shows the banner or reloads.
 const updateBanner=document.querySelector('#update-banner'),applyUpdate=document.querySelector('#apply-update');
