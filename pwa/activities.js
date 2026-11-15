@@ -1,3 +1,4 @@
+import {miniBuddy} from './buddy-fx.js';
 import {escapeHTML as e} from './core.js';
 import {recordChecklist,refreshWeekly} from './engagement.js';
 import {celebrate} from './motion.js';
@@ -14,7 +15,7 @@ export function readDaily(storage=localStorage,day=localDay()){
 export function checklist(){
   let daily,error='';
   try{daily=readDaily();}catch{daily={day:localDay(),checked:habits.map(()=>false)};error='Saved checklist could not be read. Changes will only be shown if they can be saved.';}
-  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}"><h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
+  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}">${miniBuddy('habits')}<h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
 }
 function progress(checked){return `${checked.filter(Boolean).length} of ${habits.length} actions completed today${checked.every(Boolean)?' · Ready for today':''}`;}
 export function updateHabit(input){
@@ -72,7 +73,7 @@ function loadQuiz(){
 function score(){return session.answers.reduce((total,answer,i)=>total+Number(answer===questionBank[session.ids[i]].correct),0);}
 export function quiz(){
   loadQuiz();
-  return `<section class="quiz-panel card" aria-labelledby="quiz-heading"><h2 id="quiz-heading">A quick sorting check</h2><p>Three questions. Learn why each item belongs where it does.</p><div id="quiz-content">${quizContent()}</div><p id="quiz-storage" role="status">${e(quizError)}</p></section>`;
+  return `<section class="quiz-panel card" aria-labelledby="quiz-heading">${miniBuddy('quiz')}<h2 id="quiz-heading">A quick sorting check</h2><p>Three questions. Learn why each item belongs where it does.</p><div id="quiz-content">${quizContent()}</div><p id="quiz-storage" role="status">${e(quizError)}</p></section>`;
 }
 function quizContent(){
   if(session.position===3)return `<h3 tabindex="-1" id="quiz-summary">${score()} of 3 correct</h3><p>Clean, dry and nonhazardous only. Ask authorized staff about unsuitable waste.</p><p>Keep learning with the handling guide.</p><a class="button-link secondary" href="#${questionBank[session.ids[0]].guide}">Review a related guide</a><div class="actions"><button data-quiz-restart>Try again</button></div>`;

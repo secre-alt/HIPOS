@@ -656,3 +656,136 @@ aside::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bor
 .av-bg[data-bg="0"]{fill:#2C4237}.av-bg[data-bg="1"]{fill:#3A4B2F}.av-bg[data-bg="2"]{fill:#4B4034}.av-bg[data-bg="3"]{fill:#2E4052}.av-bg[data-bg="4"]{fill:#4B3541}
 .hipos-avatar .av-shadow{opacity:.3}
 }
+
+/* ==== Cute and interactive: buddy reactions, mini buddies, sorting game, stickers ==== */
+.splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--green-deep);animation:splash-out .5s ease 1.6s forwards}
+.splash-mark{display:grid;place-items:center;width:88px;height:88px;border-radius:28px;background:var(--leaf);color:var(--green-deep);font:800 3rem/1 var(--font-display);animation:splash-bounce 1s ease-in-out infinite}
+@keyframes splash-bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.06)}}
+@keyframes splash-out{to{opacity:0;visibility:hidden}}
+@media print{.splash{display:none}}
+
+/* buddy moods and reactions */
+.hipos-avatar.do-hop{animation:av-jump .6s var(--ease)}
+.hipos-avatar.do-spin{animation:av-spin .8s var(--ease)}
+@keyframes av-jump{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-12px) scale(1.08,.94)}70%{transform:translateY(0) scale(.96,1.05)}100%{transform:none}}
+@keyframes av-spin{to{transform:rotate(360deg)}}
+[data-mood=sleepy] .av-body{animation-duration:6s}
+[data-mood=sleepy] .av-eyes{animation:none;transform:scaleY(.2)}
+[data-mood=excited] .av-body{animation:av-excited .7s ease-in-out infinite}
+[data-mood=calm] .av-body{animation-duration:4.4s}
+@keyframes av-excited{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.04,.97)}}
+.buddy-strip-art,.buddy-stage-art,.mini-buddy{position:relative;border:0;background:transparent;padding:0;cursor:pointer;border-radius:22px;-webkit-tap-highlight-color:transparent}
+[data-mood=sleepy].buddy-strip-art::after,[data-mood=sleepy].buddy-stage-art::after,[data-mood=sleepy]#avatar-link::after{content:"z z";position:absolute;right:-4px;top:-6px;font:800 .75rem/1 var(--font-display);color:var(--green-mid);letter-spacing:.1em;animation:zzz 2.4s ease-in-out infinite}
+@keyframes zzz{0%{opacity:0;transform:translateY(6px)}40%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+.buddy-strip{flex-wrap:wrap}
+.buddy-strip>div:nth-child(2){flex:1 1 180px;min-width:0}
+.buddy-mood{font-weight:600;color:var(--green-mid)}
+.buddy-treats{font-size:.8125rem}
+.buddy-strip-actions{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.buddy-strip .button-link{margin-left:0}
+
+/* speech bubble */
+.buddy-say{position:fixed;left:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:10px;max-width:min(360px,calc(100vw - 32px));padding:8px 16px 8px 8px;border-radius:22px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-md);border:2px solid var(--leaf);pointer-events:none}
+.buddy-say[hidden]{display:none}
+.buddy-say.show{animation:say-in .35s var(--ease)}
+.buddy-say-art{flex:0 0 36px;line-height:0}.buddy-say-art .hipos-avatar{width:36px;height:36px}
+.buddy-say-text{font-weight:600;font-size:.9375rem;line-height:1.35}
+@keyframes say-in{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:none}}
+@media(min-width:1001px){.buddy-say{bottom:24px;left:24px}}
+@media print{.buddy-say,.sparkle-layer{display:none}}
+
+/* sparkles */
+.sparkle-layer{position:fixed;inset:0;z-index:80;pointer-events:none;overflow:hidden}
+.spark{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--c,#b9f26b)}
+.spark:nth-child(3n){border-radius:2px;transform:rotate(45deg)}
+
+/* helper buddy inside cards */
+.quiz-panel,.daily-panel,.challenge-panel,.guide-tools,.sort-game{position:relative}
+.mini-buddy{position:absolute;top:10px;right:10px;min-width:44px;min-height:44px;display:grid;place-items:center}
+.mini-buddy-art{line-height:0}.mini-buddy-art .hipos-avatar{width:40px;height:40px}
+.mini-buddy:hover,.buddy-strip-art:hover,.buddy-stage-art:hover{background:var(--leaf-soft)}
+.quiz-panel>h2,.daily-panel>h2,.challenge-panel>h2,.sort-game>h2{padding-right:52px}
+.buddy-stage-art .hipos-avatar{width:min(200px,60vw);height:auto}
+
+/* sorting game */
+.sort-promo{margin:0 0 16px}
+.sort-progress{margin:0 0 4px;font-weight:700;color:var(--green-mid)}
+.sort-stage{display:grid;place-items:center;min-height:190px;margin:12px 0;border-radius:24px;background:var(--leaf-soft);touch-action:none}
+.sort-item{display:grid;justify-items:center;gap:6px;padding:16px 28px;border-radius:22px;background:var(--surface);box-shadow:var(--shadow-md);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;text-align:center;transition:transform .25s var(--ease),opacity .3s}
+.sort-item.dragging{cursor:grabbing;transition:none;z-index:5;box-shadow:var(--shadow-lg)}
+.sort-item .item-art{width:104px;height:104px;margin-bottom:4px}
+.sort-item.sorted{animation:sort-pop .5s var(--ease) forwards}
+.sort-item.bounced{animation:sort-shake .5s}
+@keyframes sort-pop{to{transform:scale(.7);opacity:.35}}
+@keyframes sort-shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.sort-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sort-bin{display:grid;justify-items:center;gap:4px;min-height:96px;padding:14px 10px;border:2px dashed var(--green-mid);border-radius:22px;background:transparent;color:var(--ink);text-align:center;transition:transform .15s,background .15s}
+.sort-bin small{font-size:.8125rem;color:var(--muted);font-weight:500}
+.sort-yes{background:#e6f7c9}.sort-no{background:#ffe9e1;border-color:var(--coral)}
+.sort-bin.hover,.sort-bin:not(:disabled):hover{transform:scale(1.03)}
+.sort-bin.is-right{border-style:solid;box-shadow:0 0 0 3px var(--green-mid)}
+.sort-bin.is-wrong{border-style:solid;box-shadow:0 0 0 3px var(--coral)}
+.sort-bin:disabled{opacity:1}
+.sort-done{text-align:center;padding:12px 0}
+.sort-done .actions{justify-content:center}
+#sort-feedback{margin-top:12px}
+
+/* sticker book */
+.stickers{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.sticker{display:grid;justify-items:center;gap:4px;padding:12px 8px;border-radius:20px;background:#f1f4e9;text-align:center}
+.sticker svg{filter:grayscale(1);opacity:.4}
+.sticker-name{font-weight:700;font-size:.875rem}
+.sticker-hint{font-size:.75rem;line-height:1.35;color:var(--muted)}
+.sticker.earned{background:var(--leaf-soft)}
+.sticker.earned svg{filter:none;opacity:1;animation:sticker-wiggle 3.6s ease-in-out infinite}
+@keyframes sticker-wiggle{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-8deg)}96%{transform:rotate(8deg)}}
+
+/* micro-interactions */
+button,.button-link,.waste-choice,.card-link,.buddy-chip,.buddy-swatch{transition:transform .15s var(--ease),background-color .2s,box-shadow .2s}
+button:not(:disabled):active,.button-link:active,.waste-choice:active,.card-link:active,.buddy-chip:active,.buddy-swatch:active{transform:scale(.96)}
+input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
+@keyframes check-pop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+#view.page-in{animation:view-in .35s var(--ease)}
+@keyframes view-in{from{opacity:.001;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* seasonal themes: accent colours and top bar only */
+:root[data-season=christmas]{--leaf:#ffd1d1;--leaf-soft:#ffe9e7;--green-mid:#b3262e}
+:root[data-season=christmas] aside{background:linear-gradient(120deg,#5a0f16,#9b1c24 60%,#176b3a)}
+:root[data-season=christmas] .brand-mark{background:#fff;color:#b3262e}
+:root[data-season=earth]{--leaf:#a8e6ff;--leaf-soft:#e1f4ff;--green-mid:#1c6fa8}
+:root[data-season=earth] aside{background:linear-gradient(120deg,#0a2f4d,#14598a 60%,#2a8f5c)}
+:root[data-season=earth] .brand-mark{background:#a8e6ff;color:#0a2f4d}
+:root[data-season=wika]{--leaf:#ffe27a;--leaf-soft:#fff4c9;--green-mid:#1b4fa8}
+:root[data-season=wika] aside{background:linear-gradient(120deg,#0a2a6b,#1b4fa8 60%,#c4262e)}
+:root[data-season=wika] .brand-mark{background:#ffe27a;color:#0a2a6b}
+@media(prefers-color-scheme:dark){
+  .buddy-say{background:#12251e;color:var(--ink)}
+  .sort-stage{background:#17342a}.sort-item{background:#12251e}
+  .sort-yes{background:#1c3a2b}.sort-no{background:#3a211b}.sort-bin{color:var(--ink)}
+  .sticker{background:#17302a}.sticker.earned{background:var(--leaf-soft)}
+  [data-mood=sleepy].buddy-strip-art::after,[data-mood=sleepy].buddy-stage-art::after,[data-mood=sleepy]#avatar-link::after{color:#bfe69a}
+  :root[data-season=christmas]{--leaf-soft:#4a1d22}:root[data-season=earth]{--leaf-soft:#173a52}:root[data-season=wika]{--leaf-soft:#3b3716}
+}
+@media(prefers-reduced-motion:reduce){
+  .splash{animation:splash-out .01s 0s forwards}.splash-mark{animation:none}
+  .hipos-avatar.do-hop,.hipos-avatar.do-spin,[data-mood=excited] .av-body,.sticker.earned svg,#view.page-in,.buddy-say.show,input[type=checkbox]:checked{animation:none}
+  [data-mood=sleepy]::after{animation:none}
+  .sort-item.sorted,.sort-item.bounced{animation:none}
+  button,.button-link,.waste-choice,.card-link,.buddy-chip{transition:none}
+}
+@media(max-width:760px){.sort-bins{gap:8px}.sort-bin{min-height:88px}.buddy-strip-actions{margin-left:0;width:100%}.buddy-strip-actions .button-link{flex:1 1 auto;text-align:center}}
+
+.buddy-strip-art,.buddy-stage-art,.mini-buddy{box-shadow:none;color:inherit;min-height:0}
+.mini-buddy{min-width:44px;min-height:44px}
+.buddy-strip-art:hover,.buddy-stage-art:hover,.mini-buddy:hover{box-shadow:none;color:inherit}
+.sort-bin,.sort-bin:disabled{box-shadow:none;color:var(--ink);opacity:1}
+.sort-yes,.sort-yes:disabled{background:#e6f7c9}.sort-no,.sort-no:disabled{background:#ffe9e1}
+.sort-bin.is-right{box-shadow:0 0 0 3px var(--green-mid)}.sort-bin.is-wrong{box-shadow:0 0 0 3px var(--coral)}
+@media(prefers-color-scheme:dark){.sort-yes,.sort-yes:disabled{background:#1c3a2b}.sort-no,.sort-no:disabled{background:#3a211b}}
+
+.buddy-strip-art.secondary,.buddy-stage-art.secondary,.mini-buddy.secondary{background:transparent;border:0;padding:0;box-shadow:none}
+.buddy-strip-art.secondary:hover,.buddy-stage-art.secondary:hover,.mini-buddy.secondary:hover{background:var(--leaf-soft);transform:none}
+.sort-bin.secondary{border:2px dashed var(--green-mid)}.sort-no.secondary{border-color:var(--coral)}
+.sort-bin.secondary:hover:not(:disabled){transform:scale(1.03)}
+.sort-item .item-art{background:var(--leaf-soft);box-shadow:none;position:relative;overflow:hidden}
+.sort-item .item-art::before,.sort-item .item-art::after{display:none}

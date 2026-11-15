@@ -42,6 +42,17 @@ The Weekly activity card shows a streak (days in a row with at least one habit c
 
 The **Text size** control (in **Settings**, the gear in the header) (Standard, Large, Extra large) is stored in `hipos.textsize` and sets `data-text` on the root element. All type is in `rem`, so it scales with this control and with the phone's own font setting. The browser tests check that nothing overflows horizontally at Extra large from 360 to 1920 px wide, and run basic accessibility checks (names, labels, one `h1`, unique ids) on every page.
 
+## Buddy personality, sorting game and stickers
+
+Everything here is cosmetic, optional and stays on the device. The code is in `pwa/buddy-fx.js` (reactions, moods, stickers, sounds), `pwa/sortgame.js` and `pwa/avatar.js`; progress is saved in `hipos.buddy.v1`.
+
+- **Reactions:** the buddy speaks in a bubble when habits are checked, the challenge or quiz is answered, a Waste Guide item is chosen, or a page opens. Tapping it cycles through a giggle, a spin, a tip and a fun fact. Its mood (sleepy at night, excited on a streak, calm otherwise) changes its animation. Small helper buddies in the checklist, challenge, quiz, Waste Guide and sorting cards give a hint when tapped.
+- **Treats:** checking a habit gives the buddy one treat per habit per day, so ticking and unticking cannot farm them.
+- **Sorting game (`#sort`):** six items per round (three for the pouch, three for staff), drawn from the Waste Guide data so the safe default always matches the guide. Drag the item onto a bin, tap a bin, or use the keyboard. Nothing is graded; only sticker progress is kept.
+- **Sticker book and extras:** eleven stickers (streaks, challenges, sorting rounds, taps, treats, a seasonal theme). New buddy extras unlock from the same actions and are kept once earned.
+- **Settings:** Buddy cheers (bubbles, sparkles, haptics; on by default), Sound (soft tones made with Web Audio, off by default) and Theme (Default, Christmas, Earth Day, Buwan ng Wika; accents and top bar only). Animations respect reduced motion.
+- **Week image and launch:** the weekly image includes the buddy drawing; a short branded splash covers app start and never blocks the app if scripts fail.
+
 ## Tests
 
 `npm test` runs the unit tests (including backup and restore parsing). `npm run test:browser` runs the browser suites against a local server: `tests/browser.mjs` (navigation, install, reports, staff review) and `tests/features.browser.mjs` (production headers and CSP, dark mode, scroll motion, Filipino completeness on every page, back up and restore, Waste Guide and staff tools, streak and weekly image, text size, accessibility basics, and the update banner flow). Browsers use bundled Chromium; set `PW_CHANNEL=msedge` to use Edge. GitHub Actions (`.github/workflows/ci.yml`) runs all of this on every push and pull request.

@@ -3,6 +3,7 @@ import {localDay} from './activities.js';
 import {schoolInfo} from './school-info.js';
 import {currentStreak,bestRun,badges as badgeList,isActive} from './streak.js';
 import {celebrate} from './motion.js';
+import {miniBuddy} from './buddy-fx.js';
 
 const key='hipos.activity.v1';
 const challenges=[
@@ -39,7 +40,7 @@ export function dailyChallenge(){
   let state='',error='';
   try{state=read().days[localDay()]?.challenge||'';}catch{error='Activity history could not be read. Try again after checking browser storage.';}
   const [title,body]=challenges[challengeIndex()];
-  return `<section class="card challenge-panel" data-day="${localDay()}" aria-labelledby="challenge-heading"><span class="guide-number">Today’s small challenge</span><h2 id="challenge-heading">${e(title)}</h2><p>${e(body)}</p><p class="muted">Optional. Choose what works for your school day.</p><div class="actions"><button data-challenge="done" aria-pressed="${state==='done'}">Mark complete</button><button class="secondary" data-challenge="skipped" aria-pressed="${state==='skipped'}">Skip today</button><button class="secondary" data-challenge="" ${state?'':'hidden'}>Undo</button></div><p id="challenge-feedback" role="status">${error||challengeFeedback(state)}</p></section>`;
+  return `<section class="card challenge-panel" data-day="${localDay()}" aria-labelledby="challenge-heading">${miniBuddy('challenge')}<span class="guide-number">Today’s small challenge</span><h2 id="challenge-heading">${e(title)}</h2><p>${e(body)}</p><p class="muted">Optional. Choose what works for your school day.</p><div class="actions"><button data-challenge="done" aria-pressed="${state==='done'}">Mark complete</button><button class="secondary" data-challenge="skipped" aria-pressed="${state==='skipped'}">Skip today</button><button class="secondary" data-challenge="" ${state?'':'hidden'}>Undo</button></div><p id="challenge-feedback" role="status">${error||challengeFeedback(state)}</p></section>`;
 }
 function challengeFeedback(state){return state==='done'?'Completed today. A small choice worth remembering.':state==='skipped'?'Skipped today. Choose what works for you.':'';}
 export function updateChallenge(button){
