@@ -184,7 +184,7 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.ope
 window.addEventListener('scroll',()=>closeMenu(),{passive:true,capture:true});
 window.addEventListener('wheel',()=>closeMenu(),{passive:true});
 window.addEventListener('touchmove',()=>closeMenu(),{passive:true});
-window.addEventListener('hashchange',()=>{render();view.focus();window.scrollTo({top:0,behavior:'instant'});});
+window.addEventListener('hashchange',()=>{render();view.focus();window.scrollTo({top:0,behavior:'instant'});if(current()==='sort')fitGame();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopCamera();if(unlocked){unlocked=false;render();}}});
 window.addEventListener('pagehide',stopCamera);
 window.addEventListener('storage',event=>{if(event.key===KEY){unlocked=false;location.reload();}});

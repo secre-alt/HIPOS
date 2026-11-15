@@ -74,14 +74,11 @@ export function sortClick(button){
 }
 // Keep the item and both bins on screen (above the bottom bar) so dragging always has a target.
 export function fitGame(){
-  const card=document.querySelector('#sort-game');if(!card)return;
-  requestAnimationFrame(()=>{
-    const bins=card.querySelector('.sort-bins');if(!bins)return;
-    const room=innerHeight-(matchMedia('(max-width:1000px)').matches?96:16),over=bins.getBoundingClientRect().bottom-room;
-    if(over>0)scrollBy({top:over+8,behavior:'auto'});
-    const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
-    if(top!==undefined&&top<70)scrollBy({top:top-80,behavior:'auto'});
-  });
+  const card=document.querySelector('#sort-game'),bins=card?.querySelector('.sort-bins');if(!bins)return;
+  const room=innerHeight-(matchMedia('(max-width:1000px)').matches?96:16),over=bins.getBoundingClientRect().bottom-room;
+  if(over>0)scrollBy({top:over+8,behavior:'instant'});
+  const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
+  if(top!==undefined&&top<70)scrollBy({top:top-80,behavior:'instant'});
 }
 let drag=null;
 export function sortPointerDown(event){

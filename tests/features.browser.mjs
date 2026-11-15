@@ -293,6 +293,7 @@ try{
     assert.equal(await page.locator('h1').count(),1);
     for(let i=1;i<=6;i++){
       assert.match(await page.locator('.sort-progress').innerText(),new RegExp(`Item ${i} of 6`));
+      await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
       const viewport=page.viewportSize(),bins=await page.locator('.sort-bins').boundingBox();
       assert.ok(bins.y+bins.height<=viewport.height,`both bins are on screen (bottom ${Math.round(bins.y+bins.height)} of ${viewport.height})`);
       if(i===2){ // drag the item onto the "ask staff" bin with the pointer
