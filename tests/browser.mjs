@@ -287,7 +287,7 @@ try{
     await expect(p.locator('#challenge-feedback')).toContainText('Skipped today');
     await p.getByRole('button',{name:'Undo',exact:true}).click();
     await expect(p.locator('#challenge-feedback')).toBeEmpty();
-    await p.locator('#language').selectOption('fil');
+    await p.locator('#settings-toggle').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','fil');
     await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
     await p.reload();await expect(p.locator('#language')).toHaveValue('fil');
@@ -308,7 +308,7 @@ try{
     await expect(p.locator('.report-description').first()).toHaveText('Clean paper');
     const bilingualReport=await p.evaluate(()=>JSON.parse(localStorage.getItem('hipos.pwa.v1')).reports[0]);
     assert.equal(bilingualReport.category,'Excessive packaging');
-    await p.locator('#language').selectOption('en');
+    await p.locator('#settings-toggle').click();await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','en');
     await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
@@ -320,7 +320,7 @@ try{
     await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','false');
     await p.locator('[data-answer]').first().click();
     await expect(p.locator('#quiz-storage')).toContainText('could not be saved');
-    await p.locator('#language').selectOption('fil');
+    await p.locator('#settings-toggle').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('#language')).toHaveValue('en');
     await expect(p.locator('#notice')).toContainText('Could not save language');
     await p.reload();
