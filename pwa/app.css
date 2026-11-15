@@ -886,3 +886,21 @@ html[data-font=pixelify] :is(h1,h2,h3,.brand){letter-spacing:0}
 .home-activities{gap:16px}
 .home-activities>.card{padding:20px}
 }
+
+/* Page headings already identify each screen; keep the floating buddy area clear. */
+@media(min-width:1001px){main>header>#page-label{display:none}main>header{justify-content:flex-end}}
+
+/* Customization tiles share columns, including earned and locked extras. */
+.buddy-editor{gap:24px;grid-template-columns:minmax(0,1fr)}
+.buddy-editor>.card{min-width:0;padding:24px}
+.buddy-options{align-content:start}
+.buddy-options .buddy-row:has(.buddy-chip){display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;align-items:stretch}
+.buddy-options .buddy-row:has([data-avatar-key="accessory"]){grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.buddy-options .buddy-chip{width:100%;min-width:0;justify-content:flex-start;padding:12px 8px;gap:8px}
+.buddy-options .buddy-chip>.hipos-avatar{flex-shrink:0}
+.buddy-options .buddy-chip>span:not(.buddy-hint){display:grid;place-items:center;min-height:2.8em;line-height:1.4}
+.buddy-options .buddy-hint{width:100%;margin-top:auto}
+.buddy-stage .actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%;gap:12px}
+.buddy-stage .actions>button{width:100%;margin:0}
+@media(min-width:900px){.buddy-editor{grid-template-columns:260px minmax(0,1fr);align-items:start}}
+@media(max-width:760px){.buddy-editor{gap:16px}.buddy-editor>.card{padding:20px}.buddy-stage .actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
