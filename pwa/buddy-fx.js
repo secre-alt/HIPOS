@@ -3,15 +3,18 @@
 // No text here is ever part of a report, and nothing is sent anywhere.
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate} from './i18n.js';
+import {playSfx,music} from './audio.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season';
+const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol';
 
 // ---------- Settings (cheers, sound, season) ----------
 const read=(key,fallback)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
 const write=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch{return false;}};
 export const cheersOn=()=>read(CHEERS,'on')!=='off';
 export const soundOn=()=>read(SOUND,'off')==='on';
+export const musicOn=()=>read(MUSIC,'off')==='on';
+export const musicLevel=()=>{const v=Number(read(MUSICVOL,'50'));return Number.isFinite(v)?Math.min(100,Math.max(0,v)):50;};
 export const SEASONS=['default','christmas','earth','wika'];
 export const season=()=>{const v=read(SEASON,'default');return SEASONS.includes(v)?v:'default';};
 
@@ -29,8 +32,20 @@ export function initBuddySettings(){
   };
   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
-  bind('#season',season,SEASON,SEASONS,v=>{applySeason();if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('pop');}});
-  applySeason();
+  bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{if(v==='on')music.start();else music.stop();});
+  bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
+  const volume=document.querySelector('#musicvol');
+  if(volume){volume.value=String(musicLevel());volume.addEventListener('input',()=>{write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
+  applySeason();initMusic();
+}
+// Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.
+function initMusic(){
+  music.setTheme(season());music.setLevel(musicLevel()/100);
+  if(musicOn()){
+    const go=()=>{if(musicOn())music.start();};
+    addEventListener('pointerdown',go,{once:true});addEventListener('keydown',go,{once:true});
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)music.stop();else if(musicOn())music.start();});
 }
 const SEASON_LINES={christmas:'Merry! Festive mode is on.',earth:'Happy Earth Day! Small steps count.',wika:'Mabuhay ang wika! Festive mode is on.'};
 export function applySeason(){const s=season();if(s==='default')delete document.documentElement.dataset.season;else document.documentElement.dataset.season=s;}
@@ -201,18 +216,8 @@ export function sparkle(el,count=8){
 export function buzz(ms=12){if(cheersOn())try{navigator.vibrate?.(ms);}catch{/* not supported */}}
 
 // ---------- Sounds (off by default) ----------
-let audio=null;
-const NOTES={pop:[[620,.06,'sine']],boop:[[330,.07,'triangle'],[440,.07,'triangle']],chime:[[660,.1,'sine'],[880,.16,'sine']],tada:[[523,.1,'triangle'],[659,.1,'triangle'],[784,.22,'triangle']],oops:[[300,.1,'sine'],[250,.16,'sine']]};
+// Names: tick pop boop chime coin whoosh undo oops star tada unlock win (synthesized in audio.js).
 export function sound(name){
   if(!soundOn())return;
-  try{
-    const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
-    audio=audio||new Ctx();if(audio.state==='suspended')audio.resume();
-    let t=audio.currentTime;
-    for(const [freq,len,type] of NOTES[name]||NOTES.pop){
-      const osc=audio.createOscillator(),gain=audio.createGain();osc.type=type;osc.frequency.value=freq;
-      gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.12,t+.01);gain.gain.exponentialRampToValueAtTime(.0001,t+len);
-      osc.connect(gain).connect(audio.destination);osc.start(t);osc.stop(t+len+.02);t+=len*.85;
-    }
-  }catch{/* sound is optional */}
+  try{playSfx(name);}catch{/* sound is optional */}
 }

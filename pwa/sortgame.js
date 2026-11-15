@@ -51,7 +51,7 @@ function answer(choice){
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
   fb.innerHTML=`<p><strong>${right?'Yes!':'Not quite.'}</strong> <span>${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</span> <span>${e(item.body)}</span></p>`;
   const next=document.querySelector('#sort-next');next.hidden=false;next.focus({preventScroll:true});
-  if(right){buddySay(['Nice sorting!','You got it!','Great eye!'][game.score%3]);sparkle(itemEl,6);sound('pop');buzz(10);animate('hop');}
+  if(right){buddySay(['Nice sorting!','You got it!','Great eye!'][game.score%3]);sparkle(itemEl,6);sound('coin');buzz(10);animate('hop');}
   else{buddySay('Almost! Read the tip.');sound('oops');}
 }
 function advance(){
@@ -59,7 +59,7 @@ function advance(){
   const box=document.querySelector('#sort-body');box.innerHTML=body();
   if(game.i>=game.items.length){
     recordSort(game.score,game.items.length);
-    if(game.score===game.items.length){celebrate();sound('tada');buddySay('Perfect round! Amazing!');}
+    if(game.score===game.items.length){celebrate();sound('win');buddySay('Perfect round! Amazing!');}
     else{sound('chime');buddySay('Round complete! Nice work.');}
     box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});
     return true; // round finished: the caller refreshes stickers

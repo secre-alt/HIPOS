@@ -49,3 +49,15 @@ test('a sorting round has six items, balanced, and prefers fresh ones',()=>{
   const first=makeRound(),second=makeRound(Math.random,first.map(x=>x.title));
   assert.equal(second.filter(x=>first.some(f=>f.title===x.title)).length,0,'no repeats when enough items remain');
 });
+test('background music is off by default and its volume is kept in range',()=>{
+  assert.equal(fx.musicOn(),false);assert.equal(fx.musicLevel(),50);
+  localStorage.setItem('hipos.music','on');localStorage.setItem('hipos.musicvol','900');
+  assert.equal(fx.musicOn(),true);assert.equal(fx.musicLevel(),100);
+  localStorage.setItem('hipos.musicvol','nonsense');assert.equal(fx.musicLevel(),50);
+  localStorage.removeItem('hipos.music');localStorage.removeItem('hipos.musicvol');
+});
+test('audio engine imports safely without Web Audio and ignores sounds there',async()=>{
+  const audio=await import('../pwa/audio.js');
+  assert.ok(audio.SFX_NAMES.includes('win')&&audio.SFX_NAMES.includes('pop'));
+  audio.playSfx('pop');audio.music.start();assert.equal(audio.music.playing,false);
+});

@@ -27,26 +27,26 @@ function checkBuddyUnlocks(announce=false){
   try{
     const sum=summaryNow(),fresh=syncUnlocks(sum),stickers=syncStickers(sum);applyMood(sum);
     if(!announce)return;
-    if(stickers.length){buddySay(`New sticker: ${stickers.map(t=>t.name).join(', ')}!`,{delay:2200});setTimeout(()=>sound('tada'),2200);}
+    if(stickers.length){buddySay(`New sticker: ${stickers.map(t=>t.name).join(', ')}!`,{delay:2200});setTimeout(()=>sound('unlock'),2200);}
     if(fresh.length)message(`New buddy extra unlocked: ${fresh.map(a=>a.name).join(', ')}. Open My buddy to try it.`);
   }catch{/* activity history unavailable: nothing to unlock */}
 }
 const HABIT_LINES=['Bottle packed. Nice!','Lunchbox ready. Yay!','Reusable utensils. Great choice!'];
 const HABIT_FED=['Yum! Bottle packed. Thanks for the treat!','Yum! Lunchbox ready. Thanks for the treat!','Yum! Reusable utensils. Thanks for the treat!'];
 function onHabit(input){
-  if(!input.checked)return;
+  if(!input.checked){sound('undo');return;}
   const index=Number(input.dataset.habit),fed=giveTreat(index,localDay()),all=[...document.querySelectorAll('[data-habit]')].every(x=>x.checked);
-  sparkle(input,6);buzz(12);animate('hop');sound(all?'tada':'pop');
+  sparkle(input,6);buzz(12);animate('hop');sound(all?'win':'coin');
   buddySay(all?'All three done! You are a hero!':fed?HABIT_FED[index]:HABIT_LINES[index]);
   const treats=document.querySelector('.buddy-treats');if(treats)treats.textContent=`Treats shared: ${stats().treats}`;
 }
 function onChallenge(state){
-  if(state==='done'){buddySay('Challenge complete! You are amazing!');animate('spin');sound('tada');buzz(20);}
-  else if(state==='skipped')buddySay('That is okay. See you tomorrow!');
+  if(state==='done'){buddySay('Challenge complete! You are amazing!');animate('spin');sound('win');buzz(20);}
+  else if(state==='skipped'){buddySay('That is okay. See you tomorrow!');sound('tick');}
 }
 function onAnswer(){
   const right=document.querySelector('#quiz-feedback strong')?.textContent==='Correct.';
-  buddySay(right?'Correct! Great sorting!':'Almost! Read the tip.');sound(right?'pop':'oops');if(right){buzz(10);animate('hop');}
+  buddySay(right?'Correct! Great sorting!':'Almost! Read the tip.');sound(right?'coin':'oops');if(right){buzz(10);animate('hop');}
 }
 function onWaste(button){
   const item=waste[Number(button.dataset.waste)];if(!item)return;
@@ -205,7 +205,7 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.ope
 window.addEventListener('scroll',()=>closeMenu(),{passive:true,capture:true});
 window.addEventListener('wheel',()=>closeMenu(),{passive:true});
 window.addEventListener('touchmove',()=>closeMenu(),{passive:true});
-window.addEventListener('hashchange',()=>{render();view.focus();window.scrollTo({top:0,behavior:'instant'});if(current()==='sort')fitGame();});
+window.addEventListener('hashchange',()=>{sound('whoosh');render();view.focus();window.scrollTo({top:0,behavior:'instant'});if(current()==='sort')fitGame();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopCamera();if(unlocked){unlocked=false;render();}}});
 window.addEventListener('pagehide',stopCamera);
 window.addEventListener('storage',event=>{if(event.key===KEY){unlocked=false;location.reload();}});

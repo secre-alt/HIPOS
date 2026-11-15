@@ -981,3 +981,6 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 }
 
 #settings-dialog :is(.settings-categories button,.settings-close,.settings-section>button){font-family:"HIPOS Fredoka","Segoe UI",sans-serif}
+
+.music-volume{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px;font-size:.9375rem;font-weight:400}
+.music-volume input[type=range]{flex:1 1 140px;max-width:220px;min-height:0;padding:0;accent-color:#28734e;cursor:pointer}

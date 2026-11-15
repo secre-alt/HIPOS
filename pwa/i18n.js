@@ -154,6 +154,7 @@ pairs.push(
 );
 
 pairs.push(['Language','Wika'],['Text & readability','Teksto at pagbabasa'],['Personalization','Personal na ayos'],['Sound & reactions','Tunog at mga reaksiyon'],['Sound effects','Mga tunog'],['App & offline','App at offline'],['Change','Palitan']);
+pairs.push(['Background music','Musika sa background'],['Music volume','Lakas ng musika']);
 pairs.push(['Section','Seksyon'],['Settings categories','Mga kategorya ng setting'],['Close settings','Isara ang mga setting']);
 const dictionary=new Map(pairs);
 let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
