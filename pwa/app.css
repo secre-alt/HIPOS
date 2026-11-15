@@ -984,3 +984,31 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
 
 .music-volume{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px;font-size:.9375rem;font-weight:400}
 .music-volume input[type=range]{flex:1 1 140px;max-width:220px;min-height:0;padding:0;accent-color:#28734e;cursor:pointer}
+
+/* Home summary cards share the same outer edges as the guide and concern sections. */
+#view>#weekly-activity,#view>.school-info{max-width:none;width:100%}
+#weekly-activity .week-days{gap:12px;align-items:stretch}
+#weekly-activity .badges{gap:12px}
+#weekly-activity .badge{padding:16px;gap:8px;grid-template-rows:auto 1fr auto}
+#weekly-activity .badge-state{margin-top:0}
+#weekly-activity>.note:last-child{padding-bottom:0;margin-bottom:0}
+@media(max-width:760px){#weekly-activity .week-days{gap:0}}
+
+/* Activity content stays visible; decoration must not wash out the buddy or copy. */
+.challenge-panel::after{display:none}
+.challenge-panel{color:#203b2b}
+.challenge-panel p{color:#36523f}
+.challenge-panel>.mini-buddy{top:16px;right:16px}
+.challenge-panel>.guide-number{max-width:calc(100% - 56px)}
+@media(prefers-color-scheme:dark){.challenge-panel{background:#17372a;color:#edf6e8}.challenge-panel p{color:#cee0d3}.challenge-panel h2{color:#edf6e8}}
+
+/* Mobile settings keeps categories visible without nesting them inside a dropdown. */
+#settings-dialog select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b9485' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
+.settings-body .music-volume{display:flex;align-items:center;justify-content:space-between;margin:0;gap:16px}
+.settings-body .music-volume input{width:44%;flex:0 1 160px;min-width:80px;max-width:160px;margin:0}
+@media(max-width:600px){
+.settings-category-mobile{display:none}
+.settings-categories{display:flex;flex-direction:row;gap:8px;padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto;min-width:0;scrollbar-width:thin;scroll-padding-inline:20px}
+.settings-categories button{flex:0 0 auto;white-space:nowrap;min-height:40px;padding:8px 12px;font-size:.875rem}
+#settings-dialog .settings-body{padding:20px;max-height:calc(100dvh - 224px)}
+}

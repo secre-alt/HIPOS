@@ -2,7 +2,7 @@
 // drifts slowly, and a thin progress line fills the top bar. Everything is progressive:
 // without JavaScript, IntersectionObserver or with "reduce motion" on, content is simply shown.
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const TARGETS='#view>*,.waste-choice,.home-activities>.card,.home-guides>.card,.week-days li';
+const TARGETS='#view>*:not(.home-activities),.waste-choice,.home-guides>.card,.week-days li';
 let io=null;
 
 export function revealOnScroll(){
