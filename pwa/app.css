@@ -804,14 +804,14 @@ input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
 
 /* Buddy dock: a quiet speech card beside the school-day companion.
    Restyle informed by unslop by Damir Sokolovsky, CC BY 4.0 (https://heydamir.design/unslop). */
-.buddy-dock{--buddy-surface:#edf5ed;--buddy-border:#d0e1d2;--buddy-ink:#214b38;position:fixed;z-index:45;top:calc(84px + env(safe-area-inset-top));left:16px;display:grid;grid-template-columns:56px minmax(0,240px);grid-template-rows:auto;align-items:center;gap:4px 12px;max-width:calc(100vw - 32px);pointer-events:none}
+.buddy-dock{--buddy-surface:#edf5ed;--buddy-border:#d0e1d2;--buddy-ink:#214b38;position:fixed;z-index:45;top:calc(84px + env(safe-area-inset-top));left:max(32px,calc((100vw - 1184px)/2 + 32px));display:grid;grid-template-columns:56px minmax(0,240px);grid-template-rows:auto;align-items:center;gap:4px 12px;max-width:calc(100vw - 32px);pointer-events:none}
 .buddy-dock #avatar-link{position:relative;display:grid;place-items:center;width:56px;height:56px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:transparent;box-shadow:none;cursor:pointer;pointer-events:auto}
 .buddy-dock #avatar-link:hover{background:transparent;transform:translateY(-1px)}
 .buddy-dock #avatar-link .av-bg{fill:transparent}
 .buddy-dock #avatar-link .av-shadow{opacity:.12}
 .buddy-dock #avatar-link .hipos-avatar{width:56px;height:56px}
-.buddy-dock .buddy-say{position:relative;inset:auto;z-index:auto;grid-column:2;grid-row:1;align-self:center;max-width:240px;margin-top:0;padding:12px 16px;border:1px solid var(--buddy-border);border-radius:16px;background:var(--buddy-surface);color:var(--buddy-ink);box-shadow:0 4px 12px #071a140d;pointer-events:auto}
-.buddy-dock .buddy-say::before{content:"";position:absolute;left:-6px;top:18px;width:10px;height:10px;background:inherit;border-left:1px solid var(--buddy-border);border-bottom:1px solid var(--buddy-border);transform:rotate(45deg)}
+.buddy-dock .buddy-say{position:relative;inset:auto;z-index:auto;grid-column:2;grid-row:1;align-self:center;justify-self:start;width:max-content;max-width:100%;margin-top:0;padding:12px 16px;border:1px solid var(--buddy-border);border-radius:16px;background:var(--buddy-surface);color:var(--buddy-ink);box-shadow:0 4px 12px #071a140d;pointer-events:auto}
+.buddy-dock .buddy-say::before{content:"";position:absolute;left:-6px;top:calc(50% - 5px);width:10px;height:10px;background:inherit;border-left:1px solid var(--buddy-border);border-bottom:1px solid var(--buddy-border);transform:rotate(45deg)}
 .buddy-dock .buddy-say-text{display:block;font-family:"HIPOS Fredoka","Segoe UI",sans-serif;font-size:.9375rem;font-weight:500;line-height:1.4;overflow-wrap:anywhere}
 #view{padding-top:80px}
 .buddy-dock .buddy-say{transition:opacity .18s ease,transform .18s ease}
@@ -820,11 +820,20 @@ input[type=checkbox]:checked{animation:check-pop .35s var(--ease)}
 @media(prefers-reduced-motion:reduce){.buddy-dock .buddy-say{transition:none}}
 @media(max-width:1000px){
 .app:has(#menu-toggle[aria-expanded="true"]) .buddy-dock{display:none}
-.buddy-dock{top:calc(76px + env(safe-area-inset-top));left:12px;grid-template-columns:44px minmax(0,240px);grid-template-rows:auto;gap:4px 12px;max-width:calc(100vw - 24px)}
+.buddy-dock{top:calc(76px + env(safe-area-inset-top));left:32px;grid-template-columns:44px minmax(0,240px);grid-template-rows:auto;gap:4px 12px;max-width:calc(100vw - 24px)}
 .buddy-dock #avatar-link,.buddy-dock #avatar-link .hipos-avatar{width:44px;height:44px}
 .buddy-dock #avatar-link{border-radius:50%}
 .buddy-dock .buddy-say{padding:10px 12px}
 }
+/* Align the floating companion, page edges, and controls on the same spacing grid. */
+.brand-tools{gap:8px}
+.buddy-row{gap:12px;align-items:stretch}
+.buddy-chip{justify-content:flex-start}
+.buddy-chip>span{line-height:1.4}
+.buddy-stage .actions{align-items:center;gap:12px}
+.buddy-stage .actions>button{min-height:48px}
+@media(max-width:1000px){main>header{height:0;min-height:0;padding:0}main>header>#page-label{display:none}.buddy-dock{max-width:calc(100vw - 64px)}}
+@media(max-width:760px){.buddy-dock{left:16px;max-width:calc(100vw - 32px)}}
 @media print{.buddy-dock{display:none}#view{padding-top:0}}
 
 /* ==== Font style setting (restored after merge) ==== */
