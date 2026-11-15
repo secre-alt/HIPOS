@@ -1056,3 +1056,7 @@ main>header{height:0;min-height:0;padding:0}
 .font-use{margin:10px 0 0;font-weight:600;font-size:.875rem}
 .font-preview *{max-width:100%}
 @media(prefers-color-scheme:dark){.fp-greeting{background:#12251e;color:#cdeeb0}.font-preview{background:#17342a}}
+
+/* Inner-page headings use the same buddy clearance as the home card. */
+#view>.intro:first-child{padding-top:12px}
+@media(max-width:760px){#view>.intro:first-child{padding-top:4px}}
