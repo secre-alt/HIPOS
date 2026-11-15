@@ -11,7 +11,7 @@ try{
   const context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto('http://localhost:4174');
-  await page.getByText('Ready offline',{exact:true}).waitFor();
+  await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached'});
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));});
   await mkdir('test-results',{recursive:true});
   for(const width of [1280,1920,1000,1001]){
@@ -49,7 +49,7 @@ try{
   await page.getByLabel('What needs attention?').fill('Please clarify the dry wrapper handling guide.');
   await page.getByRole('button',{name:'Save on this device'}).click();
   await page.getByRole('button',{name:'Show QR'}).click();
-  await page.locator('canvas#qr').waitFor();
+  await page.locator('canvas#qr').waitFor({state:'attached'});
   const raw=await page.getByLabel('Transfer text (alternative to scanning)').inputValue();
   assert.equal(JSON.parse(raw).type,'HIPOS1');
   await page.getByRole('button',{name:'Close',exact:true}).click();
@@ -66,31 +66,31 @@ try{
   await page.getByRole('button',{name:'Paste transfer text'}).click();
   await page.getByLabel('Transfer text',{exact:true}).fill(raw);
   await page.getByRole('button',{name:'Review report',exact:true}).click();
-  await page.getByText('Already on this device',{exact:true}).waitFor();
+  await page.getByText('Already on this device',{exact:true}).waitFor({state:'attached'});
   await page.getByRole('button',{name:'Close',exact:true}).click();
   await page.getByRole('button',{name:'Lock staff area'}).click();
   await page.getByLabel('PIN',{exact:true}).fill('654321');
   await page.getByRole('button',{name:'Unlock',exact:true}).click();
-  await page.getByText('Incorrect PIN.',{exact:true}).waitFor();
+  await page.getByText('Incorrect PIN.',{exact:true}).waitFor({state:'attached'});
   await page.getByLabel('PIN',{exact:true}).fill('123456');
   await page.getByRole('button',{name:'Unlock',exact:true}).click();
   await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Permission denied','NotAllowedError');};});
   await page.getByRole('button',{name:'Scan report QR'}).click();
-  await page.getByRole('heading',{name:'Camera permission is off'}).waitFor();
+  await page.getByRole('heading',{name:'Camera permission is off'}).waitFor({state:'attached'});
   await page.getByRole('button',{name:'Close',exact:true}).click();
   await page.reload();
-  await page.getByRole('button',{name:'Unlock',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Unlock',exact:true}).waitFor({state:'attached'});
   await page.getByLabel('PIN',{exact:true}).fill('123456');
   await page.getByRole('button',{name:'Unlock',exact:true}).click();
-  await page.locator('[data-status]').waitFor();
+  await page.locator('[data-status]').waitFor({state:'attached'});
   assert.equal(await page.locator('[data-status]').inputValue(),'Under Review');
   await context.setOffline(true);
   await page.reload();
-  await page.getByText('Offline · saved on device',{exact:true}).waitFor();
+  await page.getByText('Offline · saved on device',{exact:true}).waitFor({state:'attached'});
   for(const name of ['Prevent','Reuse','Classify','Carry out','My reports']){await page.getByRole('link',{name,exact:true}).click();await expect(page.locator('#page-label')).toHaveText(name);}
   await expect(page.getByRole('button',{name:'Show QR'})).toHaveCount(1);
   await page.getByRole('button',{name:'Show QR'}).click();
-  await page.locator('canvas#qr').waitFor();
+  await page.locator('canvas#qr').waitFor({state:'attached'});
   await page.getByRole('button',{name:'Close',exact:true}).click();
   page.once('dialog',d=>d.accept());
   await page.getByRole('button',{name:'Delete',exact:true}).click();
@@ -121,7 +121,7 @@ try{
       assert.deepEqual(bad,[],`44px touch targets at ${width}px`);
     };
     await p.goto('http://localhost:4174');
-    await p.getByText('Ready offline',{exact:true}).waitFor();
+    await p.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached'});
     await p.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));});
     const primary=p.getByRole('link',{name:'Prevent Waste',exact:false});
     await expect(primary).toBeVisible();
@@ -153,12 +153,12 @@ try{
     await p.getByRole('button',{name:'Install',exact:true}).click();
     assert.equal(await p.evaluate(()=>window.installPromptCalled),true,'Banner uses the browser install prompt');
     await p.getByRole('button',{name:'Install',exact:true}).click();
-    await p.getByRole('heading',{name:'Install HIPOS',exact:true}).waitFor();
+    await p.getByRole('heading',{name:'Install HIPOS',exact:true}).waitFor({state:'attached'});
     await p.getByRole('button',{name:'Close',exact:true}).click();
     await p.getByRole('button',{name:'Dismiss install banner',exact:true}).click();
     await expect(p.locator('#install-banner')).toBeHidden();
     await p.getByRole('button',{name:'Download as app',exact:true}).click();
-    await p.getByRole('heading',{name:'Install HIPOS',exact:true}).waitFor();
+    await p.getByRole('heading',{name:'Install HIPOS',exact:true}).waitFor({state:'attached'});
     await p.getByRole('button',{name:'Close',exact:true}).click();
     await p.reload();
     await expect(p.locator('#install-banner')).toBeHidden();
@@ -187,7 +187,7 @@ try{
     await primary.click();await expect(p.locator('#page-label')).toHaveText('Prevent');
     await go('Home');await p.getByRole('link',{name:'Check Waste Type',exact:true}).click();await expect(p.locator('#page-label')).toHaveText('Classify');
     await go('Home');await p.getByRole('link',{name:'Report a Concern',exact:true}).click();
-    await p.getByRole('heading',{name:'No reports saved on this device',exact:true}).waitFor();
+    await p.getByRole('heading',{name:'No reports saved on this device',exact:true}).waitFor({state:'attached'});
     await p.getByRole('button',{name:'Write your first concern'}).click();await expect(p.getByLabel('What needs attention?')).toBeFocused();
     await p.getByLabel('Category',{exact:true}).selectOption('Reusable-container concern');
     await p.getByLabel('What needs attention?').fill('Please clarify where reusable containers are permitted.');
@@ -195,7 +195,7 @@ try{
     await p.getByRole('button',{name:'Save on this device'}).click();
     await expect(p.locator('#notice')).toHaveText('Saved on this device');
     await p.getByRole('button',{name:'Show QR'}).click();
-    await p.getByRole('heading',{name:'QR ready to show',exact:true}).waitFor();
+    await p.getByRole('heading',{name:'QR ready to show',exact:true}).waitFor({state:'attached'});
     const transfer=await p.getByLabel('Transfer text (alternative to scanning)').inputValue();
     await touchTargets();await noOverflow();
     await p.screenshot({path:`test-results/qr-${width}.png`,fullPage:true});
@@ -208,12 +208,12 @@ try{
     await staff.getByLabel('Choose a PIN').fill('123456');await staff.getByLabel('Confirm PIN',{exact:true}).fill('123456');
     await staff.getByRole('button',{name:'Set PIN and continue'}).click();
     await staff.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Permission denied','NotAllowedError');};});
-    await staff.getByRole('button',{name:'Scan report QR'}).click();await staff.getByRole('heading',{name:'Camera permission is off'}).waitFor();
+    await staff.getByRole('button',{name:'Scan report QR'}).click();await staff.getByRole('heading',{name:'Camera permission is off'}).waitFor({state:'attached'});
     await expect(staff.getByRole('button',{name:'Try camera again'})).toBeVisible();
     await staff.screenshot({path:`test-results/camera-denied-${width}.png`,fullPage:true});
     await staff.locator('#dialog').getByRole('button',{name:'Paste transfer text',exact:true}).click();
     await staff.getByLabel('Transfer text',{exact:true}).fill('{broken json');await staff.getByRole('button',{name:'Review report',exact:true}).click();
-    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor();
+    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor({state:'attached'});
     await expect(staff.locator('#dialog-error')).toContainText('Nothing was imported.');
     assert.equal(await staff.locator('[data-status]').count(),0);
     await staff.screenshot({path:`test-results/invalid-qr-${width}.png`,fullPage:true});
@@ -224,11 +224,11 @@ try{
     const badQR=await QRCode.toDataURL('Not a HIPOS report',{width:480,margin:4});
     await staff.evaluate(async dataURL=>{navigator.mediaDevices.getUserMedia=async()=>{const img=new Image();img.src=dataURL;await img.decode();const canvas=document.createElement('canvas');canvas.width=canvas.height=480;canvas.getContext('2d').drawImage(img,0,0,480,480);return canvas.captureStream(5);};},badQR);
     await staff.getByRole('button',{name:'Scan report QR'}).click();
-    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor();
+    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor({state:'attached'});
     await expect(staff.getByRole('button',{name:'Paste transfer text instead'})).toBeVisible();
     await staffContext.close();
 
-    await mobile.setOffline(true);await p.reload();await p.getByText('Offline · saved on device',{exact:true}).waitFor();
+    await mobile.setOffline(true);await p.reload();await p.getByText('Offline · saved on device',{exact:true}).waitFor({state:'attached'});
     await expect(p.getByRole('button',{name:'Show QR'})).toHaveCount(1);
     for(const name of ['Prevent','Reuse','Classify','Carry out','My reports']){
       await go(name);await p.reload();await expect(p.locator('#page-label')).toHaveText(name);await noOverflow();await touchTargets();
@@ -240,7 +240,7 @@ try{
         await p.screenshot({path:`test-results/carry-out-${width}.png`,fullPage:true});
       }
     }
-    await p.getByRole('button',{name:'Show QR'}).click();await p.getByRole('heading',{name:'QR ready to show'}).waitFor();
+    await p.getByRole('button',{name:'Show QR'}).click();await p.getByRole('heading',{name:'QR ready to show'}).waitFor({state:'attached'});
     await p.getByRole('button',{name:'Close',exact:true}).click();
     await p.getByRole('link',{name:'Home page',exact:true}).click();
     await expect(p.locator('.mobile-bottom-nav a').first()).toHaveAttribute('aria-current','page');
@@ -287,7 +287,7 @@ try{
     await expect(p.locator('#challenge-feedback')).toContainText('Skipped today');
     await p.getByRole('button',{name:'Undo',exact:true}).click();
     await expect(p.locator('#challenge-feedback')).toBeEmpty();
-    await p.locator('#language').selectOption('fil');
+    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','fil');
     await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
     await p.reload();await expect(p.locator('#language')).toHaveValue('fil');
@@ -308,7 +308,7 @@ try{
     await expect(p.locator('.report-description').first()).toHaveText('Clean paper');
     const bilingualReport=await p.evaluate(()=>JSON.parse(localStorage.getItem('hipos.pwa.v1')).reports[0]);
     assert.equal(bilingualReport.category,'Excessive packaging');
-    await p.locator('#language').selectOption('en');
+    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','en');
     await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
@@ -320,7 +320,7 @@ try{
     await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','false');
     await p.locator('[data-answer]').first().click();
     await expect(p.locator('#quiz-storage')).toContainText('could not be saved');
-    await p.locator('#language').selectOption('fil');
+    await p.locator('.settings-toggle:visible').click();await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('#language')).toHaveValue('en');
     await expect(p.locator('#notice')).toContainText('Could not save language');
     await p.reload();

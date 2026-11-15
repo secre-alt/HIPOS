@@ -65,7 +65,7 @@ function weekData(){
     days.push({id,date,entry,active:isActive(entry)});
   }
   const streak=currentStreak(data.days,today),best=Math.max(Number(data.best)||0,bestRun(data.days),streak.count);
-  return {days,streak,best,badges:badgeList(data.days,best)};
+  return {days,streak,best,badges:badgeList(data.days,best),challengeDays:Object.values(data.days).filter(entry=>entry?.challenge==='done').length};
 }
 // Used by the "save my week as an image" card.
 export function weekSummary(){return weekData();}
