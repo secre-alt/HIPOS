@@ -202,7 +202,7 @@ function updateInstallBanner(){const installed=appInstalled||standalone.matches|
 standalone.addEventListener('change',updateInstallBanner);
 document.querySelector('#dismiss-install').addEventListener('click',()=>{installDismissed=true;try{sessionStorage.setItem('hipos.install.dismissed','true');}catch{}updateInstallBanner();});
 updateInstallBanner();
-render();refreshAvatars();connection();initLanguage();initTextSize();initBuddySettings();document.addEventListener('pointerdown',sortPointerDown);document.addEventListener('pointermove',sortPointerMove);document.addEventListener('pointerup',sortPointerUp);document.addEventListener('pointercancel',sortPointerUp);document.querySelector('#splash')?.remove();initScrollEffects();
+render();refreshAvatars();connection();initLanguage();initTextSize();initFontStyle();initBuddySettings();document.addEventListener('pointerdown',sortPointerDown);document.addEventListener('pointermove',sortPointerMove);document.addEventListener('pointerup',sortPointerUp);document.addEventListener('pointercancel',sortPointerUp);document.querySelector('#splash')?.remove();initScrollEffects();
 // Update flow: a new service worker waits until the person taps "Update now" (no surprise reloads
 // while they are typing a report). The first install never shows the banner or reloads.
 const updateBanner=document.querySelector('#update-banner'),applyUpdate=document.querySelector('#apply-update');
