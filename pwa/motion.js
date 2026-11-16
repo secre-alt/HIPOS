@@ -32,6 +32,14 @@ export function revealOnScroll(){
 }
 
 export function initScrollEffects(){
+  document.querySelector('#back-to-top')?.addEventListener('click',()=>{
+    const heading=document.querySelector('#view h1')||document.querySelector('#view');
+    if(heading){
+      if(!heading.hasAttribute('tabindex'))heading.setAttribute('tabindex','-1');
+      heading.focus({preventScroll:true});
+    }
+    window.scrollTo({top:0,behavior:reduced()?'instant':'smooth'});
+  });
   const root=document.documentElement;let queued=false;
   const update=()=>{
     queued=false;
