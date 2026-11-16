@@ -40,10 +40,11 @@ export function initScrollEffects(){
     }
     window.scrollTo({top:0,behavior:reduced()?'instant':'smooth'});
   });
-  const root=document.documentElement;let queued=false;
+  const root=document.documentElement,backToTop=document.querySelector('.back-to-top-row');let queued=false;
   const update=()=>{
     queued=false;
     const y=window.scrollY,max=Math.max(1,root.scrollHeight-window.innerHeight);
+    if(backToTop)backToTop.hidden=!(y>0&&max-y<=32);
     document.querySelector('aside')?.style.setProperty('--progress',Math.min(1,Math.max(0,y/max)).toFixed(4));
     const art=document.querySelector('.hero-deco');
     if(art)art.style.setProperty('--sy',reduced()?'0':String(Math.min(Math.round(y),1200)));
@@ -52,6 +53,8 @@ export function initScrollEffects(){
   window.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('resize',schedule);
   window.addEventListener('hashchange',schedule);
+  // Content and font loading can change the bottom without a scroll event.
+  if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedule).observe(document.body);
   schedule();
 }
 
