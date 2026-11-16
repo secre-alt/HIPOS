@@ -284,6 +284,7 @@ try{
     await expect(p.locator('#challenge-feedback')).toContainText('Completed today');
     await expect(p.locator('.week-days li').last()).toContainText('Completed an action');
     await p.reload();await expect(p.locator('.challenge-panel')).toHaveAttribute('data-state','done');
+    await p.getByRole('button',{name:'Undo',exact:true}).click();
     await p.getByRole('button',{name:'Skip today',exact:true}).click();
     await expect(p.locator('#challenge-feedback')).toContainText('Skipped today');
     await p.getByRole('button',{name:'Undo',exact:true}).click();
