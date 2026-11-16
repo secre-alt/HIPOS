@@ -9,17 +9,19 @@ import {cheersOn,cheer,buddySay,tapBuddy,applyMood,animate,sparkle,buzz,sound,gi
 import {sortGame,fitGame,sortClick,sortPointerDown,sortPointerMove,sortPointerUp} from './sortgame.js';
 import {compostGame,initCompost} from './compost.js';
 import {answerQuiz,nextQuestion,restartQuiz,updateHabit,localDay,checklist} from './activities.js';
-import {home,selectWaste,reuseArt,wasteArt} from './home.js';
+import {home,selectWaste,wasteArt} from './home.js';
 import {revealOnScroll,initScrollEffects} from './motion.js';
 import {guideTools,guideCards,setGuideFilter,applyGuideFilter} from './guide.js';
 import QRCode from 'qrcode';
 import jsQR from 'jsqr';
 import {categories,areas,statuses,decodeReport,createReport,addImport,escapeHTML as e,pinHash,buildBackup,parseBackup,reportsToCsv} from './core.js';
-import {reuse,waste} from './content.js';
+import {waste} from './content.js';
+import {reusePage,interactWithReuse} from './reuse.js';
 import {preventPage,interactWithKit} from './prevent.js';
 
 const view=document.querySelector('#view'),dialog=document.querySelector('#dialog');
 view.addEventListener('click',interactWithKit);
+view.addEventListener('click',interactWithReuse);
 const links=[['home','Home'],['prevent','Prevent'],['reuse','Reuse'],['classify','Classify'],['carry','Carry out'],['reports','My reports'],['staff','Staff review']];
 const KEY='hipos.pwa.v1';
 let data={reports:[],imports:[],pin:null},unlocked=false,pending=null,stream=null,cameraToken=0,installPrompt=null,offlineReady=false,busy=false,unlockAttempts=0,unlockAfter=0;
@@ -134,7 +136,7 @@ function reportCard(r,staff=false){return `<article class="card"><span class="pi
 function render(){if(!busy)message('');document.querySelector('#menu-toggle').setAttribute('aria-expanded','false');stopCamera();if(dialog.open)dialog.close();pending=null;const page=current();rememberGuide(page);checkBuddyUnlocks();refreshAvatars();document.querySelectorAll('.mobile-bottom-nav a').forEach(a=>{if(a.hash==='#'+page)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});document.querySelector('#nav').innerHTML=links.map(([id,label])=>`<a href="#${id}" ${id===page?'class="active" aria-current="page"':''}>${label}</a>`).join('');document.querySelector('#page-label').textContent=page==='home'?'Your daily guide':page==='avatar'?'My buddy':page==='sort'?'Sorting game':links.find(x=>x[0]===page)?.[1]||'About HIPOS';
 if(page==='home')view.innerHTML=home();
 if(page==='prevent')view.innerHTML=preventPage();
-if(page==='reuse')view.innerHTML=intro('Use it. Wash it. Use it again.','Personal reusables work best when school rules and safe washing come first.')+reuse.map((x,i)=>card(...x).replace('<h3>',reuseArt(i)+'<h3>')).join('');
+if(page==='reuse')view.innerHTML=reusePage();
 if(page==='classify')view.innerHTML=intro('Know what you’re carrying.','Only clean, dry, nonhazardous waste belongs in a dry-waste pouch.')+'<p class="sort-promo"><a class="button-link secondary" href="#sort">Play the sorting game →</a></p>'+guideTools()+guideCards();
 if(page==='carry')view.innerHTML=intro('Carry out with care','A pouch is optional. Safe handling always comes first.')+`<ol class="carry-steps"><li class="card"><div class="step-heading"><span aria-hidden="true">1</span><h2>Prevent before buying</h2></div><p>Choose less packaging where practical and buy only what you need.</p></li><li class="card"><div class="step-heading"><span aria-hidden="true">2</span><h2>Keep reusables separate</h2></div><p>Bring clean reusable containers where permitted. Keep food containers separate from waste.</p></li><li class="card"><div class="step-heading"><span aria-hidden="true">3</span><h2>Carry clean, dry waste only</h2></div><span class="pill">Clean, dry and nonhazardous only</span><p>Use a suitable existing container or an optional dry-waste pouch. Carry the waste to a lawful, approved off-campus arrangement.</p><p>Not sure what is safe to carry?</p><a class="button-link secondary" href="#classify">Check Waste Type</a></li><li class="card unsuitable-step"><div class="step-heading"><span aria-hidden="true">4</span><h2>Ask staff about unsuitable waste</h2></div><span class="pill unsafe">Keep out of your pouch or bag</span><p>Do not store wet, sanitary, sharp, chemical, or contaminated items. Do not handle hazardous waste. Follow staff-approved procedures.</p></li></ol>`;
 if(page==='reports')view.innerHTML=intro('Your concerns, on your terms.','Reports stay in this browser. Showing a QR is voluntary and does not automatically submit anything.')+`<form id="report-form" class="card"><h2>Record a concern</h2><p class="muted">Use fictional examples for this prototype. Leave out names and identifying details.</p><div class="form-grid"><div><label for="category">Category</label><select id="category" name="category">${options(categories)}</select></div><div><label for="area">School area</label><select id="area" name="area">${options(areas)}</select></div></div><label for="description">What needs attention?</label><textarea id="description" name="description" aria-describedby="description-help" required minlength="5" maxlength="160" placeholder="Describe the issue without identifying anyone."></textarea><small id="description-help">5–160 characters; up to 300 UTF-8 bytes.</small><div class="actions"><button ${busy?'disabled':''}>Save on this device</button></div></form><h2>Saved reports (${data.reports.length})</h2>${data.reports.map(r=>reportCard(r)).join('')||'<section class="card empty-state"><h3>No reports saved on this device</h3><p>Noticed unclear guidance or unsafe waste? Write a concern above. It stays here until you choose to show its QR to staff.</p><button class="secondary" data-action="write-report">Write your first concern</button></section>'}${backupCard()}`;
