@@ -1,0 +1,134 @@
+/* Classify shares Prevent's hero and Reuse's illustrated guidance rows. */
+.classify-game {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 16px;
+  font-weight: 700;
+}
+.classify-kit {
+  /* Reserve room for the longest safety tip below the helpers. */
+  margin-bottom: 140px;
+}
+.classify-hero-art {
+  color: #254b38;
+}
+main .classify-kit button.kit-friend.kit-friend {
+  min-width: 44px;
+  min-height: 44px;
+}
+.classify-page .guide-tools {
+  max-width: none;
+  margin: 0 0 24px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+}
+.classify-page .guide-tools input {
+  margin-bottom: 16px;
+}
+.classify-page .chip {
+  box-shadow: none;
+}
+.classify-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.classify-page .visual-waste-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: none;
+}
+.classify-page .visual-waste-card[hidden] {
+  display: none;
+}
+.classify-page .visual-waste-card::before {
+  content: none;
+}
+.classify-art {
+  flex: 0 0 80px;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: #dceee3;
+}
+[data-kind=no] .classify-art {
+  background: #f7e0d1;
+}
+.classify-art .waste-guide-art,
+.classify-art .waste-more-art {
+  display: block;
+  float: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 0;
+  background: transparent;
+  color: #254b38;
+}
+.classify-item-copy {
+  min-width: 0;
+}
+.classify-item-copy h3 {
+  margin: 12px 0 8px;
+  color: var(--heading, var(--ink));
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+.classify-item-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.classify-item-copy .pill {
+  white-space: normal;
+  line-height: 1.5;
+}
+.classify-page #guide-empty {
+  grid-column: 1 / -1;
+  max-width: none;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .classify-kit {
+    margin-bottom: 140px;
+  }
+  .classify-items {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .classify-page .guide-tools,
+  .classify-page .visual-waste-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  .classify-page .visual-waste-card {
+    gap: 16px;
+  }
+  .classify-art {
+    flex-basis: 64px;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  .classify-item-copy h3 {
+    font-size: 1.25rem;
+  }
+}
+@media (max-width: 360px) {
+  .classify-page .visual-waste-card {
+    flex-direction: column;
+  }
+}

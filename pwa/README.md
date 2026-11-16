@@ -24,7 +24,7 @@ under `dist/fonts/`.
 
 The stylesheet order preserves the existing cascade: base and navigation,
 field guide and theme, tools, buddy and games, settings, waste picker,
-layout refinements, Prevent and activities, then Reuse. Later rules can
+layout refinements, Prevent and activities, then Reuse and Classify. Later rules can
 override earlier rules. Keep this order when editing; grouping every rule
 for the same selector together can change the appearance.
 

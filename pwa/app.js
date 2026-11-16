@@ -13,7 +13,7 @@ import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
 import { home, selectWaste, wasteArt } from "./home.js";
 import { revealOnScroll, initScrollEffects } from "./motion.js";
-import { guideTools, guideCards, setGuideFilter, applyGuideFilter } from "./guide.js";
+import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter } from "./guide.js";
 import QRCode from "qrcode";
 import jsQR from "jsqr";
 import { categories, areas, statuses, decodeReport, createReport, addImport, escapeHTML as e, pinHash, buildBackup, parseBackup, reportsToCsv } from "./core.js";
@@ -24,6 +24,7 @@ import { gamePages, gamesPage, gamesBack } from "./games.js";
 const view = document.querySelector("#view"), dialog = document.querySelector("#dialog");
 view.addEventListener("click", interactWithKit);
 view.addEventListener("click", interactWithReuse);
+view.addEventListener("click", interactWithClassify);
 const links = [["home", "Home"], ["prevent", "Prevent"], ["reuse", "Reuse"], ["classify", "Classify"], ["carry", "Carry out"], ["games", "Games"], ["reports", "My reports"], ["staff", "Staff review"]];
 // Sorting game, Compost Catch and Buddy garden live under the single Games menu item.
 const navId = (page) => (gamePages.includes(page) ? "games" : page);
@@ -262,7 +263,7 @@ function render() {
   if (page === "home") view.innerHTML = home();
   if (page === "prevent") view.innerHTML = preventPage();
   if (page === "reuse") view.innerHTML = reusePage();
-  if (page === "classify") view.innerHTML = intro("Know what you’re carrying.", "Only clean, dry, nonhazardous waste belongs in a dry-waste pouch.") + '<p class="sort-promo"><a class="button-link secondary" href="#sort">Play the sorting game →</a></p>' + guideTools() + guideCards();
+  if (page === "classify") view.innerHTML = classifyPage();
   if (page === "carry") view.innerHTML = intro("Carry out with care", "A pouch is optional. Safe handling always comes first.") + `<ol class="carry-steps"><li class="card"><div class="step-heading"><span aria-hidden="true">1</span><h2>Prevent before buying</h2></div><p>Choose less packaging where practical and buy only what you need.</p></li><li class="card"><div class="step-heading"><span aria-hidden="true">2</span><h2>Keep reusables separate</h2></div><p>Bring clean reusable containers where permitted. Keep food containers separate from waste.</p></li><li class="card"><div class="step-heading"><span aria-hidden="true">3</span><h2>Carry clean, dry waste only</h2></div><span class="pill">Clean, dry and nonhazardous only</span><p>Use a suitable existing container or an optional dry-waste pouch. Carry the waste to a lawful, approved off-campus arrangement.</p><p>Not sure what is safe to carry?</p><a class="button-link secondary" href="#classify">Check Waste Type</a></li><li class="card unsuitable-step"><div class="step-heading"><span aria-hidden="true">4</span><h2>Ask staff about unsuitable waste</h2></div><span class="pill unsafe">Keep out of your pouch or bag</span><p>Do not store wet, sanitary, sharp, chemical, or contaminated items. Do not handle hazardous waste. Follow staff-approved procedures.</p></li></ol>`;
   if (page === "reports") view.innerHTML = intro("Your concerns, on your terms.", "Reports stay in this browser. Showing a QR is voluntary and does not automatically submit anything.") + `<form id="report-form" class="card"><h2>Record a concern</h2><p class="muted">Use fictional examples for this prototype. Leave out names and identifying details.</p><div class="form-grid"><div><label for="category">Category</label><select id="category" name="category">${options(categories)}</select></div><div><label for="area">School area</label><select id="area" name="area">${options(areas)}</select></div></div><label for="description">What needs attention?</label><textarea id="description" name="description" aria-describedby="description-help" required minlength="5" maxlength="160" placeholder="Describe the issue without identifying anyone."></textarea><small id="description-help">5–160 characters; up to 300 UTF-8 bytes.</small><div class="actions"><button ${busy ? "disabled" : ""}>Save on this device</button></div></form><h2>Saved reports (${data.reports.length})</h2>${data.reports.map((r) => reportCard(r)).join("") || '<section class="card empty-state"><h3>No reports saved on this device</h3><p>Noticed unclear guidance or unsafe waste? Write a concern above. It stays here until you choose to show its QR to staff.</p><button class="secondary" data-action="write-report">Write your first concern</button></section>'}${backupCard()}`;
   if (!unlocked || page !== "staff") staffFilter = noStaffFilter();
