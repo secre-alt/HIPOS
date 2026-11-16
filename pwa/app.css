@@ -1186,3 +1186,6 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 .sound-preview-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
 .sound-preview-actions .muted{font-size:.875rem}
 #settings-dialog :is(#music-preview,#cheer-preview){min-height:44px;font-family:var(--font-body)}
+
+/* Give report dropdown chevrons a consistent inset and vertical alignment. */
+#report-form select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b9485' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
