@@ -1191,3 +1191,29 @@ html[data-font=fredoka],html[data-font=pixelify]{--font-game-weight:700}
 #settings-dialog,.settings-body,#settings-dialog :is(.settings-heading #settings-title,.settings-section h3,.settings-categories button,.settings-close,.settings-section>button,select,.font-name),.font-preview .fp-body,.primary-action span{font-family:var(--font-body)}
 .font-preview :is(.fp-greeting,.fp-title,.fp-chip,.fp-button){font-family:var(--font-display);font-weight:var(--font-game-weight)}
 .font-chip:is([data-font=lilita],[data-font=titan]) .font-sample{font-weight:400}
+
+/* All five reference combinations share Nunito copy and their own display weight. */
+html{--font-game-spacing:.01em}
+html[data-font=titan],html[data-font=grandstander],html[data-font=fredoka],html[data-font=pixelify]{--font-game-spacing:0}
+html :is(h1,h2,h3,.brand,.streak-count,.splash-mark,.install-banner-copy strong,.update-banner-copy strong,button,.button-link,.home-report,.buddy-bubble,.buddy-dock .buddy-say-text,.chip,.pill,.badge-name,.badge-state){font-weight:var(--font-game-weight);letter-spacing:var(--font-game-spacing)}
+html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,system-ui,sans-serif}
+#settings-dialog .font-options{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
+#settings-dialog .font-chip{display:grid;align-content:start;gap:12px;padding:18px;border-radius:22px;background:var(--surface);text-align:left}
+#settings-dialog .font-chip:hover{background:var(--leaf-soft)}
+#settings-dialog .font-name{font:800 .75rem/1.5 "HIPOS Nunito",system-ui,sans-serif;color:var(--muted)}
+.font-chip .font-sample{display:grid;gap:12px;font-size:1rem;font-weight:400;letter-spacing:.01em}
+.font-chip[data-font=default] .font-sample{font-family:"HIPOS Lilita One",ui-rounded,system-ui,sans-serif}
+.font-chip:is([data-font=titan],[data-font=grandstander],[data-font=fredoka],[data-font=pixelify]) .font-sample{letter-spacing:0}
+.font-chip[data-font=pixelify] .font-sample{font-family:"HIPOS Pixelify Sans",ui-monospace,system-ui,sans-serif}
+.combo-greeting{justify-self:start;padding:6px 14px;border-radius:14px;background:var(--leaf-soft);color:var(--heading,var(--green-deep));line-height:1.5}
+.combo-title{font-size:1.8rem;line-height:1.1;color:var(--heading,var(--green-deep))}
+.combo-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.combo-streak{padding:4px 12px;border-radius:999px;background:var(--sun);color:#6b4a00;font-size:.95rem;line-height:1.5}
+.combo-button{padding:10px 20px;border-radius:16px;background:var(--leaf);color:var(--green-deep);font-size:1.05rem;line-height:1.4;box-shadow:0 4px 0 #7dbb3a}
+.combo-body{font:600 1rem/1.5 "HIPOS Nunito",system-ui,sans-serif;color:var(--muted)}
+.font-preview{gap:12px;padding:18px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.font-preview .fp-greeting{padding:6px 14px;border-radius:14px;background:var(--leaf-soft);font-size:1rem}
+.font-preview .fp-title{font-size:1.8rem;line-height:1.1}
+.font-preview .fp-chip{background:var(--sun);color:#6b4a00;font-size:.95rem}
+.font-preview .fp-button{padding:10px 20px;border-radius:16px;background:var(--leaf);color:var(--green-deep);box-shadow:0 4px 0 #7dbb3a;font-size:1.05rem}
+.font-preview .fp-body{font:600 1rem/1.5 "HIPOS Nunito",system-ui,sans-serif}
