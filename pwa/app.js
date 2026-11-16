@@ -16,9 +16,10 @@ import QRCode from 'qrcode';
 import jsQR from 'jsqr';
 import {categories,areas,statuses,decodeReport,createReport,addImport,escapeHTML as e,pinHash,buildBackup,parseBackup,reportsToCsv} from './core.js';
 import {reuse,waste} from './content.js';
-import {preventPage} from './prevent.js';
+import {preventPage,interactWithKit} from './prevent.js';
 
 const view=document.querySelector('#view'),dialog=document.querySelector('#dialog');
+view.addEventListener('click',interactWithKit);
 const links=[['home','Home'],['prevent','Prevent'],['reuse','Reuse'],['classify','Classify'],['carry','Carry out'],['reports','My reports'],['staff','Staff review']];
 const KEY='hipos.pwa.v1';
 let data={reports:[],imports:[],pin:null},unlocked=false,pending=null,stream=null,cameraToken=0,installPrompt=null,offlineReady=false,busy=false,unlockAttempts=0,unlockAfter=0;

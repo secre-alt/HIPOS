@@ -16,7 +16,28 @@ function buddy(){return '<svg viewBox="0 0 100 100" aria-hidden="true" focusable
 export function preventPage(){return `<div class="prevent-page">
   <section class="prevent-hero" aria-labelledby="prevent-title">
     <div class="prevent-copy"><h1 id="prevent-title">Prevent it before it starts.</h1><p>A little planning keeps packaging out of your school day.</p></div>
-    <div class="prevent-kit" aria-hidden="true"><span class="kit-ground"></span><span class="kit-bottle">${art(1)}</span><span class="kit-lunch">${art(2)}</span><span class="kit-buddy">${buddy()}</span></div>
+    <div class="prevent-kit"><span class="kit-ground" aria-hidden="true"></span><button type="button" class="kit-bottle kit-friend" data-kit="bottle" aria-label="Ask bottle buddy for a tip">${art(1)}</button><button type="button" class="kit-lunch kit-friend" data-kit="lunch" aria-label="Ask lunchbox buddy for a tip">${art(2)}</button><button type="button" class="kit-buddy kit-friend" data-kit="leaf" aria-label="Ask leaf buddy for a tip">${buddy()}</button><p class="kit-tip" role="status" aria-live="polite" aria-atomic="true">Tap a buddy for a little tip.</p></div>
   </section>
   <div class="prevent-tips">${prevention.map(([title,body,note],index)=>`<article class="prevent-tip"><div class="prevent-art prevent-art-${index}">${art(index)}<span class="prevent-leaf" aria-hidden="true"></span></div><div class="prevent-tip-copy"><h2>${e(title)}</h2><p>${e(body)}</p>${note?`<p class="prevent-note">${e(note)}</p>`:''}</div></article>`).join('')}</div>
 </div>`;}
+
+const tips={
+  bottle:['Bring a clean refillable bottle. Use only school-approved refill options.','Give your bottle a wash before its next school day.'],
+  lunch:['Pack a washable lunchbox and reusable utensils where school rules allow.','Keep your food containers separate from any waste.'],
+  leaf:['A little planning keeps packaging out of your school day.','Buy only what you need. Small choices add up!'],
+};
+const turns=new WeakMap();
+export function interactWithKit(event){
+  const button=event.target.closest('[data-kit]');
+  if(!button)return;
+  const messages=tips[button.dataset.kit];
+  if(!messages)return;
+  const turn=turns.get(button)||0;
+  button.closest('.prevent-kit').querySelector('.kit-tip').textContent=messages[turn%messages.length];
+  turns.set(button,turn+1);
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const drawing=button.querySelector('svg');
+    drawing.getAnimations().forEach(animation=>animation.cancel());
+    drawing.animate([{transform:'translateY(0) rotate(0)'},{transform:'translateY(-8px) rotate(-6deg)',offset:.4},{transform:'translateY(0) rotate(0)'}],{duration:360,easing:'ease-out'});
+  }
+}
