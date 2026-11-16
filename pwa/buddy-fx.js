@@ -61,7 +61,7 @@ export function cheer(kind,options){
   if(!cheersOn())return false;
   const chosen=pickCheer(kind,options);if(!chosen)return false;
   if(options?.preview){const status=document.querySelector('#cheer-preview-status');if(status)status.textContent=translate(chosen.text);}
-  buddySay(chosen.text,{ms:3000});animate(chosen.motion);sound(chosen.sound,{duckMusic:true});
+  buddySay(options?.text||chosen.text,{ms:3000});animate(chosen.motion);sound(chosen.sound,{duckMusic:true});
   return true;
 }
 // Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.

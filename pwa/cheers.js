@@ -1,5 +1,7 @@
 // Short, original encouragement. Each event cycles without immediate repeats.
 export const CHEERS={
+  welcome:{motion:'hop',sound:'chime',lines:['Welcome back! Ready for a little good today?']},
+  daily:{motion:'spin',sound:'win',lines:['Your daily adventure is complete! Thanks for caring!']},
   correct:{motion:'hop',sound:'star',lines:['You spotted it! Sparkle points!','Nice eye! You have got this!','Sorted like a superstar!']},
   retry:{motion:'hop',sound:'boop',lines:['Almost! Let us try the tip together.','Every try helps you learn!','Take a breath. You can try again!']},
   habit:{motion:'hop',sound:'coin',lines:['Little habit, big high five!','One small step for our school!','Packed and ready! Nice work!']},

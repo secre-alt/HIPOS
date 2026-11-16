@@ -219,6 +219,14 @@ pairs.push(
  ['Bouncy and playful, with cheerful synths and a hopping rhythm.','Masaya at malikot, may masiglang tunog at paluksong ritmo.'],
  ['Warm and relaxed, with guitar-like plucks and soft piano.','Magiliw at kalmado, may kalabit na parang gitara at banayad na piyano.']
 );
+pairs.push(
+ ['Welcome back! Ready for a little good today?','Maligayang pagbabalik! Handa ka na bang gumawa ng munting kabutihan?'],
+ ['A new day, a new little adventure together!','Bagong araw, bagong munting pakikipagsapalaran natin!'],
+ ['Hello again, friend! Let us make today a little greener.','Kumusta muli, kaibigan! Gawin nating mas luntian ang araw na ito.'],
+ ['All your daily activities are done! Time for a happy dance!','Tapos na ang lahat ng gawain mo ngayong araw! Sayaw ng saya!'],
+ ['Three habits, a challenge, and a quiz. What a day!','Tatlong gawi, isang hamon, at isang pagsusulit. Ang galing ng araw na ito!'],
+ ['Your daily adventure is complete! Thanks for caring!','Tapos ang pakikipagsapalaran mo ngayong araw! Salamat sa malasakit!']
+);
 const dictionary=new Map(pairs);
 let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
 const originals=new WeakMap(),attributes=new WeakMap();
