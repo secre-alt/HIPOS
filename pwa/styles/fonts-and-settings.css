@@ -505,12 +505,7 @@ html[data-font=pixelify] :is(h1, h2, h3, .brand) {
 aside > .settings-toggle-desktop {
   width: 44px;
   height: 44px;
-  color: #fffef9;
   flex: 0 0 44px;
-}
-aside > .settings-toggle-desktop:hover {
-  background: #ffffff12;
-  color: #fffef9;
 }
 .settings-body .font-all {
   align-items: center;

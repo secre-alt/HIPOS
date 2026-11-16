@@ -197,14 +197,34 @@
   min-width: 44px;
   min-height: 44px;
   padding: 0;
-  border: 0;
-  border-radius: 14px;
-  background: transparent;
-  color: var(--green);
+  border: 2px solid #7dbb3a;
+  border-radius: 24px 24px 16px 24px;
+  background: var(--leaf);
+  color: var(--green-deep);
+  box-shadow: 0 3px 0 #7dbb3a;
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 .settings-toggle:hover {
-  background: var(--leaf-soft,#eef2e3);
-  color: var(--green);
+  background: #c8f78e;
+  color: var(--green-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #7dbb3a;
+}
+.settings-toggle:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #7dbb3a;
+}
+.settings-toggle svg {
+  stroke-width: 2.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-toggle {
+    transition: none;
+  }
+  .settings-toggle:hover,
+  .settings-toggle:active {
+    transform: none;
+  }
 }
 .settings-body h2 {
   margin-bottom: 8px;
@@ -220,10 +240,6 @@
 .settings-body .language-control select {
   width: 100%;
   min-height: 48px;
-}
-:where(:root[data-theme=dark]) .settings-toggle,
-:where(:root[data-theme=dark]) .settings-toggle:hover {
-  color: var(--ink);
 }
 /* Locked buddy extras: dimmed preview plus how to earn it. */
 .buddy-chip.is-locked {
@@ -266,11 +282,6 @@
   width: 48px;
   height: 48px;
   min-width: 48px;
-  color: #fffef9;
-}
-.settings-toggle-top:hover {
-  background: #245540;
-  color: #fffef9;
 }
 .avatar-link:has(.buddy-bubble) {
   justify-content: flex-start;
@@ -319,10 +330,6 @@
 }
 :where(:root[data-theme=dark]) .buddy-bubble {
   color: #cdeeb0;
-}
-:where(:root[data-theme=dark]) .settings-toggle-top,
-:where(:root[data-theme=dark]) .settings-toggle-top:hover {
-  color: #fffef9;
 }
 :where(:root[data-theme=dark]) .av-bg[data-bg="0"] {
   fill: #2C4237;
