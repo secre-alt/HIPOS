@@ -1173,3 +1173,8 @@ main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:80px}
 #view>.intro:first-child{padding-top:4px}
 main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:60px}
 }
+
+/* The guide helper shares the label row instead of covering the input. */
+.guide-search-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.guide-tools .guide-search-heading label{margin:0;min-width:0}
+.guide-search-heading .mini-buddy{position:relative;inset:auto;flex:0 0 44px}
