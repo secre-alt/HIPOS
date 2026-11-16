@@ -1094,6 +1094,16 @@ input[type=checkbox]:checked {
     font-size: 1.25rem;
   }
 }
+@media (max-height:600px) {
+  .sort-item .item-art { width:48px; height:48px; }
+  .sort-stage { padding:8px; }
+}
+@media (max-height:600px) and (min-width:500px) {
+  #sort-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:8px; }
+  #sort-body > :not(.sort-stage):not(.sort-bins) { grid-column:1/-1; }
+  #sort-body .sort-stage { grid-column:1; grid-row:4; margin:0; }
+  #sort-body .sort-bins { grid-column:2; grid-row:4; }
+}
 /* Buddy dock: a quiet speech card beside the school-day companion.
    Restyle informed by unslop by Damir Sokolovsky, CC BY 4.0 (https://heydamir.design/unslop). */
 .buddy-dock {
@@ -1361,8 +1371,8 @@ input[type=checkbox]:checked {
 :where(:root[data-theme=dark]) .garden-plot { background:#203c32; color:#e1efe4; }
 
 /* Game hub previews put the color into the game objects. */
-.games-grid.home-guides > .arcade-card { display:flex; flex-direction:column; grid-row:auto; gap:12px; overflow:hidden; border:1px solid var(--line); border-radius:20px; padding:20px; }
-.games-grid.home-guides > .arcade-card > .guide-link { margin-top:auto; }
+.games-grid.home-guides > .arcade-card { display:grid; grid-row:span 5; grid-template-rows:subgrid; gap:12px; overflow:hidden; border:1px solid var(--line); border-radius:20px; padding:20px; }
+.games-grid.home-guides > .arcade-card > .guide-link { margin-top:0; align-self:start; }
 .arcade-preview { display:grid; place-items:center; height:168px; border-radius:12px; background:var(--leaf-soft); margin-bottom:8px; flex-shrink:0; }
 .arcade-preview svg { width:136px; height:136px; transform:rotate(-6deg); }
 .arcade-compost .arcade-preview svg { transform:rotate(5deg); }

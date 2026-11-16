@@ -35,9 +35,9 @@ export function compostGame(summary={}){
   gardenSummary=summary;
   return `<section class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
   <h2 id="compost-heading">Compost Catch</h2>
-  <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span><button type="button" class="secondary" data-compost-pause hidden>Pause</button></div>
+  <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span></div>
   <p class="note">Catch only the scraps that can be composted. Use the arrow keys, the buttons, or drag across the field.</p>
-  <div class="compost-hud" id="compost-hud" hidden><p class="compost-score" id="compost-score" aria-live="off"></p><progress id="compost-progress" max="18" value="0" aria-label="Round progress"></progress></div>
+  <div class="compost-hud" id="compost-hud" hidden><div class="compost-hud-row"><p class="compost-score" id="compost-score" aria-live="off"></p><button type="button" class="secondary" data-compost-pause hidden>Pause</button></div><progress id="compost-progress" max="18" value="0" aria-label="Round progress"></progress></div>
   <div class="compost-field" id="compost-field" tabindex="0" role="application" aria-label="Compost Catch field. Use left and right arrow keys to move the basket.">
     <div class="compost-start" id="compost-start"><div class="arcade-ready"><h3>Good scraps. Great catches.</h3><div class="compost-legend"><div>${gameArt('carrot')}<strong>Catch food scraps</strong></div><div>${gameArt('wrapper')}<strong>Let plastic pass</strong></div></div><button type="button" data-compost-start>Start</button></div></div>
     <div class="compost-basket" id="compost-basket" aria-hidden="true">${gameArt('basket')}</div>
@@ -67,6 +67,8 @@ function spawn(){
 }
 
 function finish(){
+  document.querySelector('#compost-game')?.classList.remove('is-playing');
+  const playfield=document.querySelector('#compost-field');playfield?.style.removeProperty('height');
   document.querySelector('[data-compost-pause]')?.setAttribute('hidden','');
   cancelAnimationFrame(raf);raf=0;
   const field=document.querySelector('#compost-field'),controls=document.querySelector('#compost-controls');
@@ -117,6 +119,19 @@ let cleanupCompost=()=>{};
 export function initCompost(){
   cleanupCompost();
   const field=document.querySelector('#compost-field');if(!field)return;
+  const fit=()=>{
+    if(!g)return;
+    const hud=document.querySelector('#compost-hud'),controls=document.querySelector('#compost-controls');
+    const top=(document.querySelector('aside')?.getBoundingClientRect().height||0)+8;
+    const nav=document.querySelector('.mobile-bottom-nav')?.getBoundingClientRect();
+    const bottom=(nav?.height?nav.top:innerHeight)-8;
+    const sideControls=matchMedia('(max-height:600px) and (min-width:500px)').matches;
+    const extra=sideControls?field.getBoundingClientRect().top-hud.getBoundingClientRect().top:controls.getBoundingClientRect().bottom-hud.getBoundingClientRect().top-field.getBoundingClientRect().height;
+    field.style.height=Math.max(96,Math.min(400,innerHeight*.52,bottom-top-extra))+'px';
+    hud.scrollIntoView({block:'start',behavior:'instant'});
+  };
+  let fitFrame=0;
+  const fitAfterText=()=>{fit();cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fit);};
   const togglePause=(force=false)=>{
     if(!g)return;
     g.paused=force||!g.paused;
@@ -131,8 +146,9 @@ export function initCompost(){
     }else{last=performance.now();raf=requestAnimationFrame(frame);field.focus({preventScroll:true});}
   };
   const visibility=()=>{if(document.hidden)togglePause(true);};
-  const leave=()=>{cancelAnimationFrame(raf);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);};
+  const leave=()=>{cancelAnimationFrame(raf);cancelAnimationFrame(fitFrame);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);window.removeEventListener('resize',fitAfterText);};
   document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',leave);cleanupCompost=leave;
+  window.addEventListener('resize',fitAfterText);
   const start=()=>{
     cancelAnimationFrame(raf);
     const seq=makeSequence();
@@ -143,6 +159,8 @@ export function initCompost(){
     moveBasket(50);setScore();setStatus('');
     document.querySelector('#compost-controls').hidden=false;
     document.querySelector('#compost-hud').hidden=false;
+    document.querySelector('#compost-game').classList.add('is-playing');
+    fitAfterText();
     field.focus({preventScroll:true});
     last=performance.now();raf=requestAnimationFrame(frame);
     buddySay('Catch the compost!',{ms:2500});

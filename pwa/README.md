@@ -3,6 +3,8 @@
 Run `npm run dev` to build and preview, `npm test` for unit checks, and
 `npm run test:browser` for the browser flows. Set `PW_CHANNEL=msedge` if
 using installed Edge instead of Playwright Chromium.
+Run `node tests/game-layout.browser.mjs` for game alignment checks across phone,
+tablet, desktop, and landscape viewports in both themes and languages.
 
 - `index.html`: shared page shell, navigation, dialogs, and settings markup.
 - `app.js`: routing, page rendering, report workflows, and delegated UI events.

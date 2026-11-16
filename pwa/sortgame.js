@@ -82,12 +82,21 @@ export function sortClick(button){
   if(button.hasAttribute('data-sort-again')){start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
 }
 // Keep the item and both bins on screen (above the bottom bar) so dragging always has a target.
+let fitFrame=0;
 export function fitGame(){
+  fitVisibleGame();
+  cancelAnimationFrame(fitFrame);
+  // The language observer can wrap labels after the initial render.
+  fitFrame=requestAnimationFrame(fitVisibleGame);
+}
+function fitVisibleGame(){
   const card=document.querySelector('#sort-game'),bins=card?.querySelector('.sort-bins');if(!bins)return;
-  const room=innerHeight-(matchMedia('(max-width:1000px)').matches?96:16),over=bins.getBoundingClientRect().bottom-room;
+  const bottomNav=document.querySelector('.mobile-bottom-nav')?.getBoundingClientRect();
+  const room=(bottomNav?.height?bottomNav.top:innerHeight)-8,over=bins.getBoundingClientRect().bottom-room;
   if(over>0)scrollBy({top:over+8,behavior:'instant'});
   const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
-  if(top!==undefined&&top<70)scrollBy({top:top-80,behavior:'instant'});
+  const safeTop=(document.querySelector('aside')?.getBoundingClientRect().height||0)+8;
+  if(top!==undefined&&top<safeTop)scrollBy({top:top-safeTop,behavior:'instant'});
 }
 let drag=null;
 export function sortPointerDown(event){

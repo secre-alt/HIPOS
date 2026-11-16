@@ -253,6 +253,8 @@ function render() {
   if (dialog.open) dialog.close();
   pending = null;
   const page = current();
+  if (gamePages.includes(page)) view.dataset.gamePage = page;
+  else delete view.dataset.gamePage;
   rememberGuide(page);
   checkBuddyUnlocks();
   refreshAvatars();
@@ -623,6 +625,7 @@ document.addEventListener("keydown", (event) => {
 window.addEventListener("scroll", () => closeMenu(), { passive: true, capture: true });
 window.addEventListener("wheel", () => closeMenu(), { passive: true });
 window.addEventListener("touchmove", () => closeMenu(), { passive: true });
+window.addEventListener("resize", () => { if (current() === "sort") fitGame(); });
 window.addEventListener("hashchange", () => {
   sound("whoosh");
   render();

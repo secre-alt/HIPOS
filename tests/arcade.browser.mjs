@@ -25,7 +25,7 @@ try {
       await page.locator('[data-compost-start]').click();
       await expect(page.locator('#compost-hud')).toBeVisible();
       await page.locator('.compost-item svg').first().waitFor();
-      await page.locator('.arcade-toolbar [data-compost-pause]').click();
+      await page.locator('#compost-hud [data-compost-pause]').click();
       await expect(page.locator('.compost-paused button')).toBeFocused();
     }
     await page.screenshot({path:`test-results/arcade-${route}-${width}-${theme}.png`,fullPage:true});

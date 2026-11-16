@@ -364,7 +364,7 @@ try{
     await page.evaluate(()=>{location.hash='compost';});
     await page.locator('[data-compost-start]').click();
     await page.locator('.compost-item').first().waitFor();
-    await page.locator('.arcade-toolbar [data-compost-pause]').click();
+    await page.locator('#compost-hud [data-compost-pause]').click();
     const before=await page.locator('.compost-item').first().getAttribute('style');
     await page.waitForTimeout(250);
     assert.equal(await page.locator('.compost-item').first().getAttribute('style'),before,'falling items freeze');
