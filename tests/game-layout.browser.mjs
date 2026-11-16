@@ -25,17 +25,15 @@ try {
       const stage=document.querySelector('.sort-stage').getBoundingClientRect(),bins=document.querySelector('.sort-bins').getBoundingClientRect(),nav=document.querySelector('aside').getBoundingClientRect(),bottom=document.querySelector('.mobile-bottom-nav').getBoundingClientRect();
       return {stageTop:stage.top,binsBottom:bins.bottom,top:nav.bottom,bottom:bottom.height?bottom.top:innerHeight};
     }):null;
-    // Check both the top of the route and a position where fixed overlays can hide controls.
+    // Buddy keeps its floating position at the top and while scrolling.
     for(const scroll of [0,240]) {
       const issues=await page.evaluate(scroll=>{
         scrollTo({top:scroll,behavior:'instant'});
-        const out=[],rect=el=>el.getBoundingClientRect(),overlap=(a,b)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>2&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>2;
+        const out=[],rect=el=>el.getBoundingClientRect();
         if(document.documentElement.scrollWidth>innerWidth+1)out.push('horizontal overflow');
-        const dock=document.querySelector('.buddy-dock'),dr=rect(dock);
-        for(const control of document.querySelectorAll('#view a,#view button')) {
-          const cr=rect(control);
-          if(cr.width&&cr.height&&overlap(cr,dr))out.push('Buddy overlaps '+(control.getAttribute('aria-label')||control.textContent.trim()).slice(0,40));
-        }
+        const dock=document.querySelector('.buddy-dock'),avatar=rect(document.querySelector('#avatar-link'));
+        if(getComputedStyle(dock).position!=='fixed')out.push('Buddy is not floating');
+        if(avatar.top<0||avatar.bottom>innerHeight||avatar.left<0||avatar.right>innerWidth)out.push('Buddy outside viewport');
         return out;
       },scroll);
       failures.push(...issues.map(issue=>`${label} @${scroll}: ${issue}`));

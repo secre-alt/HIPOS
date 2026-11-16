@@ -231,32 +231,10 @@ main > header {
     margin-top: 60px;
   }
 }
-/* Games share a centered content rail and an in-flow companion row. The fixed
-   companion used on reading pages must not cover game controls while scrolling. */
-main:has(> #view[data-game-page]) > header {
-  display: block;
-  height: auto;
-  min-height: 0;
-  max-width: 880px;
-  margin-inline: auto;
-  padding: 0 0 16px;
-}
-main:has(> #view[data-game-page]) > header > #page-label { display: none; }
-main:has(> #view[data-game-page]) .buddy-dock {
-  position: static;
-  z-index: auto;
-  width: 100%;
-  max-width: 100%;
-  grid-template-columns: 56px minmax(0, 1fr);
-}
-main:has(> #view[data-game-page]) .buddy-dock .buddy-say { max-width: min(100%, 360px); }
-main:has(> #view[data-game-page]) > #view { padding-top: 0; }
+/* Games share a centered content rail; Buddy keeps its shared floating layout. */
 #view[data-game-page]:not([data-game-page="games"]) { max-width: 880px; margin-inline: auto; }
-main:has(> #view[data-game-page="games"]) > header { max-width: none; }
-main:has(> #view[data-game-page]) > #update-banner { max-width: 880px; margin: 0 auto 16px; }
 #view[data-game-page] { --game-top-safe: 80px; }
 @media (max-width: 1000px) {
-  main:has(> #view[data-game-page]) .buddy-dock { grid-template-columns: 44px minmax(0, 1fr); }
   #view[data-game-page] { --game-top-safe: 72px; }
 }
 /* The guide helper shares the label row instead of covering the input. */

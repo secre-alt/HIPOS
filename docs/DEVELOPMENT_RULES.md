@@ -49,8 +49,8 @@ change them; update the relevant documentation when it does.
 
 ## Games and garden
 
-- Game routes reserve a normal document row for Buddy so it cannot cover back
-  links or play controls. Individual games share a centered 880px content column.
+- Buddy keeps its shared floating position on game routes.
+  Individual games share a centered 880px content column.
   Keep the object and destinations, or the compost field and movement controls,
   visible between navigation bars during play, including short landscape screens.
 - The garden grows from existing care points: treats, completed sorting and
