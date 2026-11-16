@@ -1312,3 +1312,5 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 main .prevent-kit button.kit-friend.kit-friend,main .prevent-kit button.kit-friend.kit-friend:hover,main .prevent-kit button.kit-friend.kit-friend:active{background:none;box-shadow:none;border:0;filter:none}
 /* Daily habit checkboxes: a 44px touch target so they are easy to tap on phones. */
 .daily-panel input[type=checkbox]{width:44px;height:44px;min-width:44px;min-height:44px;margin:0;cursor:pointer;accent-color:var(--green-deep)}
+/* Filter and suitability chips: a little over 44px so sub-pixel rounding never drops them below the touch target. */
+button.chip{min-height:46px}
