@@ -1169,9 +1169,13 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 
 /* Keep the shortcut within reach, above the mobile navigation and safe area. */
 .back-to-top-row{position:fixed;right:max(24px,env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));z-index:26}
+@media(min-width:761px){
+  .back-to-top-row{right:max(32px,calc((100% - 1120px)/2),env(safe-area-inset-right))}
+  main>footer{padding-bottom:80px}
+}
 @media(max-width:760px){.back-to-top-row{right:max(16px,env(safe-area-inset-right));bottom:calc(88px + env(safe-area-inset-bottom))}}
 @media print{.back-to-top-row{display:none}}
-#back-to-top{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 18px 10px 12px;border:2px solid #7dbb3a;border-radius:24px 24px 16px 24px;background:var(--leaf);color:var(--green-deep);box-shadow:0 3px 0 #7dbb3a;font-size:.9375rem;transition:transform .18s ease,box-shadow .18s ease}
+#back-to-top{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 16px;border:2px solid #7dbb3a;border-radius:24px 24px 16px 24px;background:var(--leaf);color:var(--green-deep);box-shadow:0 3px 0 #7dbb3a;font-size:.9375rem;line-height:1;transition:transform .18s ease,box-shadow .18s ease}
 #back-to-top svg{flex-shrink:0;transition:transform .18s ease}
 @media(max-width:760px){#back-to-top{width:48px;height:48px;padding:10px;justify-content:center;gap:0}#back-to-top span{display:none}}
 #back-to-top:hover{background:#c8f78e;transform:translateY(-2px);box-shadow:0 5px 0 #7dbb3a}
