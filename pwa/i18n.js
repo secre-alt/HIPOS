@@ -207,6 +207,18 @@ pairs.push(
  ['Your streak is growing! Keep shining!','Humahaba ang sunod-sunod mong araw! Ipagpatuloy!'],['Another day, another little victory!','Bagong araw, bagong munting tagumpay!'],['Look at those good habits growing!','Lumalago ang magagandang gawi mo!'],
  ['A new surprise! You earned it!','Bagong sorpresa! Pinaghirapan mo ito!'],['Treasure unlocked! Happy dance!','Nabuksan ang kayamanan! Sayaw ng saya!'],['Something new for our adventure!','May bago para sa ating pakikipagsapalaran!']
 );
+pairs.push(
+ ['Mellow and cozy, with soft keys and a gently swinging beat.','Banayad at maginhawa, may malambot na tunog ng piyano at marahang indayog.'],
+ ['Peaceful and airy, with delicate plucks and a soft flute.','Payapa at magaan, may pinong kalabit at banayad na plawta.'],
+ ['Bright and adventurous, with retro synths and bouncy bass.','Masigla at mapagsapalaran, may tunog retro at masayang bass.'],
+ ['Quiet and soothing, with soft chords and a gentle rain texture.','Tahimik at nakapapawi, may banayad na mga kuwerdas at tunog ng mahinang ulan.'],
+ ['Warm and groovy, with rhythmic keys and a playful bass line.','Magiliw at maindayog, may ritmikong piyano at masayang bass.'],
+ ['Delicate and dreamy, with twinkling music-box notes.','Pino at parang panaginip, may kumikislap na himig ng music box.'],
+ ['Bright, upbeat, and energetic, with piano, bells, and playful drums.','Masigla, masaya, at puno ng sigla, may piyano, kampanilya, at masayang tambol.'],
+ ['Gentle and sparkling, with harp-like plucks and shimmering bells.','Banayad at kumikislap, may kalabit na parang alpa at kumikinang na kampanilya.'],
+ ['Bouncy and playful, with cheerful synths and a hopping rhythm.','Masaya at malikot, may masiglang tunog at paluksong ritmo.'],
+ ['Warm and relaxed, with guitar-like plucks and soft piano.','Magiliw at kalmado, may kalabit na parang gitara at banayad na piyano.']
+);
 const dictionary=new Map(pairs);
 let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
 const originals=new WeakMap(),attributes=new WeakMap();

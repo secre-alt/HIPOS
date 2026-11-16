@@ -234,6 +234,18 @@ const STYLES={
 };
 export const MUSIC_STYLES=Object.keys(STYLES);
 export const MUSIC_STYLE_LABELS=Object.fromEntries(MUSIC_STYLES.map(id=>[id,STYLES[id].label]));
+export const MUSIC_MOODS={
+  lofi:'Mellow and cozy, with soft keys and a gently swinging beat.',
+  sakura:'Peaceful and airy, with delicate plucks and a soft flute.',
+  arcade:'Bright and adventurous, with retro synths and bouncy bass.',
+  rain:'Quiet and soothing, with soft chords and a gentle rain texture.',
+  city:'Warm and groovy, with rhythmic keys and a playful bass line.',
+  musicbox:'Delicate and dreamy, with twinkling music-box notes.',
+  festival:'Bright, upbeat, and energetic, with piano, bells, and playful drums.',
+  magical:'Gentle and sparkling, with harp-like plucks and shimmering bells.',
+  chibi:'Bouncy and playful, with cheerful synths and a hopping rhythm.',
+  sunset:'Warm and relaxed, with guitar-like plucks and soft piano.',
+};
 const cfg=()=>{const st=STYLES[style];return st.themes?(st.themes[theme]||st.themes.default):st;};
 
 function scheduleStep(i,when,stepLen){

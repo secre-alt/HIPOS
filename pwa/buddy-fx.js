@@ -3,7 +3,7 @@
 // No text here is ever part of a report, and nothing is sent anywhere.
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate} from './i18n.js';
-import {playSfx,music,MUSIC_STYLES} from './audio.js';
+import {playSfx,music,MUSIC_STYLES,MUSIC_MOODS} from './audio.js';
 import {createCheerPicker} from './cheers.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -47,7 +47,9 @@ export function initBuddySettings(){
   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(cheerPreview)cheerPreview.disabled=v==='off';if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
   bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{endPreview();if(v==='on')music.start();else music.stop();});
-  bind('#musicstyle',musicStyle,MUSICSTYLE,MUSIC_STYLES,v=>music.setStyle(v));
+  const describeMusic=style=>{const description=document.querySelector('#music-mood');if(description)description.textContent=translate(MUSIC_MOODS[style]);};
+  bind('#musicstyle',musicStyle,MUSICSTYLE,MUSIC_STYLES,v=>{music.setStyle(v);describeMusic(v);});
+  describeMusic(musicStyle());
   bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
   const volume=document.querySelector('#musicvol');
   if(volume){const paint=()=>{volume.style.setProperty('--volume',volume.value+'%');volume.setAttribute('aria-valuetext',volume.value+'%');};volume.value=String(musicLevel());paint();volume.addEventListener('input',()=>{paint();write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
