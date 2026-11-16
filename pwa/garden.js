@@ -15,7 +15,7 @@ export function gardenPage(summary){
   }).join('');
   const line=g.complete?'Every flower is in bloom. What a lovely garden!':`${g.blooms} of ${g.plots.length} flowers in bloom`;
   const next=g.complete?'':`<p class="note">${TIPS[g.points%TIPS.length]}</p>`;
-  return `<section class="card garden" id="garden" aria-labelledby="garden-heading">${miniBuddy('garden')}<h2 id="garden-heading">Your garden</h2>
+  return `<section data-back-to-top-card class="card garden" id="garden" aria-labelledby="garden-heading">${miniBuddy('garden')}<h2 id="garden-heading">Your garden</h2>
   <p class="garden-count" role="status">${line}</p>
   <ul class="garden-grid">${plots}</ul>${next}</section>`;
 }

@@ -30,7 +30,7 @@ export function makeSequence(random=Math.random){
 }
 
 export function compostGame(){
-  return `<section class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
+  return `<section data-back-to-top-card class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
   <h2 id="compost-heading">Compost Catch</h2>
   <p class="note">Catch only the scraps that can be composted. Use the arrow keys, the buttons, or drag across the field.</p>
   <div class="compost-field" id="compost-field" tabindex="0" role="application" aria-label="Compost Catch field. Use left and right arrow keys to move the basket.">

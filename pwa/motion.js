@@ -45,7 +45,8 @@ export function initScrollEffects(){
     queued=false;
     const y=window.scrollY,max=Math.max(0,root.scrollHeight-window.innerHeight);
     const cards=[...document.querySelectorAll('#view .card,#view .prevent-tip,#view .reuse-item,#view .reuse-scheme')].filter(card=>card.getClientRects().length);
-    const finalSection=cards.at(-1)||document.querySelector('#view')?.lastElementChild;
+    const gameCards=[...document.querySelectorAll('#view [data-back-to-top-card]')].filter(card=>card.getClientRects().length);
+    const finalSection=gameCards.at(-1)||cards.at(-1)||document.querySelector('#view')?.lastElementChild;
     // Every page uses the same trigger: reaching its last visible card.
     // Keep the shortcut visible below that card, including through the footer.
     const rect=finalSection?.getBoundingClientRect();
