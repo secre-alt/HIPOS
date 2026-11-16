@@ -12,6 +12,28 @@ export function decodeReport(raw,now=Date.now()) {
   return {type:'HIPOS1',id:r.id,category:r.category,area:r.area,description:r.description,createdAt:r.createdAt};
 }
 export function createReport(category,area,description) {return decodeReport(JSON.stringify({type:'HIPOS1',id:crypto.randomUUID(),category,area,description:description.trim(),createdAt:Date.now()}));}
+// Reject damaged storage rather than silently dropping records or resetting a PIN.
+export function validateSavedData(saved,now=Date.now()) {
+  if(!saved||typeof saved!=='object'||Array.isArray(saved)||!Array.isArray(saved.reports)||!Array.isArray(saved.imports))throw Error('Invalid saved data.');
+  const records=(rows,staff)=>{
+    const seen=new Set();
+    return rows.map(row=>{
+      const report=decodeReport(JSON.stringify(row),now);
+      if(seen.has(report.id))throw Error('Duplicate saved report.');
+      seen.add(report.id);
+      if(!staff)return report;
+      if(!statuses.includes(row.status))throw Error('Invalid saved status.');
+      return {...report,status:row.status};
+    });
+  };
+  let pin=null;
+  if(saved.pin!==null){
+    const byteArray=(value,length)=>Array.isArray(value)&&value.length===length&&value.every(n=>Number.isInteger(n)&&n>=0&&n<=255);
+    if(!saved.pin||!byteArray(saved.pin.salt,16)||!byteArray(saved.pin.hash,32))throw Error('Invalid saved PIN verifier.');
+    pin={salt:[...saved.pin.salt],hash:[...saved.pin.hash]};
+  }
+  return {reports:records(saved.reports,false),imports:records(saved.imports,true),pin};
+}
 export const BACKUP_TYPE='HIPOS-BACKUP';
 // A backup holds only the student's own reports. The staff PIN and imported reports are never included.
 export function buildBackup(reports,now=new Date()){

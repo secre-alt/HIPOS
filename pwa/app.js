@@ -17,7 +17,7 @@ import { revealOnScroll, initScrollEffects } from "./motion.js";
 import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter } from "./guide.js";
 import QRCode from "qrcode";
 import jsQR from "jsqr";
-import { categories, areas, statuses, decodeReport, createReport, addImport, escapeHTML as e, pinHash, buildBackup, parseBackup, reportsToCsv } from "./core.js";
+import { categories, areas, statuses, decodeReport, createReport, addImport, escapeHTML as e, pinHash, buildBackup, parseBackup, reportsToCsv, validateSavedData } from "./core.js";
 import { waste } from "./content.js";
 import { reusePage, interactWithReuse } from "./reuse.js";
 import { preventPage, interactWithKit } from "./prevent.js";
@@ -33,15 +33,14 @@ const navId = (page) => (gamePages.includes(page) ? "games" : page);
 const pageTitles = { avatar: "My buddy", sort: "Sorting game", compost: "Compost Catch", garden: "Buddy garden" };
 const KEY = "hipos.pwa.v1";
 let data = { reports: [], imports: [], pin: null }, unlocked = false, pending = null, stream = null, cameraToken = 0, busy = false, unlockAttempts = 0, unlockAfter = 0;
+let storageUnreadable = false;
 try {
-  const saved = JSON.parse(localStorage.getItem(KEY) || "null");
-  if (saved) {
-    if (!Array.isArray(saved.reports) || !Array.isArray(saved.imports)) throw Error();
-    data = saved;
-  }
+  const raw = localStorage.getItem(KEY);
+  if (raw !== null) data = validateSavedData(JSON.parse(raw));
 } catch {
   message("Saved data could not be read. Reload or restore your browser storage before saving more reports.");
   busy = true;
+  storageUnreadable = true;
 }
 function message(text) {
   document.querySelector("#notice").textContent = text;
@@ -120,6 +119,7 @@ const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sor
 const greeted = /* @__PURE__ */ new Set();
 let firstRender = true;
 function save(next) {
+  if (storageUnreadable) throw Error("Saved data could not be read. Reload or restore your browser storage before saving more reports.");
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
     data = next;
