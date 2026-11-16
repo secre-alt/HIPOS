@@ -2,7 +2,7 @@
 // compostable scraps; anything else (plastic, wrappers, juice boxes) stays out of the basket.
 // Runs entirely on this device. Nothing is scored against a student or sent anywhere.
 import {escapeHTML as e} from './core.js';
-import {buddySay,sparkle,animate,buzz,sound} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound} from './buddy-fx.js';
 
 const ITEMS=[
   {name:'Banana peel',icon:'🍌',good:true},
@@ -68,7 +68,7 @@ function finish(){
   const line=perfect?'Perfect! Every compostable scrap caught.':g.caught>=g.good-3?'Great catching!':'Good practice. Watch the labels as they fall.';
   if(field)field.innerHTML=`<div class="compost-done"><h3>You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p><button type="button" data-compost-start>Play again</button></div>`;
   controls&&(controls.hidden=true);
-  if(perfect){sound('win');buddySay('Perfect catch! Amazing!');}else{sound('chime');buddySay('Round complete! Nice work.');}
+  cheer('complete');
   setStatus('');
   document.querySelector('#compost-field .compost-done button')?.focus({preventScroll:true});
   g=null;

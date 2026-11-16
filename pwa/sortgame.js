@@ -4,7 +4,7 @@
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
-import {buddySay,sparkle,animate,buzz,sound,recordSort,miniBuddy} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,miniBuddy} from './buddy-fx.js';
 import {celebrate} from './motion.js';
 
 const ROUND=6;
@@ -51,16 +51,16 @@ function answer(choice){
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
   fb.innerHTML=`<p><strong>${right?'Yes!':'Not quite.'}</strong> <span>${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</span> <span>${e(item.body)}</span></p>`;
   const next=document.querySelector('#sort-next');next.hidden=false;next.focus({preventScroll:true});
-  if(right){buddySay(['Nice sorting!','You got it!','Great eye!'][game.score%3]);sparkle(itemEl,6);sound('coin');buzz(10);animate('hop');}
-  else{buddySay('Almost! Read the tip.');sound('oops');}
+  if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
+  else{cheer('retry');}
 }
 function advance(){
   if(!game)return;game.i++;game.answered=false;
   const box=document.querySelector('#sort-body');box.innerHTML=body();
   if(game.i>=game.items.length){
     recordSort(game.score,game.items.length);
-    if(game.score===game.items.length){celebrate();sound('win');buddySay('Perfect round! Amazing!');}
-    else{sound('chime');buddySay('Round complete! Nice work.');}
+    if(game.score===game.items.length){celebrate();cheer('complete');}
+    else{cheer('complete');}
     box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});
     return true; // round finished: the caller refreshes stickers
   }

@@ -1,7 +1,7 @@
 // Game-style audio for HIPOS: synthesized sound effects and a choice of generative background music styles (lofi anime by default).
 // Everything is generated with the Web Audio API, so there are no audio files to cache or license,
 // it works offline, and nothing is sent anywhere. Safe to import where Web Audio does not exist.
-let ctx=null,sfxBus=null,musicBus=null,echo=null,mix=null,wobble=null,noiseBuf=null;
+let ctx=null,sfxBus=null,musicBus=null,duckBus=null,echo=null,mix=null,wobble=null,noiseBuf=null;
 const levels={sfx:.85,music:.5};
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -12,7 +12,9 @@ function ensure(){
   ctx=new Ctx();
   const master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination);
   sfxBus=ctx.createGain();sfxBus.gain.value=levels.sfx;sfxBus.connect(master);
-  musicBus=ctx.createGain();musicBus.gain.value=0;musicBus.connect(master);
+  // A separate envelope keeps temporary ducking independent of volume and track fades.
+  duckBus=ctx.createGain();duckBus.gain.value=1;duckBus.connect(master);
+  musicBus=ctx.createGain();musicBus.gain.value=0;musicBus.connect(duckBus);
   // Lofi chain for music: instruments -> mix -> dull "tape" lowpass -> gentle compressor -> musicBus.
   const comp=ctx.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=3;comp.connect(musicBus);
   const tape=ctx.createBiquadFilter();tape.type='lowpass';tape.frequency.value=4200;tape.Q.value=.4;tape.connect(comp);
@@ -39,6 +41,7 @@ function tone(bus,{f,t=0,len=.15,type='sine',vol=.2,to,send=false,attack=.008}){
   gain.gain.exponentialRampToValueAtTime(.0001,start+len);
   osc.connect(gain);gain.connect(bus);if(send&&echo)gain.connect(echo);
   osc.start(start);osc.stop(start+len+.03);
+  osc.onended=()=>{if(bus===mix)wobble?.disconnect(osc.detune);osc.disconnect();gain.disconnect();};
 }
 
 // ---------- Sound effects ----------
@@ -98,6 +101,7 @@ function noise(dest,{t=0,len=.1,vol=.1,type='highpass',freq=6000,q=.7,attack=.00
   gain.gain.exponentialRampToValueAtTime(.0001,start+len);
   src.connect(filt);filt.connect(gain);gain.connect(dest);
   src.start(start,Math.random()*.5);src.stop(start+len+.03);
+  src.onended=()=>{src.disconnect();filt.disconnect();gain.disconnect();};
 }
 // Koto-style pluck: bright saw that closes into a soft lowpass, with a tiny pitch dip on the attack.
 function pluck({f,t=0,len=1,vol=.09}){
@@ -111,6 +115,7 @@ function pluck({f,t=0,len=1,vol=.09}){
   gain.gain.exponentialRampToValueAtTime(.0001,start+len);
   osc.connect(filt);filt.connect(gain);gain.connect(mix);if(echo)gain.connect(echo);
   osc.start(start);osc.stop(start+len+.03);
+  osc.onended=()=>{wobble?.disconnect(osc.detune);osc.disconnect();filt.disconnect();gain.disconnect();};
 }
 // Rhodes-ish key: soft sine body plus a quick "tine" overtone.
 function key(f,t,len,vol,send=false){
@@ -216,6 +221,10 @@ function boxStep(s,t,stepLen,[bass,notes]){
 }
 
 const STYLES={
+  festival:{label:'School Festival',swing:.04,bpm:126,prog:[F3,G3,Am3,C3],play:festivalStep},
+  magical:{label:'Magical Garden',swing:0,bpm:82,prog:[CM9,FM9,Dm9,G9],play:magicalStep},
+  chibi:{label:'Chibi Adventure',swing:.08,bpm:118,prog:[C3,Am3,F3,G3],play:chibiStep},
+  sunset:{label:'Sunset Walk',swing:.1,bpm:86,prog:[CM9,Am9,FM9,G9],play:sunsetStep},
   lofi:{label:'Lofi Anime',swing:.2,themes:LOFI_THEMES,play:lofiStep},
   sakura:{label:'Sakura Garden',swing:0,bpm:62,prog:[Am9,FM9,CM9,G9],play:sakuraStep},
   arcade:{label:'Pixel Adventure',swing:0,human:.002,bpm:112,prog:[C3,G3,Am3,F3],play:arcadeStep},
@@ -231,7 +240,7 @@ function scheduleStep(i,when,stepLen){
   const st=STYLES[style],chordAt=cfg().prog[Math.floor(i/8)%4],s=i%8;
   // Swing the off-beats and humanize the timing a little.
   const t=when-ctx.currentTime+(s%2?stepLen*st.swing:0)+(Math.random()-.5)*(st.human??.012);
-  st.play(s,t,stepLen,chordAt);
+  st.play(s,Math.max(0,t),stepLen,chordAt,Math.floor(i/8));
 }
 function pump(){
   if(!playing||!ctx)return;
@@ -240,20 +249,75 @@ function pump(){
   timer=setTimeout(pump,100);
 }
 export const music={
+  duck(){
+    if(!playing||!ctx)return;
+    const now=ctx.currentTime,gain=duckBus.gain;
+    if(gain.cancelAndHoldAtTime)gain.cancelAndHoldAtTime(now);
+    else{const current=gain.value;gain.cancelScheduledValues(now);gain.setValueAtTime(current,now);}
+    gain.setTargetAtTime(.3,now,.04);
+    gain.setTargetAtTime(1,now+1.1,.3);
+  },
   start(){
     if(playing||!ensure())return;
     playing=true;nextTime=ctx.currentTime+.15;
+    musicBus.gain.cancelScheduledValues(ctx.currentTime);
     musicBus.gain.setTargetAtTime(levels.music,ctx.currentTime,.2);
     pump();
   },
   stop(){
     playing=false;clearTimeout(timer);
-    if(ctx)musicBus.gain.setTargetAtTime(0,ctx.currentTime,.15);
+    if(ctx){musicBus.gain.cancelScheduledValues(ctx.currentTime);musicBus.gain.setTargetAtTime(0,ctx.currentTime,.15);}
   },
   get playing(){return playing;},
   get style(){return style;},
-  setLevel(v){levels.music=clamp(Number(v)||0,0,1);if(ctx&&playing)musicBus.gain.setTargetAtTime(levels.music,ctx.currentTime,.05);},
+  setLevel(v){levels.music=clamp(Number(v)||0,0,1);if(ctx&&playing){musicBus.gain.cancelScheduledValues(ctx.currentTime);musicBus.gain.setTargetAtTime(levels.music,ctx.currentTime,.05);}},
   setTheme(name){theme=LOFI_THEMES[name]?name:'default';},
   // Switching style starts the new one on the next beat (notes already scheduled finish naturally).
-  setStyle(name){style=STYLES[name]?name:'lofi';step=0;melody=2;if(playing&&ctx)nextTime=ctx.currentTime+.1;},
+  setStyle(name){
+    style=STYLES[name]?name:'lofi';step=0;melody=2;
+    if(playing&&ctx){
+      clearTimeout(timer);
+      // Let scheduled notes settle under a short fade before the new arrangement.
+      musicBus.gain.cancelScheduledValues(ctx.currentTime);
+      musicBus.gain.setTargetAtTime(0,ctx.currentTime,.08);
+      nextTime=ctx.currentTime+.65;
+      musicBus.gain.setTargetAtTime(levels.music,nextTime,.2);
+      pump();
+    }
+  },
 };
+
+// Original short motifs with alternating phrases and chord-following accompaniment.
+function festivalStep(s,t,len,[bass,notes],bar){
+  if(s===0||s===4)chord(notes,t,len*1.7,.05);
+  if(s%2===0)tone(mix,{f:hz(bass+(s===4?12:0)),t,len:len*.8,type:'triangle',vol:.17});
+  if(s===0||s===4)kick(t,.28);
+  if(s===2||s===6)noise(mix,{t,len:.09,vol:.065,type:'bandpass',freq:1600});
+  noise(mix,{t,len:.025,vol:.012,freq:6500});
+  const motif=bar%8<4?[0,2,1,2,3,2,1,0]:[2,3,2,1,0,1,2,3];
+  key(hz(notes[motif[s]%notes.length]+12),t,len*1.2,.065,true);
+  if(s===7&&bar%4===3)bell(hz(notes[0]+24),t,len*2,.035);
+}
+function magicalStep(s,t,len,[bass,notes],bar){
+  if(s===0){pad(notes,t,len*8,.025);tone(mix,{f:hz(bass),t,len:len*6,vol:.12,attack:.08});}
+  const index=(bar%2?s:7-s)%notes.length;
+  pluck({f:hz(notes[index]+(s%3===0?12:0)),t,len:len*2.4,vol:.045});
+  if(s===0||s===3||s===6)bell(hz(notes[(s+bar)%notes.length]+12),t,len*3,.045);
+}
+function chibiStep(s,t,len,[bass,notes],bar){
+  tone(mix,{f:hz(bass+(s%2?12:0)),t,len:len*.55,type:'triangle',vol:.16});
+  if(s===0||s===4)kick(t,.23);
+  if(s===2||s===6)noise(mix,{t,len:.06,vol:.05,type:'bandpass',freq:2400});
+  const motif=bar%2?[2,1,0,1,2,2,1,0]:[0,0,2,1,2,3,2,1];
+  const f=hz(notes[motif[s]%notes.length]+12);
+  tone(mix,{f,t,len:len*.7,type:'square',vol:.025});
+  key(f/2,t,len*.6,.05);
+  if(s===7&&bar%4===3)bell(f*2,t,len,.025);
+}
+function sunsetStep(s,t,len,[bass,notes],bar){
+  if(s===0){chord(notes,t,len*6,.035);tone(mix,{f:hz(bass),t,len:len*3,vol:.15});}
+  pluck({f:hz(notes[(s+(bar%2))%notes.length]-12),t,len:len*1.8,vol:.035});
+  if(s===2||s===6)noise(mix,{t,len:.07,vol:.025,type:'bandpass',freq:1200});
+  if(s===0)kick(t,.16);
+  if(s===1||s===4||s===7)key(hz(notes[(s+bar)%notes.length]+12),t,len*2,.045,true);
+}

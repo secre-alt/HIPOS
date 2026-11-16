@@ -1182,3 +1182,7 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 #back-to-top:hover svg{transform:translateY(-2px)}
 #back-to-top:active{transform:translateY(2px);box-shadow:0 1px 0 #7dbb3a}
 @media(prefers-reduced-motion:reduce){#back-to-top,#back-to-top svg{transition:none}#back-to-top:hover,#back-to-top:hover svg{transform:none}}
+
+.sound-preview-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
+.sound-preview-actions .muted{font-size:.875rem}
+#settings-dialog :is(#music-preview,#cheer-preview){min-height:44px;font-family:var(--font-body)}

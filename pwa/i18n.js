@@ -195,6 +195,18 @@ pairs.push(
 pairs.push(['Language','Wika'],['Text & readability','Teksto at pagbabasa'],['Personalization','Personal na ayos'],['Sound & reactions','Tunog at mga reaksiyon'],['Sound effects','Mga tunog'],['App & offline','App at offline'],['Change','Palitan']);
 pairs.push(['Background music','Musika sa background'],['Music volume','Lakas ng musika'],['Music style','Estilo ng musika']);
 pairs.push(['Section','Seksyon'],['Settings categories','Mga kategorya ng setting'],['Close settings','Isara ang mga setting']);
+pairs.push(
+ ['Back to top','Bumalik sa itaas'],['Back to top of page','Bumalik sa itaas ng pahina'],
+ ['Preview music','Pakinggan ang musika'],['Stop preview','Ihinto ang pakikinig'],['Listen for 10 seconds.','Makinig sa loob ng 10 segundo.'],['Try a cheer','Subukan ang pagbati'],
+ ['Cheer sounds follow Sound effects. Animations follow your motion preference.','Ang tunog ng pagbati ay sumusunod sa Sound effects. Ang galaw ay sumusunod sa iyong kagustuhan sa animation.'],
+ ['You spotted it! Sparkle points!','Nakita mo! Ang galing!'],['Nice eye! You have got this!','Ang talas ng mata mo! Kaya mo iyan!'],['Sorted like a superstar!','Parang bituin sa paghihiwalay!'],
+ ['Almost! Let us try the tip together.','Malapit na! Subukan natin ang payo.'],['Every try helps you learn!','Bawat pagsubok ay dagdag kaalaman!'],['Take a breath. You can try again!','Huminga muna. Maaari kang sumubok muli!'],
+ ['Little habit, big high five!','Munting gawi, malaking pagbati!'],['One small step for our school!','Isang munting hakbang para sa paaralan!'],['Packed and ready! Nice work!','Nakahanda na! Ang husay!'],
+ ['You did it! Victory wiggle!','Nagawa mo! Sayaw ng tagumpay!'],['Mission complete! High five!','Tapos ang misyon! Apir!'],['Look at you go, superstar!','Ang galing mo, bituin!'],
+ ['Challenge cleared! Ta-da!','Tapos ang hamon! Ta-da!'],['Your little adventure is complete!','Tapos ang iyong munting pakikipagsapalaran!'],['A gold-star kind of effort!','Karapat-dapat sa gintong bituin ang sipag mo!'],
+ ['Your streak is growing! Keep shining!','Humahaba ang sunod-sunod mong araw! Ipagpatuloy!'],['Another day, another little victory!','Bagong araw, bagong munting tagumpay!'],['Look at those good habits growing!','Lumalago ang magagandang gawi mo!'],
+ ['A new surprise! You earned it!','Bagong sorpresa! Pinaghirapan mo ito!'],['Treasure unlocked! Happy dance!','Nabuksan ang kayamanan! Sayaw ng saya!'],['Something new for our adventure!','May bago para sa ating pakikipagsapalaran!']
+);
 const dictionary=new Map(pairs);
 let language='en';try{if(localStorage.getItem('hipos.language')==='fil')language='fil';}catch{}
 const originals=new WeakMap(),attributes=new WeakMap();

@@ -4,6 +4,7 @@
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate} from './i18n.js';
 import {playSfx,music,MUSIC_STYLES} from './audio.js';
+import {createCheerPicker} from './cheers.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='hipos.season',MUSIC='hipos.music',MUSICVOL='hipos.musicvol',MUSICSTYLE='hipos.musicstyle';
@@ -20,6 +21,17 @@ export const SEASONS=['default','christmas','earth','wika'];
 export const season=()=>{const v=read(SEASON,'default');return SEASONS.includes(v)?v:'default';};
 
 export function initBuddySettings(){
+  const preview=document.querySelector('#music-preview');let previewTimer=null;
+  const endPreview=()=>{clearTimeout(previewTimer);previewTimer=null;if(preview){preview.textContent='Preview music';preview.setAttribute('aria-pressed','false');}if(!musicOn())music.stop();};
+  preview?.addEventListener('click',()=>{
+    if(previewTimer){endPreview();return;}
+    music.setStyle(musicStyle());music.start();
+    preview.textContent='Stop preview';preview.setAttribute('aria-pressed','true');
+    previewTimer=setTimeout(endPreview,10000);
+  });
+  document.querySelector('#settings-dialog')?.addEventListener('close',endPreview);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)endPreview();});
+  document.querySelector('#cheer-preview')?.addEventListener('click',()=>cheer('complete',{preview:true}));
   const bind=(id,get,key,valid,after)=>{
     const select=document.querySelector(id);if(!select)return;
     const isSwitch=select.type==='checkbox';
@@ -31,14 +43,24 @@ export function initBuddySettings(){
       if(isSwitch)select.checked=next==='on';else select.value=next;after?.(next);
     });
   };
-  bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
+  const cheerPreview=document.querySelector('#cheer-preview');if(cheerPreview)cheerPreview.disabled=!cheersOn();
+  bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(cheerPreview)cheerPreview.disabled=v==='off';if(v==='off')hideBubble();else buddySay('Hi! I will cheer you on.');});
   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
-  bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{if(v==='on')music.start();else music.stop();});
+  bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{endPreview();if(v==='on')music.start();else music.stop();});
   bind('#musicstyle',musicStyle,MUSICSTYLE,MUSIC_STYLES,v=>music.setStyle(v));
   bind('#season',season,SEASON,SEASONS,v=>{applySeason();music.setTheme(v);if(v!=='default'){markSeason(v);buddySay(SEASON_LINES[v]);sound('unlock');}});
   const volume=document.querySelector('#musicvol');
   if(volume){const paint=()=>{volume.style.setProperty('--volume',volume.value+'%');volume.setAttribute('aria-valuetext',volume.value+'%');};volume.value=String(musicLevel());paint();volume.addEventListener('input',()=>{paint();write(MUSICVOL,volume.value);music.setLevel(musicLevel()/100);});}
   applySeason();initMusic();
+}
+
+const pickCheer=createCheerPicker();
+export function cheer(kind,options){
+  if(!cheersOn())return false;
+  const chosen=pickCheer(kind,options);if(!chosen)return false;
+  if(options?.preview){const status=document.querySelector('#cheer-preview-status');if(status)status.textContent=translate(chosen.text);}
+  buddySay(chosen.text,{ms:3000});animate(chosen.motion);sound(chosen.sound,{duckMusic:true});
+  return true;
 }
 // Background music is off by default. Browsers only allow audio after a tap, so a saved "on" starts at the first touch.
 function initMusic(){
@@ -219,7 +241,7 @@ export function buzz(ms=12){if(cheersOn())try{navigator.vibrate?.(ms);}catch{/* 
 
 // ---------- Sounds (off by default) ----------
 // Names: tick pop boop chime coin whoosh undo oops star tada unlock win (synthesized in audio.js).
-export function sound(name){
+export function sound(name,{duckMusic=false}={}){
   if(!soundOn())return;
-  try{playSfx(name);}catch{/* sound is optional */}
+  try{playSfx(name);if(duckMusic)music.duck();}catch{/* sound is optional */}
 }

@@ -266,7 +266,7 @@ try{
     await page.waitForFunction(()=>!document.querySelector('#buddy-say').hidden,null,{timeout:3000});
     assert.ok((await page.locator('.buddy-say-text').innerText()).length>3,'buddy says something when tapped');
     await page.locator('[data-habit="0"]').check();
-    await page.waitForFunction(()=>/Yum!/.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
+    await page.waitForFunction(()=>/Little habit|One small step|Packed and ready/.test(document.querySelector('.buddy-say-text')?.textContent||''),null,{timeout:3000});
     assert.match(await page.locator('.buddy-treats').innerText(),/Treats shared: 1/);
     await page.locator('[data-habit="0"]').uncheck();await page.locator('[data-habit="0"]').check();
     assert.match(await page.locator('.buddy-treats').innerText(),/Treats shared: 1/,'no extra treat for ticking again');
