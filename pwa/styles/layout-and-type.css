@@ -123,12 +123,14 @@ main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
 }
 .compost-field {
   position: relative;
-  height: min(52vh, 360px);
+  height: min(52vh, 400px);
   min-height: 260px;
   margin: 12px 0;
   overflow: hidden;
   border-radius: 24px;
-  background: linear-gradient(#e9f5dc, #cfeab2);
+  background: #e4eedc;
+  border: 2px solid var(--green);
+  box-shadow: inset 0 -28px 0 #b6c99c;
   touch-action: none;
   user-select: none;
 }
@@ -145,7 +147,8 @@ main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
 .compost-item {
   position: absolute;
   transform: translateX(-50%);
-  font-size: 2rem;
+  width: 52px;
+  height: 52px;
   line-height: 1;
   pointer-events: none;
 }
@@ -154,13 +157,13 @@ main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
   bottom: 2%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 2.6rem;
+  width: 76px;
+  height: 76px;
   line-height: 1;
-  transition: left .12s ease;
 }
 .compost-controls {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 .compost-controls button {
@@ -185,7 +188,8 @@ main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
   margin: 0;
 }
 :where(:root[data-theme=dark]) .compost-field {
-  background: linear-gradient(#17342a, #1f4a3a);
+  background: #203c32;
+  box-shadow: inset 0 -28px 0 #324d39;
 }
 /* Reserve only the buddy row; the update banner adds its own height when present. */
 main > header {
@@ -541,4 +545,27 @@ html[data-font=pixelify] {
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 16px;
+}
+
+/* Eco-arcade: shared local artwork, stitched patches and deliberate play states.
+   Design review informed by unslop, Damir Sokolovsky (CC BY 4.0). */
+.arcade-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; }
+.arcade-patch { border:1px dashed currentColor; border-radius:8px; padding:4px 12px; font-size:.875rem; color:var(--muted); }
+.arcade-toolbar button { min-height:48px; }
+.arcade-ready { text-align:center; padding:16px; position:relative; z-index:1; }
+.arcade-ready svg,.compost-done > svg { width:80px; height:80px; }
+.arcade-ready h3 { margin:0; font-family:var(--font-display); font-size:1.5rem; }
+.arcade-ready p { margin:4px 0 16px; }
+.compost-start { z-index:2; background:var(--surface); }
+.compost-paused { position:absolute; inset:0; z-index:3; display:grid; place-items:center; background:var(--surface); }
+.compost-game .feedback { min-height:32px; margin:8px 0; }
+.compost-done { position:relative; z-index:2; background:var(--surface); }
+.compost-done .actions { justify-content:center; }
+.compost-controls button { flex:1; max-width:240px; }
+.compost-item svg,.compost-basket svg { display:block; width:100%; height:100%; }
+@media (max-width:600px) {
+  .compost-game { padding:16px; }
+  .compost-game .note { font-size:.875rem; }
+  .compost-done > svg { width:48px; height:48px; }
+  .compost-done .actions { gap:8px; }
 }

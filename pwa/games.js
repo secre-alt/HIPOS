@@ -1,5 +1,6 @@
 // Games hub: every game is reached from one "Games" item in the main menu and from the Games page.
 // Add a new game here (and its route in app.js) instead of adding another menu item.
+import {gameArt} from './game-art.js';
 export const gamePages = ["games", "sort", "compost", "garden"];
 const games = [
   ["sort", "01 / Sort", "Pouch or staff?", "Six quick items. Drag each one to where it belongs.", "Play the sorting game →"],
@@ -8,7 +9,7 @@ const games = [
 ];
 export const gamesPage = () =>
   `<div class="home-guides games-grid">${games
-    .map(([id, number, title, body, action]) => `<a class="card card-link" href="#${id}"><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="guide-link">${action}</span></a>`)
+    .map(([id, number, title, body, action]) => `<a class="card card-link arcade-card arcade-${id}" href="#${id}"><div class="arcade-preview">${gameArt(id==='sort'?'pouch':id==='compost'?'basket':'flower')}</div><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="guide-link">${action}</span></a>`)
     .join("")}</div>`;
 // Shown on the Sorting game, Compost Catch and Buddy garden pages.
 export const gamesBack = () => '<p class="sort-promo"><a class="button-link secondary" href="#games">← All games</a></p>';

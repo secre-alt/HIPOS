@@ -359,6 +359,31 @@ try{
     if(/Lilita/i.test(f.b))throw new Error('body should keep reading font: '+f.b);
     await page.keyboard.press('Escape');await close(s);
   });
+  await check('arcade pause freezes play, resumes, pauses when hidden and cleans up on navigation',async()=>{
+    const s=await open({viewport:{width:390,height:844},reducedMotion:'reduce'}),{page}=s;
+    await page.evaluate(()=>{location.hash='compost';});
+    await page.locator('[data-compost-start]').click();
+    await page.locator('.compost-item').first().waitFor();
+    await page.locator('.arcade-toolbar [data-compost-pause]').click();
+    const before=await page.locator('.compost-item').first().getAttribute('style');
+    await page.waitForTimeout(250);
+    assert.equal(await page.locator('.compost-item').first().getAttribute('style'),before,'falling items freeze');
+    const basket=await page.locator('#compost-basket').getAttribute('style');
+    await page.locator('[data-compost-left]').click();
+    assert.equal(await page.locator('#compost-basket').getAttribute('style'),basket,'movement freezes too');
+    await page.locator('.compost-paused button').click();
+    await page.waitForTimeout(100);
+    assert.notEqual(await page.locator('.compost-item').first().getAttribute('style'),before,'fall resumes');
+    await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
+    await page.locator('.compost-paused').waitFor();
+    await page.evaluate(()=>{delete document.hidden;location.hash='games';});
+    await page.locator('.games-grid').waitFor();
+    await page.locator('a[href="#compost"].arcade-card').click();
+    await page.locator('[data-compost-start]').click();
+    await page.locator('.compost-item').first().waitFor();
+    assert.equal(await page.locator('.compost-paused').count(),0,'new visit starts cleanly');
+    await close(s);
+  });
   await check('menu has one Games item that opens a hub for every game; the garden shows nine plots, grows from care, Filipino',async()=>{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
     assert.equal(await page.locator('#nav a',{hasText:'Games'}).count(),1,'Games in the menu');

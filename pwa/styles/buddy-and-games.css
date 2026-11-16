@@ -702,7 +702,9 @@
 }
 .sort-bin.hover,
 .sort-bin:not(:disabled):hover {
-  transform: scale(1.03);
+  transform: none;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 .sort-bin.is-right {
   border-style: solid;
@@ -1284,10 +1286,13 @@ input[type=checkbox]:checked {
 .garden-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin: 0;
-  padding: 0;
+  padding: 16px;
   list-style: none;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: var(--leaf-soft);
 }
 .garden-plot {
   display: grid;
@@ -1298,7 +1303,7 @@ input[type=checkbox]:checked {
   min-height: 112px;
   padding: 10px 6px;
   border-radius: 20px;
-  background: linear-gradient(#e9f5dc, #d6ecb9);
+  background: var(--surface);
   color: var(--green-deep);
   text-align: center;
 }
@@ -1307,7 +1312,7 @@ input[type=checkbox]:checked {
   opacity: 0.85;
 }
 .garden-plot[data-stage="3"] {
-  background: linear-gradient(#fff4d6, #ffe3ec);
+  background: #f4ecd1;
 }
 .garden-icon {
   font-size: 2.2rem;
@@ -1331,9 +1336,21 @@ input[type=checkbox]:checked {
 @media (prefers-reduced-motion: reduce) {
   .garden-plot.wiggle .garden-icon { animation: none; }
 }
-@media (prefers-color-scheme: dark) {
-  .garden-plot { background: linear-gradient(#17342a, #1f4a3a); color: #e1efe4; }
-  .garden-plot[data-stage="0"] { background: #2b2a22; }
-  .garden-plot[data-stage="3"] { background: linear-gradient(#3a3a22, #3a2a33); }
-  .garden-stage { color: #b9cfc0; }
-}
+:where(:root[data-theme=dark]) .garden-plot { background:#203c32; color:#e1efe4; }
+
+/* Game hub previews put the color into the game objects. */
+.games-grid.home-guides > .arcade-card { display:flex; flex-direction:column; grid-row:auto; gap:12px; overflow:hidden; border:1px solid var(--line); border-radius:20px; padding:20px; }
+.games-grid.home-guides > .arcade-card > .guide-link { margin-top:auto; }
+.arcade-preview { display:grid; place-items:center; height:168px; border-radius:12px; background:var(--leaf-soft); margin-bottom:8px; flex-shrink:0; }
+.arcade-preview svg { width:136px; height:136px; transform:rotate(-6deg); }
+.arcade-compost .arcade-preview svg { transform:rotate(5deg); }
+.arcade-garden .arcade-preview svg { transform:none; }
+.games-grid .guide-number { font-size:.875rem; letter-spacing:0; text-transform:none; }
+.round-markers { display:flex; gap:8px; margin:8px 0 12px; }
+.round-markers span { width:24px; height:8px; border:1px solid var(--muted); border-radius:4px; }
+.round-markers .is-complete { background:var(--green); }
+.round-markers .is-current { background:var(--muted); }
+:where(:root[data-theme=dark]) .garden-plot[data-stage="0"] { background:#292e25; }
+:where(:root[data-theme=dark]) .garden-plot[data-stage="3"] { background:#3a402b; }
+:where(:root[data-theme=dark]) .garden-stage { color:#b9cfc0; }
+@media (max-width:600px) { .arcade-preview { height:128px; } .arcade-preview svg { width:104px; height:104px; } .garden-grid { padding:8px; gap:8px; } }

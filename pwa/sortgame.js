@@ -28,6 +28,7 @@ function body(){
   if(game.i>=game.items.length)return done();
   const item=game.items[game.i];
   return `<p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p>
+  <div class="round-markers" aria-hidden="true">${game.items.map((_,i)=>`<span class="${i<game.i?'is-complete':i===game.i?'is-current':''}"></span>`).join('')}</div>
   <p class="note">Drag the item to a bin, or tap a bin.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
   <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-sort-bin="yes" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${pouch}</span><strong>Dry-waste pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-sort-bin="no" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${hand}</span><strong>Ask school staff</strong><small>Keep out of the pouch</small></button></div>
@@ -39,7 +40,7 @@ const hand='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="
 function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
-  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p><div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
+  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p><div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
 }
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
