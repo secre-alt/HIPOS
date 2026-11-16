@@ -1163,7 +1163,8 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 .font-preview .fp-button{padding:10px 20px;border-radius:16px;background:var(--leaf);color:var(--green-deep);box-shadow:0 4px 0 #7dbb3a;font-size:1.05rem}
 .font-preview .fp-body{font:600 1rem/1.5 "HIPOS Nunito",system-ui,sans-serif}
 
-:root[data-theme=light]{color-scheme:light}
+:root[data-theme=light]{color-scheme:light;background:#edf3e8;color:#173d2c;--surface:#fffefa;--line:#d5e0cf;--ink:#173d2c}
+:root[data-theme=light] body{background:#edf3e8}
 :root[data-theme=dark]{color-scheme:dark}
 
 /* Keep the shortcut within reach, above the mobile navigation and safe area. */
