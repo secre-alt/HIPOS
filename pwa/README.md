@@ -9,6 +9,8 @@ using installed Edge instead of Playwright Chromium.
 - `pwa-runtime.js`: installation, connection status, service worker registration,
   and user-controlled updates. Initialized once by `app.js`.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`: page content and interactions.
+- `games.js`: the Games hub page, the Home games strip, and the list of game routes
+  that keep the single Games menu item highlighted.
 - `core.js`: report validation, transfer, backup, CSV, and PIN helpers.
 - `content.js`, `i18n.js`: guidance content and translations.
 - Activity, buddy, audio, and preference modules remain named for their features.

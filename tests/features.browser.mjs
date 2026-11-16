@@ -359,10 +359,17 @@ try{
     if(/Lilita/i.test(f.b))throw new Error('body should keep reading font: '+f.b);
     await page.keyboard.press('Escape');await close(s);
   });
-  await check('menu lists Compost Catch and Buddy garden; the garden shows nine plots, grows from care, Filipino',async()=>{
+  await check('menu has one Games item that opens a hub for every game; the garden shows nine plots, grows from care, Filipino',async()=>{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
-    for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),1,name+' in the menu');
-    await page.locator('#nav a',{hasText:'Buddy garden'}).click();
+    assert.equal(await page.locator('#nav a',{hasText:'Games'}).count(),1,'Games in the menu');
+    for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),0,name+' is grouped under Games');
+    assert.equal(await page.locator('.games-strip a[href="#games"]').count(),1,'home links to Games');
+    await page.locator('#nav a',{hasText:'Games'}).click();
+    for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
+    await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
+    assert.equal(await page.locator('#nav a.active').innerText(),'Games','a game keeps Games active in the menu');
+    await page.locator('a',{hasText:'All games'}).click();await page.locator('.games-grid').waitFor();
+    await page.locator('.games-grid a[href="#garden"]').click();
     await page.locator('#garden .garden-plot').first().waitFor();
     assert.equal(await page.locator('#garden .garden-plot').count(),9);
     assert.equal(await page.locator('#garden .garden-plot[data-stage="3"]').count(),0,'a fresh garden has no blooms');
