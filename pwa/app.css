@@ -1159,3 +1159,17 @@ main:has(>#update-banner:not([hidden]))>#view>.intro:first-child{padding-top:12p
 .compost-done{display:grid;place-items:center;align-content:center;gap:8px;height:100%;padding:16px;text-align:center}
 .compost-done h3{margin:0}
 @media(prefers-color-scheme:dark){.compost-field{background:linear-gradient(#17342a,#1f4a3a)}}
+
+/* Reserve only the buddy row; the update banner adds its own height when present. */
+main>header{height:0;min-height:0;padding:0}
+#view>.intro:first-child{padding-top:12px}
+@media(min-width:1001px){
+.buddy-dock{top:calc(96px + env(safe-area-inset-top))}
+main:not(:has(>#update-banner:not([hidden])))>#view{padding-top:68px}
+main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:80px}
+}
+@media(min-width:761px) and (max-width:1000px){main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:52px}}
+@media(max-width:760px){
+#view>.intro:first-child{padding-top:4px}
+main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:60px}
+}
