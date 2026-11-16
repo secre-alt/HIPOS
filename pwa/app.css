@@ -1116,3 +1116,19 @@ aside>.settings-toggle-desktop:hover{background:#ffffff12;color:#fffef9}
   .waste-choice,.waste-choice .item-art,.waste-choice::before,.waste-choice[aria-pressed=true]::after{animation:none!important;transition:none}
   .waste-choice:hover,.waste-choice[aria-pressed=true]{transform:none}
 }
+
+/* An available update occupies its own row below the floating buddy. */
+main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:52px;animation:none}
+main:has(>#update-banner:not([hidden]))>#view{padding-top:12px}
+.update-banner-actions{gap:12px;align-items:center}
+@media(min-width:761px) and (max-width:1000px){
+main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:48px}
+main:has(>#update-banner:not([hidden]))>#view{padding-top:4px}
+}
+@media(max-width:760px){
+main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:56px}
+.update-banner-actions{display:grid;grid-template-columns:1fr 1fr}
+}
+
+main:has(>#update-banner:not([hidden]))>#view>.intro:first-child{padding-top:12px}
+@media(max-width:760px){main:has(>#update-banner:not([hidden]))>#view>.intro:first-child{padding-top:4px}}
