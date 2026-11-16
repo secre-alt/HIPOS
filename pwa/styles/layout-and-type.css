@@ -1,0 +1,544 @@
+/* An available update occupies its own row below the floating buddy. */
+main:has(> #update-banner:not([hidden])) > #update-banner {
+  margin-top: 52px;
+  animation: none;
+}
+main:has(> #update-banner:not([hidden])) > #view {
+  padding-top: 12px;
+}
+.update-banner-actions {
+  gap: 12px;
+  align-items: center;
+}
+@media (min-width: 761px) and (max-width: 1000px) {
+  main:has(> #update-banner:not([hidden])) > #update-banner {
+    margin-top: 48px;
+  }
+  main:has(> #update-banner:not([hidden])) > #view {
+    padding-top: 4px;
+  }
+}
+@media (max-width: 760px) {
+  main:has(> #update-banner:not([hidden])) > #update-banner {
+    margin-top: 56px;
+  }
+  .update-banner-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
+  padding-top: 12px;
+}
+@media (max-width: 760px) {
+  main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
+    padding-top: 4px;
+  }
+}
+/* Match the space on either side of the mobile buddy row. */
+@media (max-width: 1000px) {
+  .buddy-dock {
+    top: calc(80px + env(safe-area-inset-top));
+  }
+  #view {
+    padding-top: 40px;
+  }
+}
+@media (max-width: 760px) {
+  #view {
+    padding-top: 56px;
+  }
+}
+/* Font preview in Settings: shows the combo with the real classes, so it updates live. */
+.font-preview {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--leaf-soft,#eef2e3);
+}
+.fp-greeting {
+  justify-self: start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--green-deep);
+  font-weight: 700;
+  font-size: .875rem;
+}
+.fp-title {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  color: var(--heading,var(--green-deep));
+}
+.fp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.fp-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--leaf);
+  color: var(--green-deep);
+  font-weight: 800;
+  font-size: .875rem;
+}
+.fp-button {
+  padding: 8px 16px;
+  border-radius: 14px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+  font-size: .9375rem;
+  box-shadow: 0 3px 0 #0a2a20;
+}
+.fp-body {
+  margin: 0;
+  font-size: .875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.font-use {
+  margin: 10px 0 0;
+  font-weight: 600;
+  font-size: .875rem;
+}
+.font-preview * {
+  max-width: 100%;
+}
+:where(:root[data-theme=dark]) .fp-greeting {
+  background: #12251e;
+  color: #cdeeb0;
+}
+:where(:root[data-theme=dark]) .font-preview {
+  background: #17342a;
+}
+/* Compost Catch: falling scraps and a basket the buddy moves left and right. */
+.compost-game {
+  position: relative;
+}
+.compost-field {
+  position: relative;
+  height: min(52vh, 360px);
+  min-height: 260px;
+  margin: 12px 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: linear-gradient(#e9f5dc, #cfeab2);
+  touch-action: none;
+  user-select: none;
+}
+.compost-field:focus-visible {
+  outline: 3px solid var(--green-deep);
+  outline-offset: 3px;
+}
+.compost-start {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.compost-item {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.compost-basket {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.6rem;
+  line-height: 1;
+  transition: left .12s ease;
+}
+.compost-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.compost-controls button {
+  min-height: 48px;
+  min-width: 120px;
+}
+.compost-score {
+  margin: 8px 0 0;
+  font-weight: 700;
+  text-align: center;
+}
+.compost-done {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  height: 100%;
+  padding: 16px;
+  text-align: center;
+}
+.compost-done h3 {
+  margin: 0;
+}
+:where(:root[data-theme=dark]) .compost-field {
+  background: linear-gradient(#17342a, #1f4a3a);
+}
+/* Reserve only the buddy row; the update banner adds its own height when present. */
+main > header {
+  height: 0;
+  min-height: 0;
+  padding: 0;
+}
+#view > .intro:first-child {
+  padding-top: 12px;
+}
+@media (min-width: 1001px) {
+  .buddy-dock {
+    top: calc(96px + env(safe-area-inset-top));
+  }
+  main:not(:has(> #update-banner:not([hidden]))) > #view {
+    padding-top: 68px;
+  }
+  main:has(> #update-banner:not([hidden])) > #update-banner {
+    margin-top: 80px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1000px) {
+  main:has(> #update-banner:not([hidden])) > #update-banner {
+    margin-top: 52px;
+  }
+}
+@media (max-width: 760px) {
+  #view > .intro:first-child {
+    padding-top: 4px;
+  }
+  main:has(> #update-banner:not([hidden])) > #update-banner {
+    margin-top: 60px;
+  }
+}
+/* The guide helper shares the label row instead of covering the input. */
+.guide-search-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.guide-tools .guide-search-heading label {
+  margin: 0;
+  min-width: 0;
+}
+.guide-search-heading .mini-buddy {
+  position: relative;
+  inset: auto;
+  flex: 0 0 44px;
+}
+/* Reference pairing: chunky game labels with readable Nunito guidance. */
+@font-face {
+  font-family: "HIPOS Nunito";
+  src: url(../fonts/nunito.ttf) format("truetype");
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-body:"HIPOS Nunito","Segoe UI",system-ui,sans-serif;
+  --font-display:"HIPOS Lilita One",ui-rounded,system-ui,sans-serif;
+  --font-game-weight:400;
+}
+body {
+  font-weight: 600;
+}
+html[data-font=grandstander] {
+  --font-game-weight:800;
+}
+html[data-font=fredoka],
+html[data-font=pixelify] {
+  --font-game-weight:700;
+}
+:is(h1, h2, h3, .brand, .streak-count, .splash-mark, .install-banner-copy strong, .update-banner-copy strong),
+:is(button, .button-link, .home-report, .buddy-bubble, .buddy-dock .buddy-say-text, .chip, .pill, .badge-name, .badge-state, .fp-greeting, .fp-title, .fp-chip, .fp-button) {
+  font-family: var(--font-display);
+  font-weight: var(--font-game-weight);
+  letter-spacing: .01em;
+}
+/* Settings controls and explanatory copy retain the readable body pairing. */
+#settings-dialog,
+.settings-body,
+#settings-dialog :is(.settings-heading #settings-title, .settings-section h3, .settings-categories button, .settings-close, .settings-section > button, select, .font-name),
+.font-preview .fp-body,
+.primary-action span {
+  font-family: var(--font-body);
+}
+.font-preview :is(.fp-greeting, .fp-title, .fp-chip, .fp-button) {
+  font-family: var(--font-display);
+  font-weight: var(--font-game-weight);
+}
+.font-chip:is([data-font=lilita], [data-font=titan]) .font-sample {
+  font-weight: 400;
+}
+/* All five reference combinations share Nunito copy and their own display weight. */
+html {
+  --font-game-spacing:.01em;
+}
+html[data-font=titan],
+html[data-font=grandstander],
+html[data-font=fredoka],
+html[data-font=pixelify] {
+  --font-game-spacing:0;
+}
+html :is(h1, h2, h3, .brand, .streak-count, .splash-mark, .install-banner-copy strong, .update-banner-copy strong, button, .button-link, .home-report, .buddy-bubble, .buddy-dock .buddy-say-text, .chip, .pill, .badge-name, .badge-state) {
+  font-weight: var(--font-game-weight);
+  letter-spacing: var(--font-game-spacing);
+}
+html[data-font=pixelify] {
+  --font-display:"HIPOS Pixelify Sans",ui-monospace,system-ui,sans-serif;
+}
+#settings-dialog .font-options {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 14px;
+}
+#settings-dialog .font-chip {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--surface);
+  text-align: left;
+}
+#settings-dialog .font-chip:hover {
+  background: var(--leaf-soft);
+}
+#settings-dialog .font-name {
+  font:
+    800 .75rem/1.5 "HIPOS Nunito",
+    system-ui,
+    sans-serif;
+  color: var(--muted);
+}
+.font-chip .font-sample {
+  display: grid;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: .01em;
+}
+.font-chip[data-font=default] .font-sample {
+  font-family:
+    "HIPOS Lilita One",
+    ui-rounded,
+    system-ui,
+    sans-serif;
+}
+.font-chip:is([data-font=titan], [data-font=grandstander], [data-font=fredoka], [data-font=pixelify]) .font-sample {
+  letter-spacing: 0;
+}
+.font-chip[data-font=pixelify] .font-sample {
+  font-family:
+    "HIPOS Pixelify Sans",
+    ui-monospace,
+    system-ui,
+    sans-serif;
+}
+.combo-greeting {
+  justify-self: start;
+  padding: 6px 14px;
+  border-radius: 14px;
+  background: var(--leaf-soft);
+  color: var(--heading,var(--green-deep));
+  line-height: 1.5;
+}
+.combo-title {
+  font-size: 1.8rem;
+  line-height: 1.1;
+  color: var(--heading,var(--green-deep));
+}
+.combo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.combo-streak {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--sun);
+  color: #6b4a00;
+  font-size: .95rem;
+  line-height: 1.5;
+}
+.combo-button {
+  padding: 10px 20px;
+  border-radius: 16px;
+  background: var(--leaf);
+  color: var(--green-deep);
+  font-size: 1.05rem;
+  line-height: 1.4;
+  box-shadow: 0 4px 0 #7dbb3a;
+}
+.combo-body {
+  font:
+    600 1rem/1.5 "HIPOS Nunito",
+    system-ui,
+    sans-serif;
+  color: var(--muted);
+}
+.font-preview {
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.font-preview .fp-greeting {
+  padding: 6px 14px;
+  border-radius: 14px;
+  background: var(--leaf-soft);
+  font-size: 1rem;
+}
+.font-preview .fp-title {
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+.font-preview .fp-chip {
+  background: var(--sun);
+  color: #6b4a00;
+  font-size: .95rem;
+}
+.font-preview .fp-button {
+  padding: 10px 20px;
+  border-radius: 16px;
+  background: var(--leaf);
+  color: var(--green-deep);
+  box-shadow: 0 4px 0 #7dbb3a;
+  font-size: 1.05rem;
+}
+.font-preview .fp-body {
+  font:
+    600 1rem/1.5 "HIPOS Nunito",
+    system-ui,
+    sans-serif;
+}
+:root[data-theme=light] {
+  color-scheme: light;
+  background: #edf3e8;
+  color: #173d2c;
+  --surface:#fffefa;
+  --line:#d5e0cf;
+  --ink:#173d2c;
+}
+:root[data-theme=light] body {
+  background: #edf3e8;
+}
+:root[data-theme=dark] {
+  color-scheme: dark;
+}
+/* Keep the shortcut within reach, above the mobile navigation and safe area. */
+.back-to-top-row {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 26;
+}
+@media (min-width: 761px) {
+  .back-to-top-row {
+    right: max(32px, calc((100% - 1120px)/2), env(safe-area-inset-right));
+  }
+  main > footer {
+    padding-bottom: 80px;
+  }
+}
+@media (max-width: 760px) {
+  .back-to-top-row {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+@media print {
+  .back-to-top-row {
+    display: none;
+  }
+}
+#back-to-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 2px solid #7dbb3a;
+  border-radius: 24px 24px 16px 24px;
+  background: var(--leaf);
+  color: var(--green-deep);
+  box-shadow: 0 3px 0 #7dbb3a;
+  font-size: .9375rem;
+  line-height: 1;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+#back-to-top svg {
+  flex-shrink: 0;
+  transition: transform .18s ease;
+}
+@media (max-width: 760px) {
+  #back-to-top {
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+    justify-content: center;
+    gap: 0;
+  }
+  #back-to-top span {
+    display: none;
+  }
+}
+#back-to-top:hover {
+  background: #c8f78e;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #7dbb3a;
+}
+#back-to-top:hover svg {
+  transform: translateY(-2px);
+}
+#back-to-top:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #7dbb3a;
+}
+@media (prefers-reduced-motion: reduce) {
+  #back-to-top,
+  #back-to-top svg {
+    transition: none;
+  }
+  #back-to-top:hover,
+  #back-to-top:hover svg {
+    transform: none;
+  }
+}
+.sound-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.sound-preview-actions .muted {
+  font-size: .875rem;
+}
+#settings-dialog :is(#music-preview, #cheer-preview) {
+  min-height: 44px;
+  font-family: var(--font-body);
+}
+/* Give report dropdown chevrons a consistent inset and vertical alignment. */
+#report-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b9485' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}

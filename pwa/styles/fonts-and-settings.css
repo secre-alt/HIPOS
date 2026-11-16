@@ -1,0 +1,921 @@
+/* ==== Font style setting (restored after merge) ==== */
+/* Font style (Settings): bundled game-style fonts, applied with data attributes on <html>. */
+@font-face {
+  font-family: "HIPOS Lilita One";
+  src: url(../fonts/lilita-one.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HIPOS Titan One";
+  src: url(../fonts/titan-one.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HIPOS Grandstander";
+  src: url(../fonts/grandstander.woff2) format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HIPOS Fredoka";
+  src: url(../fonts/fredoka.woff2) format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HIPOS Pixelify Sans";
+  src: url(../fonts/pixelify-sans.woff2) format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+html[data-font=lilita] {
+  --font-display:"HIPOS Lilita One",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+html[data-font=titan] {
+  --font-display:"HIPOS Titan One",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+html[data-font=grandstander] {
+  --font-display:"HIPOS Grandstander",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+html[data-font=fredoka] {
+  --font-display:"HIPOS Fredoka",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+html[data-font=pixelify] {
+  --font-display:"HIPOS Pixelify Sans",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+html[data-font-all] {
+  --font-body:var(--font-display);
+}
+html[data-font] :is(button, .button-link, .buddy-bubble, #connection) {
+  font-family: var(--font-display);
+}
+html[data-font=pixelify] :is(h1, h2, h3, .brand) {
+  letter-spacing: 0;
+}
+.settings-label {
+  display: block;
+  margin: 20px 0 8px;
+  font-weight: 600;
+}
+.font-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.font-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ink,#143026);
+  text-align: left;
+}
+.font-chip:hover {
+  background: var(--leaf-soft,#eef2e3);
+}
+.font-chip[aria-pressed=true] {
+  border-color: var(--ring,#2f8a57);
+  box-shadow: 0 0 0 2px var(--ring,#2f8a57);
+}
+.font-sample {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.font-name {
+  font-family:
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: .8125rem;
+  font-weight: 600;
+}
+.font-chip[data-font=lilita] .font-sample {
+  font-family:
+    "HIPOS Lilita One",
+    system-ui,
+    sans-serif;
+}
+.font-chip[data-font=titan] .font-sample {
+  font-family:
+    "HIPOS Titan One",
+    system-ui,
+    sans-serif;
+}
+.font-chip[data-font=grandstander] .font-sample {
+  font-family:
+    "HIPOS Grandstander",
+    system-ui,
+    sans-serif;
+  font-weight: 800;
+}
+.font-chip[data-font=fredoka] .font-sample {
+  font-family:
+    "HIPOS Fredoka",
+    system-ui,
+    sans-serif;
+  font-weight: 700;
+}
+.font-chip[data-font=pixelify] .font-sample {
+  font-family:
+    "HIPOS Pixelify Sans",
+    system-ui,
+    sans-serif;
+  font-weight: 700;
+}
+.font-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-weight: 600;
+}
+.font-all input {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: #2f8a57;
+}
+.font-all input:disabled + span {
+  opacity: .55;
+}
+.font-note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: .8125rem;
+}
+:where(:root[data-theme=dark]) .font-chip {
+  color: var(--ink);
+  --ring:#a9e57b;
+}
+:where(:root[data-theme=dark]) .font-all input {
+  accent-color: #a9e57b;
+}
+.font-chip .font-name {
+  font-size: .8125rem;
+  overflow-wrap: normal;
+  word-break: normal;
+  min-width: 0;
+}
+.font-chip .font-sample {
+  flex: 0 0 auto;
+}
+@media (max-width: 400px) {
+  .font-chip {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+  .font-chip .font-name {
+    font-size: .75rem;
+  }
+}
+/* Shared card rhythm: align guide content across columns and keep activity insets consistent. */
+.home-guides {
+  column-gap: 20px;
+  row-gap: 12px;
+}
+.home-guides > .card {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 12px;
+  align-content: start;
+}
+.home-guides > .card > :is(.guide-number, h3, p, .guide-link) {
+  margin: 0;
+}
+.home-guides > .card > .guide-number {
+  justify-self: start;
+  align-self: start;
+}
+.home-guides > .card > .guide-link {
+  align-self: end;
+  padding-top: 4px;
+}
+.home-activities > .card {
+  padding: 24px;
+}
+@media (max-width: 760px) {
+  .home-guides {
+    gap: 16px;
+  }
+  .home-guides > .card {
+    grid-row: auto;
+    grid-template-rows: auto;
+    gap: 12px;
+    padding: 28px 20px 20px;
+  }
+  .home-activities {
+    gap: 16px;
+  }
+  .home-activities > .card {
+    padding: 20px;
+  }
+}
+/* Page headings already identify each screen; keep the floating buddy area clear. */
+@media (min-width: 1001px) {
+  main > header > #page-label {
+    display: none;
+  }
+  main > header {
+    justify-content: flex-end;
+  }
+}
+/* Customization tiles share columns, including earned and locked extras. */
+.buddy-editor {
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr);
+}
+.buddy-editor > .card {
+  min-width: 0;
+  padding: 24px;
+}
+.buddy-options {
+  align-content: start;
+}
+.buddy-options .buddy-row:has(.buddy-chip) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+.buddy-options .buddy-row:has([data-avatar-key=accessory]) {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+.buddy-options .buddy-chip {
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+  padding: 12px 8px;
+  gap: 8px;
+}
+.buddy-options .buddy-chip > .hipos-avatar {
+  flex-shrink: 0;
+}
+.buddy-options .buddy-chip > span:not(.buddy-hint) {
+  display: grid;
+  place-items: center;
+  min-height: 2.8em;
+  line-height: 1.4;
+}
+.buddy-options .buddy-hint {
+  width: 100%;
+  margin-top: auto;
+}
+.buddy-stage .actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  gap: 12px;
+}
+.buddy-stage .actions > button {
+  width: 100%;
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .buddy-editor {
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+@media (max-width: 760px) {
+  .buddy-editor {
+    gap: 16px;
+  }
+  .buddy-editor > .card {
+    padding: 20px;
+  }
+  .buddy-stage .actions {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+/* Keep the sticker book separate from the full customization grid. */
+.buddy-editor + .sticker-book {
+  margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .buddy-editor + .sticker-book {
+    margin-top: 16px;
+  }
+}
+/* Settings groups keep related choices together without a wall of controls. */
+#settings-dialog {
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  padding: 24px;
+}
+.settings-body {
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+}
+.settings-body #settings-title {
+  margin: 0 0 24px;
+  font-family: inherit;
+  font-size: 1.5rem;
+}
+.settings-section {
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.settings-section h3 {
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 4px;
+}
+.settings-body .settings-section .language-control {
+  margin: 0;
+  gap: 8px;
+  font-size: .9375rem;
+  font-weight: 400;
+}
+.settings-body select {
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+.settings-body .settings-status {
+  margin: 0;
+  flex-wrap: wrap;
+  font-size: .9375rem;
+}
+.settings-version {
+  margin: 0;
+  font-size: .875rem;
+  color: var(--muted);
+}
+.settings-section > button {
+  justify-self: start;
+}
+.font-picker summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-size: .9375rem;
+}
+.font-picker summary::-webkit-details-marker {
+  display: none;
+}
+.font-current {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: .875rem;
+}
+.font-change {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.font-picker[open] .font-options {
+  margin-top: 12px;
+}
+.settings-body .font-all {
+  margin-top: 12px;
+  font-size: .9375rem;
+  font-weight: 400;
+  align-items: flex-start;
+}
+.settings-body .font-all input {
+  margin: 2px 0 0;
+  flex: 0 0 22px;
+}
+.settings-body .font-note {
+  margin: 8px 0 0;
+  font-size: .8125rem;
+}
+.settings-buddy-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  font-size: .9375rem;
+  text-decoration: none;
+}
+.settings-switch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  min-height: 44px;
+  font-size: .9375rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+.settings-switch input {
+  appearance: none;
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 26px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #84938a;
+  cursor: pointer;
+  box-shadow: none;
+}
+.settings-switch input::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .15s ease;
+}
+.settings-switch input:checked {
+  background: #28734e;
+  border-color: #28734e;
+  animation: none;
+}
+.settings-switch input:checked::after {
+  transform: translateX(18px);
+}
+.settings-footer {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+}
+.settings-footer button {
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+  min-width: 88px;
+}
+:where(:root[data-theme=dark]) .font-change {
+  color: #cdeeb0;
+}
+:where(:root[data-theme=dark]) .settings-switch input:checked {
+  background: #639c70;
+  border-color: #639c70;
+}
+@media (max-width: 400px) {
+  #settings-dialog {
+    padding: 20px;
+  }
+  .font-picker summary {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .font-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-switch input::after {
+    transition: none;
+  }
+}
+/* Navbar settings and a checkbox that does not inherit text-field dimensions. */
+aside > .settings-toggle-desktop {
+  width: 44px;
+  height: 44px;
+  color: #fffef9;
+  flex: 0 0 44px;
+}
+aside > .settings-toggle-desktop:hover {
+  background: #ffffff12;
+  color: #fffef9;
+}
+.settings-body .font-all {
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+.settings-body .font-all input {
+  appearance: auto;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  max-height: 22px;
+  flex: 0 0 22px;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  animation: none;
+  cursor: pointer;
+}
+.settings-body .font-all input:focus {
+  box-shadow: none;
+}
+.settings-body .font-all input:focus-visible {
+  outline: 2px solid var(--green-mid,#28734e);
+  outline-offset: 3px;
+}
+@media (min-width: 1001px) and (max-width: 1150px) {
+  aside {
+    gap: 12px;
+  }
+  #nav {
+    gap: 0;
+  }
+  #nav a {
+    padding-inline: 8px;
+    font-size: .875rem;
+  }
+  #nav a:last-child {
+    margin-left: 4px;
+    padding-left: 12px;
+  }
+}
+/* Settings uses a category rail instead of a long stack of unrelated controls. */
+#settings-dialog {
+  width: 680px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+}
+.settings-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.settings-heading #settings-title {
+  font:
+    600 1.375rem/1.3 "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+  margin: 0;
+}
+#settings-dialog .settings-heading form {
+  margin: 0;
+}
+.settings-heading .settings-close {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  font:
+    400 .875rem/1.4 "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+  color: var(--muted);
+  box-shadow: none;
+}
+.settings-layout {
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr);
+  min-height: 320px;
+}
+.settings-categories {
+  padding: 16px 12px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.settings-categories button {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  text-align: left;
+  font:
+    400 .9375rem/1.4 "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+}
+.settings-categories button:hover {
+  background: var(--leaf-soft,#edf5ed);
+}
+.settings-categories button[aria-pressed=true] {
+  background: var(--leaf-soft,#edf5ed);
+  color: var(--ink,#214b38);
+  font-weight: 500;
+}
+#settings-dialog .settings-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(100dvh - 132px);
+  min-width: 0;
+  scrollbar-width: thin;
+}
+#settings-dialog .settings-section {
+  padding: 0;
+  border: 0;
+  gap: 16px;
+  align-content: start;
+}
+#settings-dialog .settings-section[hidden] {
+  display: none;
+}
+.settings-section h3 {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+}
+.settings-category-mobile {
+  display: none;
+}
+.settings-body .font-all {
+  font-size: .875rem;
+  gap: 10px;
+}
+.settings-body .font-note {
+  line-height: 1.5;
+  margin: 4px 0 0;
+}
+.font-picker summary {
+  border-radius: 8px;
+}
+.font-picker summary:focus-visible {
+  outline: 2px solid var(--green-mid,#28734e);
+  outline-offset: 4px;
+}
+#settings-dialog .settings-status {
+  align-items: center;
+  font-weight: 400;
+}
+#settings-dialog :is(.settings-categories button, .settings-close, .settings-section > button) {
+  font-family:
+    "HIPOS Fredoka",
+    "Segoe UI",
+    sans-serif;
+}
+.music-volume {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  font-size: .9375rem;
+  font-weight: 400;
+}
+.music-volume input[type=range] {
+  flex: 1 1 140px;
+  max-width: 220px;
+  min-height: 0;
+  padding: 0;
+  accent-color: #28734e;
+  cursor: pointer;
+}
+/* Home summary cards share the same outer edges as the guide and concern sections. */
+#view > #weekly-activity,
+#view > .school-info {
+  max-width: none;
+  width: 100%;
+}
+#weekly-activity .week-days {
+  gap: 12px;
+  align-items: stretch;
+}
+#weekly-activity .badges {
+  gap: 12px;
+}
+#weekly-activity .badge {
+  padding: 16px;
+  gap: 8px;
+  grid-template-rows: auto 1fr auto;
+}
+#weekly-activity .badge-state {
+  margin-top: 0;
+}
+#weekly-activity > .note:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+@media (max-width: 760px) {
+  #weekly-activity .week-days {
+    gap: 0;
+  }
+}
+/* Activity content stays visible; decoration must not wash out the buddy or copy. */
+.challenge-panel::after {
+  display: none;
+}
+.challenge-panel {
+  color: #203b2b;
+}
+.challenge-panel p {
+  color: #36523f;
+}
+.challenge-panel > .mini-buddy {
+  top: 16px;
+  right: 16px;
+}
+.challenge-panel > .guide-number {
+  max-width: calc(100% - 56px);
+}
+:where(:root[data-theme=dark]) .challenge-panel {
+  background: #17372a;
+  color: #edf6e8;
+}
+:where(:root[data-theme=dark]) .challenge-panel p {
+  color: #cee0d3;
+}
+:where(:root[data-theme=dark]) .challenge-panel h2 {
+  color: #edf6e8;
+}
+/* Mobile settings keeps categories visible without nesting them inside a dropdown. */
+#settings-dialog select {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b9485' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+.settings-body .music-volume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  gap: 16px;
+}
+.settings-body .music-volume input {
+  width: 44%;
+  flex: 0 1 160px;
+  min-width: 80px;
+  max-width: 160px;
+  margin: 0;
+}
+/* Keep the desktop sidebar structure on small screens as well. */
+@media (max-width: 600px) {
+  #settings-dialog {
+    max-width: calc(100vw - 24px);
+  }
+  .settings-heading {
+    padding: 16px;
+  }
+  .settings-layout {
+    grid-template-columns: 104px minmax(0, 1fr);
+    min-height: 340px;
+  }
+  .settings-category-mobile {
+    display: none;
+  }
+  .settings-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 8px;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: calc(100dvh - 140px);
+    scrollbar-width: thin;
+  }
+  .settings-categories button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 8px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    font-size: .8125rem;
+    line-height: 1.4;
+  }
+  #settings-dialog .settings-body {
+    padding: 16px 12px;
+    max-height: calc(100dvh - 140px);
+  }
+  #settings-dialog .settings-section {
+    gap: 16px;
+  }
+  .settings-section h3 {
+    font-size: 1rem;
+  }
+  .settings-body .settings-switch,
+  .settings-body .music-volume {
+    font-size: .875rem;
+    gap: 8px;
+  }
+  .settings-body .music-volume input {
+    min-width: 56px;
+    width: 40%;
+    flex-basis: 40%;
+  }
+  .settings-body .font-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-body .font-all {
+    align-items: flex-start;
+    font-size: .8125rem;
+  }
+  .font-picker summary {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .font-picker summary #font-label {
+    flex-basis: 100%;
+  }
+  .font-current {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  #settings-dialog .settings-status {
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+/* The range track reflects the actual value, without text-field borders or padding. */
+#settings-dialog #musicvol {
+  appearance: none;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  --volume-color:#28734e;
+  --volume-track:#c2cfc4;
+}
+#settings-dialog #musicvol:focus {
+  box-shadow: none;
+}
+#settings-dialog #musicvol:focus-visible {
+  outline: 2px solid var(--volume-color);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+#musicvol::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      to right,
+      var(--volume-color) 0 var(--volume,50%),
+      var(--volume-track) var(--volume,50%) 100%);
+}
+#musicvol::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--volume-color);
+}
+#musicvol::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--volume-track);
+}
+#musicvol::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--volume-color);
+}
+#musicvol::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--volume-color);
+}
+:where(:root[data-theme=dark]) #settings-dialog #musicvol {
+  --volume-color:#8ac694;
+  --volume-track:#39564a;
+}

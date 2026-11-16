@@ -1,0 +1,748 @@
+/* Prevent: a small school-day kit, with quiet surfaces around the artwork. */
+.prevent-page {
+  padding: 12px 0 32px;
+}
+.prevent-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, 1fr);
+  align-items: center;
+  gap: 32px;
+  padding: 24px 0 32px;
+}
+.prevent-copy h1 {
+  max-width: 19ch;
+  margin: 0 0 20px;
+  font-size: clamp(2.25rem, 3.6vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  color: var(--heading,var(--ink));
+}
+.prevent-copy > p {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+.prevent-kit {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 232px;
+  justify-self: center;
+}
+.prevent-kit svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.kit-ground {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 12px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--leaf-soft);
+}
+.kit-bottle {
+  position: absolute;
+  right: 4%;
+  top: 0;
+  width: 44%;
+  height: 88%;
+  transform: rotate(9deg);
+}
+.kit-lunch {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 68%;
+  height: 88%;
+  transform: rotate(-7deg);
+}
+.kit-buddy {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  width: 32%;
+  height: 48%;
+  transform: rotate(8deg);
+}
+.prevent-tips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.prevent-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  transition: border-color .16s ease;
+}
+.prevent-tip:last-child {
+  grid-column: 1/-1;
+  align-items: center;
+}
+.prevent-tip:last-child .prevent-tip-copy {
+  max-width: 64ch;
+}
+.prevent-tip h2 {
+  margin: 0 0 8px;
+  font-size: 1.375rem;
+  line-height: 1.25;
+  color: var(--heading,var(--ink));
+}
+.prevent-tip p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.prevent-tip .prevent-note {
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-left: 3px solid #87aa68;
+  border-radius: 0 8px 8px 0;
+  background: var(--leaf-soft);
+  font-size: .875rem;
+  color: var(--ink);
+}
+.prevent-art {
+  position: relative;
+  flex: 0 0 80px;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: #f4e6bf;
+}
+.prevent-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.prevent-art-1,
+.prevent-art-2 {
+  background: #dceee3;
+}
+.prevent-art-3 {
+  background: #f7e0d1;
+}
+.prevent-art-4 {
+  background: #e5edcf;
+}
+.prevent-leaf {
+  position: absolute;
+  right: -3px;
+  top: -4px;
+  width: 16px;
+  height: 22px;
+  border: 2px solid #254b38;
+  border-radius: 14px 2px 14px 2px;
+  background: #b9e780;
+  transform: rotate(24deg);
+}
+@media (hover: hover) {
+  .prevent-tip:hover {
+    border-color: #87aa68;
+  }
+}
+@media (max-width: 760px) {
+  .prevent-page {
+    padding-top: 4px;
+  }
+  .prevent-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 8px 0 24px;
+  }
+  .prevent-kit {
+    grid-row: 1;
+    height: 132px;
+    max-width: 220px;
+  }
+  .prevent-copy h1 {
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    max-width: 15ch;
+    margin-bottom: 16px;
+  }
+  .prevent-tips {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .prevent-tip {
+    gap: 16px;
+    padding: 20px;
+    border-radius: 20px;
+  }
+  .prevent-art {
+    flex-basis: 64px;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  .prevent-tip h2 {
+    font-size: 1.25rem;
+  }
+}
+@media (max-width: 360px) {
+  .prevent-tip {
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prevent-tip {
+    transition: none;
+  }
+}
+/* Home activity stations share the Prevent page's small illustrated objects. */
+.home-activities {
+  gap: 20px;
+  align-items: start;
+}
+.home-activities > .card {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: none;
+  min-width: 0;
+}
+.home-activities > .challenge-panel {
+  padding-right: 132px;
+  background: var(--leaf-soft);
+}
+.home-activities h2 {
+  padding-right: 84px;
+  margin: 0 0 16px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+.home-activities .challenge-panel h2 {
+  min-height: 0;
+  padding-right: 0;
+  margin: 8px 0 12px;
+}
+.home-activities .challenge-panel > .guide-number {
+  display: block;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+  font-size: .875rem;
+  font-weight: 600;
+}
+.home-activities p {
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+.home-activities .challenge-panel > .muted {
+  font-size: .875rem;
+  margin-bottom: 0;
+}
+.home-activities .actions {
+  gap: 12px;
+  margin-top: 20px;
+}
+.home-activities .actions button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+.home-activities .activity-art {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: block;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #f4e6bf;
+  box-shadow: none;
+  overflow: visible;
+  transition: background-color .16s ease;
+}
+.home-activities .activity-art-habits {
+  background: #f7e0d1;
+}
+.home-activities .activity-art-challenge {
+  width: 80px;
+  height: 80px;
+  background: #dceee3;
+}
+.activity-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.activity-leaf {
+  position: absolute;
+  right: -3px;
+  top: -4px;
+  width: 12px;
+  height: 18px;
+  border: 2px solid #254b38;
+  border-radius: 12px 2px 12px 2px;
+  background: #b9e780;
+  transform: rotate(24deg);
+}
+.home-activities .activity-art:hover {
+  background: #e5edcf;
+  transform: none;
+}
+.home-activities #challenge-feedback:not(:empty) {
+  margin: 16px 0 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+.challenge-panel[data-state=done] #challenge-feedback::before {
+  content: "?";
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  background: var(--leaf);
+  color: #254b38;
+  border-radius: 14px 4px 14px 4px;
+}
+.home-activities .daily-items label {
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 0;
+  margin: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.home-activities .daily-items input {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  border-radius: 6px;
+  accent-color: var(--green-mid);
+}
+.home-activities .daily-items label:has(:checked) span {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  color: var(--muted);
+}
+.home-activities #daily-progress {
+  margin: 16px 0 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: .875rem;
+  background: var(--leaf-soft);
+  color: var(--ink);
+}
+.quiz-markers {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 12px;
+}
+.quiz-markers span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: .875rem;
+}
+.quiz-markers .is-current {
+  border: 2px solid #87aa68;
+  color: var(--ink);
+}
+.quiz-markers .is-finished {
+  background: var(--leaf-soft);
+  border-color: #87aa68;
+  color: var(--ink);
+}
+.home-activities .quiz-step {
+  margin: 0 0 12px;
+  font-size: .875rem;
+}
+.home-activities .quiz-options {
+  gap: 12px;
+}
+.home-activities .quiz-options button {
+  padding: 12px 16px;
+  border-radius: 12px;
+  min-height: 48px;
+  box-shadow: none;
+}
+.home-activities .quiz-options button[aria-pressed=true] {
+  border-color: #87aa68;
+  background: var(--leaf-soft);
+  color: var(--ink);
+  opacity: 1;
+  box-shadow: inset 3px 0 #87aa68;
+}
+.home-activities #quiz-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.home-activities #quiz-summary::before {
+  content: "?";
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 36px;
+  border-radius: 18px 6px 18px 6px;
+  background: var(--leaf-soft);
+  color: var(--ink);
+}
+@media (max-width: 760px) {
+  .home-activities {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .home-activities > .card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  .home-activities h2 {
+    padding-right: 76px;
+    font-size: 1.375rem;
+  }
+  .home-activities .activity-art {
+    top: 20px;
+    right: 20px;
+  }
+  .home-activities .activity-art-challenge {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+  }
+  .home-activities .challenge-panel > .guide-number {
+    max-width: calc(100% - 76px);
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+  }
+  .home-activities .challenge-panel h2 {
+    margin-top: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-activities .activity-art {
+    transition: none;
+  }
+}
+/* The school-day kit doubles as three keyboard-accessible little helpers. */
+.prevent-kit {
+  margin-bottom: 72px;
+}
+.prevent-kit .kit-friend {
+  padding: 0;
+  min-height: 44px;
+  min-width: 44px;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.prevent-kit .kit-friend:hover {
+  background: transparent;
+  box-shadow: none;
+  filter: brightness(1.08);
+}
+.prevent-kit .kit-bottle {
+  transform: rotate(9deg);
+}
+.prevent-kit .kit-lunch {
+  transform: rotate(-7deg);
+}
+.prevent-kit .kit-buddy {
+  transform: rotate(8deg);
+}
+.prevent-kit .kit-friend:focus-visible {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+  background: var(--leaf-soft);
+}
+.prevent-kit .kit-tip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: .875rem;
+  line-height: 1.5;
+  text-align: center;
+  min-height: 44px;
+}
+@media (max-width: 760px) {
+  .prevent-kit {
+    margin-bottom: 100px;
+  }
+  .prevent-kit .kit-tip {
+    left: -28px;
+    right: -28px;
+  }
+}
+/* ---- Prevent hero: "buddy shelf" redesign ---- */
+.prevent-kit {
+  --tail:50%;
+  max-width: 400px;
+  height: 250px;
+  margin-bottom: 84px;
+  isolation: isolate;
+}
+.prevent-kit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  background:
+    radial-gradient(
+      120% 90% at 50% 0%,
+      color-mix(in srgb, var(--leaf) 24%, transparent),
+      transparent 68%),
+    var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.prevent-kit::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 12px;
+  height: 12px;
+  z-index: -1;
+  border-radius: 50%;
+  background: #0c312633;
+  filter: blur(6px);
+}
+.prevent-kit .kit-ground {
+  left: 6%;
+  right: 6%;
+  bottom: 22px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--leaf);
+  opacity: .85;
+}
+.prevent-kit .kit-friend {
+  --disc:var(--mint);
+  position: absolute;
+  display: grid;
+  place-items: end center;
+  width: auto;
+  height: auto;
+  padding: 0;
+  rotate: 0deg;
+  transition: translate .25s var(--ease), filter .2s;
+  animation: kit-bob 3.6s ease-in-out infinite;
+}
+.prevent-kit .kit-friend::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 104%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--disc);
+}
+.prevent-kit .kit-friend svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.prevent-kit .kit-lunch {
+  --disc:#d5f3ea;
+  left: 7%;
+  bottom: 30px;
+  width: 44%;
+  height: auto;
+  aspect-ratio: 1;
+  rotate: -4deg;
+}
+.prevent-kit .kit-bottle {
+  --disc:#cfe3f7;
+  left: auto;
+  right: 25%;
+  top: auto;
+  bottom: 30px;
+  width: 26%;
+  height: auto;
+  aspect-ratio: 1;
+  rotate: 3deg;
+  animation-delay: -1.2s;
+}
+.prevent-kit .kit-buddy {
+  --disc:#ffe9b0;
+  right: 5%;
+  bottom: 30px;
+  width: 25%;
+  height: auto;
+  aspect-ratio: 1;
+  rotate: 6deg;
+  animation-delay: -2.4s;
+}
+.prevent-kit .kit-friend:hover {
+  translate: 0 -6px;
+  filter: none;
+}
+.prevent-kit .kit-friend:focus-visible {
+  outline: 3px solid var(--leaf);
+  outline-offset: 6px;
+  background: transparent;
+}
+.prevent-kit[data-active=lunch] {
+  --tail:28%;
+}
+.prevent-kit[data-active=bottle] {
+  --tail:58%;
+}
+.prevent-kit[data-active=leaf] {
+  --tail:86%;
+}
+.prevent-kit .kit-friend[aria-pressed=true]::before {
+  box-shadow: 0 0 0 4px var(--leaf);
+}
+.prevent-kit .kit-tip {
+  top: calc(100% + 14px);
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 12px 16px;
+  border: 2px solid var(--leaf);
+  border-radius: 18px;
+  background: var(--surface);
+  font-family: var(--font-display);
+  font-size: .9375rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.prevent-kit .kit-tip::before {
+  content: "";
+  position: absolute;
+  left: var(--tail);
+  top: -9px;
+  width: 14px;
+  height: 14px;
+  translate: -50% 0;
+  rotate: 45deg;
+  border: 2px solid var(--leaf);
+  border-right: 0;
+  border-bottom: 0;
+  background: var(--surface);
+  border-radius: 3px 0 0 0;
+  transition: left .3s var(--ease);
+}
+@keyframes kit-bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@media (max-width: 760px) {
+  .prevent-kit {
+    height: 210px;
+    max-width: 340px;
+    margin-bottom: 96px;
+  }
+  .prevent-kit .kit-tip {
+    left: 0;
+    right: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prevent-kit .kit-friend {
+    animation: none;
+    transition: none;
+  }
+  .prevent-kit .kit-tip::before {
+    transition: none;
+  }
+}
+.prevent-kit .kit-lunch,
+.prevent-kit .kit-bottle,
+.prevent-kit .kit-buddy {
+  transform: none;
+}
+.prevent-kit button.kit-friend,
+.prevent-kit button.kit-friend:hover,
+.prevent-kit button.kit-friend:active {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  filter: none;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 0;
+}
+.prevent-kit button.kit-friend::after {
+  content: none;
+}
+.prevent-kit .kit-friend::before {
+  width: 92%;
+  bottom: 6%;
+}
+.prevent-kit .kit-friend svg {
+  width: 74%;
+  height: 74%;
+  margin-bottom: 12%;
+}
+.prevent-kit .kit-lunch svg {
+  width: 82%;
+  height: 82%;
+}
+main .prevent-kit button.kit-friend.kit-friend,
+main .prevent-kit button.kit-friend.kit-friend:hover,
+main .prevent-kit button.kit-friend.kit-friend:active {
+  background: none;
+  box-shadow: none;
+  border: 0;
+  filter: none;
+}
+/* Daily habit checkboxes: a 44px touch target so they are easy to tap on phones. */
+.daily-panel input[type=checkbox] {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--green-deep);
+}
+/* Filter and suitability chips: a little over 44px so sub-pixel rounding never drops them below the touch target. */
+button.chip {
+  min-height: 46px;
+}

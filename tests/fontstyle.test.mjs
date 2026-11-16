@@ -8,14 +8,15 @@ test('unknown or damaged font choices fall back to the default font',()=>{
   for(const ok of FONTS)assert.equal(normalizeFont(ok),ok);
 });
 test('every font choice has a Settings button, a stack, and a bundled file',async()=>{
-  const [css,html]=await Promise.all([readFile('pwa/app.css','utf8'),readFile('pwa/index.html','utf8')]);
+  const [entry,html]=await Promise.all([readFile('pwa/app.css','utf8'),readFile('pwa/index.html','utf8')]);
+  const css=(await Promise.all([...entry.matchAll(/@import "(.+?)";/g)].map(([,path])=>readFile('pwa/'+path,'utf8')))).join('\n');
   for(const id of FONTS){
     assert.ok(html.includes(`data-font="${id}"`),`${id} button`);
     if(id==='default')continue;
-    assert.ok(css.includes(`html[data-font=${id}]{--font-display:`),`${id} font stack`);
+    assert.ok(new RegExp(`html\\[data-font=${id}\\]\\s*\\{\\s*--font-display:`).test(css),`${id} font stack`);
     assert.ok(css.includes(`[data-font=${id}] .font-sample`),`${id} sample`);
   }
-  for(const m of css.matchAll(/url\(fonts\/([a-z0-9-]+\.(?:woff2|ttf))\)/g))await access(`pwa/fonts/${m[1]}`);
+  for(const m of css.matchAll(/url\(\.\.\/fonts\/([a-z0-9-]+\.(?:woff2|ttf))\)/g))await access(`pwa/fonts/${m[1]}`);
   assert.equal([...css.matchAll(/@font-face/g)].length,FONTS.length);
 });
 test('font licenses ship with the fonts',async()=>{

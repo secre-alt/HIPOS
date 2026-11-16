@@ -1,0 +1,29 @@
+# PWA source map
+
+Run `npm run dev` to build and preview, `npm test` for unit checks, and
+`npm run test:browser` for the browser flows. Set `PW_CHANNEL=msedge` if
+using installed Edge instead of Playwright Chromium.
+
+- `index.html`: shared page shell, navigation, dialogs, and settings markup.
+- `app.js`: routing, page rendering, report workflows, and delegated UI events.
+- `pwa-runtime.js`: installation, connection status, service worker registration,
+  and user-controlled updates. Initialized once by `app.js`.
+- `home.js`, `guide.js`, `prevent.js`, `reuse.js`: page content and interactions.
+- `core.js`: report validation, transfer, backup, CSV, and PIN helpers.
+- `content.js`, `i18n.js`: guidance content and translations.
+- Activity, buddy, audio, and preference modules remain named for their features.
+
+## Styles
+
+`app.css` is the ordered entry point for `styles/`. The build bundles these
+files into `dist/app.css`, so the offline shell still loads one stylesheet.
+Font URLs in source styles are relative to `styles/`; the build emits fonts
+under `dist/fonts/`.
+
+The stylesheet order preserves the existing cascade: base and navigation,
+field guide and theme, tools, buddy and games, settings, waste picker,
+layout refinements, Prevent and activities, then Reuse. Later rules can
+override earlier rules. Keep this order when editing; grouping every rule
+for the same selector together can change the appearance.
+
+Edit source files under `pwa/`, not generated files under `dist/`.

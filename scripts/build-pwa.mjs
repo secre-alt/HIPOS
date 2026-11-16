@@ -3,7 +3,7 @@ import {mkdir,copyFile,writeFile,readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 await mkdir('dist/icons',{recursive:true});
-for(const f of ['index.html','app.css','theme.js','manifest.webmanifest'])await copyFile(`pwa/${f}`,`dist/${f}`);
+for(const f of ['index.html','theme.js','manifest.webmanifest'])await copyFile(`pwa/${f}`,`dist/${f}`);
 await mkdir('dist/fonts',{recursive:true});
 for(const f of await readdir('pwa/fonts').catch(()=>[]))await copyFile(`pwa/fonts/${f}`,`dist/fonts/${f}`);
 await mkdir('dist/screenshots',{recursive:true});
@@ -11,6 +11,8 @@ for(const f of await readdir('pwa/screenshots').catch(()=>[]))await copyFile(`pw
 // Build id shown on the Privacy page (Vercel provides the commit; local builds say "dev").
 const buildInfo={version:(process.env.VERCEL_GIT_COMMIT_SHA||'dev').slice(0,7),date:new Date().toISOString().slice(0,10)};
 await build({entryPoints:['pwa/app.js'],bundle:true,minify:true,format:'esm',target:['es2022'],outfile:'dist/app.js',define:{__HIPOS_BUILD__:JSON.stringify(buildInfo)}});
+// Bundle ordered source styles into the single offline-cached stylesheet.
+await build({entryPoints:['pwa/app.css'],bundle:true,outfile:'dist/app.css',target:['es2022'],loader:{'.woff2':'file','.ttf':'file'},assetNames:'fonts/[name]'});
 // Generate app-owned PNG artwork directly; no remote image/font dependencies.
 function crc(buf){let c=0xffffffff;for(const b of buf){c^=b;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
 function chunk(type,body){const t=Buffer.from(type),n=Buffer.alloc(4),checksum=Buffer.alloc(4);n.writeUInt32BE(body.length);checksum.writeUInt32BE(crc(Buffer.concat([t,body])));return Buffer.concat([n,t,body,checksum]);}
