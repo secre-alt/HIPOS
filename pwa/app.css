@@ -1178,3 +1178,16 @@ main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:60px}
 .guide-search-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .guide-tools .guide-search-heading label{margin:0;min-width:0}
 .guide-search-heading .mini-buddy{position:relative;inset:auto;flex:0 0 44px}
+
+/* Reference pairing: chunky game labels with readable Nunito guidance. */
+@font-face{font-family:"HIPOS Nunito";src:url(fonts/nunito.ttf) format("truetype");font-weight:200 1000;font-style:normal;font-display:swap}
+:root{--font-body:"HIPOS Nunito","Segoe UI",system-ui,sans-serif;--font-display:"HIPOS Lilita One",ui-rounded,system-ui,sans-serif;--font-game-weight:400}
+body{font-weight:600}
+html[data-font=grandstander]{--font-game-weight:800}
+html[data-font=fredoka],html[data-font=pixelify]{--font-game-weight:700}
+:is(h1,h2,h3,.brand,.streak-count,.splash-mark,.install-banner-copy strong,.update-banner-copy strong),
+:is(button,.button-link,.home-report,.buddy-bubble,.buddy-dock .buddy-say-text,.chip,.pill,.badge-name,.badge-state,.fp-greeting,.fp-title,.fp-chip,.fp-button){font-family:var(--font-display);font-weight:var(--font-game-weight);letter-spacing:.01em}
+/* Settings controls and explanatory copy retain the readable body pairing. */
+#settings-dialog,.settings-body,#settings-dialog :is(.settings-heading #settings-title,.settings-section h3,.settings-categories button,.settings-close,.settings-section>button,select,.font-name),.font-preview .fp-body,.primary-action span{font-family:var(--font-body)}
+.font-preview :is(.fp-greeting,.fp-title,.fp-chip,.fp-button){font-family:var(--font-display);font-weight:var(--font-game-weight)}
+.font-chip:is([data-font=lilita],[data-font=titan]) .font-sample{font-weight:400}

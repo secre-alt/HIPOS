@@ -2,7 +2,7 @@
 // data-font picks the display font (headings, buttons, greeting bubble); data-font-all also
 // uses it for body text. The font files are bundled with the app, so they work offline.
 const KEY='hipos.font',ALL_KEY='hipos.font.all';
-export const USE={default:'The standard HIPOS look.',lilita:'Bold and chunky: headings, greeting bubble, streak chips and buttons.',titan:'Even bolder: the logo, headings and big moments.',grandstander:'Playful and bouncy, still easy to read.',fredoka:'Cute but calm. A safe choice if bold feels too loud.',pixelify:'Retro pixels for small accents only, like the streak and badges.'};
+export const USE={default:'Lilita One for headings, greetings, streaks and buttons + Nunito for body text.',lilita:'Bold and chunky: headings, greeting bubble, streak chips and buttons.',titan:'Even bolder: the logo, headings and big moments.',grandstander:'Playful and bouncy, still easy to read.',fredoka:'Cute but calm. A safe choice if bold feels too loud.',pixelify:'Retro pixels for small accents only, like the streak and badges.'};
 export const FONTS=['default','lilita','titan','grandstander','fredoka','pixelify'];
 export const normalizeFont=v=>FONTS.includes(v)?v:'default';
 export function initFontStyle(){

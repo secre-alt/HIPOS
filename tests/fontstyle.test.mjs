@@ -15,8 +15,8 @@ test('every font choice has a Settings button, a stack, and a bundled file',asyn
     assert.ok(css.includes(`html[data-font=${id}]{--font-display:`),`${id} font stack`);
     assert.ok(css.includes(`[data-font=${id}] .font-sample`),`${id} sample`);
   }
-  for(const m of css.matchAll(/url\(fonts\/([a-z0-9-]+\.woff2)\)/g))await access(`pwa/fonts/${m[1]}`);
-  assert.equal([...css.matchAll(/@font-face/g)].length,FONTS.length-1);
+  for(const m of css.matchAll(/url\(fonts\/([a-z0-9-]+\.(?:woff2|ttf))\)/g))await access(`pwa/fonts/${m[1]}`);
+  assert.equal([...css.matchAll(/@font-face/g)].length,FONTS.length);
 });
 test('font licenses ship with the fonts',async()=>{
   const text=await readFile('pwa/fonts/LICENSES.txt','utf8');
