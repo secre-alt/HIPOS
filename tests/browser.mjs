@@ -273,7 +273,7 @@ try{
     await p.getByRole('link',{name:'Waste Guide',exact:true}).click();
     await expect(p.locator('#page-label')).toHaveText('Classify');
     await expect(p.locator('.waste-guide-art')).toHaveCount(6);
-    await go('Reuse');await expect(p.locator('.reuse-art')).toHaveCount(3);
+    await go('Reuse');await expect(p.locator('.reuse-item')).toHaveCount(3);
     await p.getByRole('link',{name:'My Concerns',exact:true}).click();
     await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
