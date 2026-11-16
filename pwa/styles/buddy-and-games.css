@@ -1372,7 +1372,7 @@ input[type=checkbox]:checked {
 :where(:root[data-theme=dark]) .garden-plot { background:#203c32; color:#e1efe4; }
 
 /* Game hub previews put the color into the game objects. */
-.games-grid.home-guides > .arcade-card { display:grid; grid-row:span 5; grid-template-rows:subgrid; gap:12px; overflow:hidden; border:1px solid var(--line); border-radius:20px; padding:20px; }
+.games-grid.home-guides > .arcade-card { display:grid; grid-row:span 6; grid-template-rows:subgrid; gap:12px; overflow:hidden; border:1px solid var(--line); border-radius:20px; padding:20px; }
 .games-grid.home-guides > .arcade-card > .guide-link { margin-top:0; align-self:start; }
 .arcade-preview { display:grid; place-items:center; height:168px; border-radius:12px; background:var(--leaf-soft); margin-bottom:8px; flex-shrink:0; }
 .arcade-preview svg { width:136px; height:136px; transform:rotate(-6deg); }

@@ -7,7 +7,7 @@ import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
-import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, stickerBook, initBuddySettings } from "./buddy-fx.js";
+import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
 import { gardenPage, initGarden } from "./garden.js";
@@ -49,6 +49,14 @@ function message(text) {
 function summaryNow() {
   const week = weekSummary();
   return { ...week, extra: [...earnedKeys(week), ...stats().seasons.map((key) => "season-" + key)] };
+}
+function gamesProgress() {
+  try {
+    const st = stats();
+    return { sort: st.sorts, compost: st.compost, blooms: gardenState(carePoints(summaryNow())).blooms };
+  } catch {
+    return {};
+  }
 }
 function checkBuddyUnlocks(announce = false) {
   try {
@@ -276,7 +284,7 @@ function render() {
     else view.innerHTML = intro("A clearer picture.", "Review each concern before adding it to this device.") + `<div class="actions"><button data-action="scan">Scan report QR</button><button class="secondary" data-action="manual">Paste transfer text</button>${data.imports.length ? '<button class="secondary" data-action="export-csv">Export CSV</button>' : ""}<button class="secondary" data-action="lock">Lock staff area</button></div><div class="stats">${statuses.map((s) => `<div><strong>${data.imports.filter((r) => r.status === s).length}</strong><span>${s}</span></div>`).join("")}</div>${data.imports.length ? staffFilters() : ""}<div id="staff-list">${staffListHTML()}</div>`;
   }
   if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device and is never part of a report.") + avatarEditor() + stickerBook();
-  if (page === "games") view.innerHTML = intro("Games", "Short, friendly games about waste. Nothing is graded or sent anywhere.") + gamesPage();
+  if (page === "games") view.innerHTML = intro("Games", "Short, friendly games about waste. Nothing is graded or sent anywhere.") + gamesPage(gamesProgress());
   if (page === "sort") view.innerHTML = gamesBack() + intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + sortGame(summaryNow()) +'<p class="sort-promo"><a class="button-link secondary" href="#compost">Try Compost Catch →</a></p>';
   if (page === "garden") view.innerHTML = gamesBack() + intro("Buddy garden","Your flowers grow from the care you give. Nothing wilts and nothing is sent anywhere.") + gardenPage(summaryNow());
   if (page === "compost") view.innerHTML = gamesBack() + intro("Compost Catch","Catch the scraps that can be composted. Nothing is graded or sent anywhere.") + compostGame(summaryNow());

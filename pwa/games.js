@@ -7,9 +7,11 @@ const games = [
   ["compost", "02 / Catch", "Catch the compost", "Move the basket and catch only the scraps that can be composted.", "Try Compost Catch →"],
   ["garden", "03 / Grow", "Tend your garden", "Your care grows nine flowers. Nothing wilts.", "Visit the Buddy garden →"],
 ];
-export const gamesPage = () =>
+// Progress shown on each game card: rounds played, and flowers in bloom for the garden.
+const metaLine=(id,progress={})=>id==='garden'?`${progress.blooms||0} of 9 flowers in bloom`:(progress[id]||0)>0?`Rounds played: ${progress[id]}`:'Not played yet';
+export const gamesPage = (progress = {}) =>
   `<div class="home-guides games-grid">${games
-    .map(([id, number, title, body, action]) => `<a class="card card-link arcade-card arcade-${id}" href="#${id}"><div class="arcade-preview">${gameArt(id==='sort'?'pouch':id==='compost'?'basket':'flower')}</div><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="guide-link">${action}</span></a>`)
+    .map(([id, number, title, body, action]) => `<a class="card card-link arcade-card arcade-${id}" href="#${id}"><div class="arcade-preview">${gameArt(id==='sort'?'pouch':id==='compost'?'basket':'flower')}</div><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="arcade-meta">${metaLine(id,progress)}</span><span class="guide-link">${action}</span></a>`)
     .join("")}</div>`;
 // Shown on the Sorting game, Compost Catch and Buddy garden pages.
 export const gamesBack = () => '<p class="sort-promo"><a class="button-link secondary" href="#games">← All games</a></p>';

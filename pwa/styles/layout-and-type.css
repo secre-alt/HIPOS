@@ -605,3 +605,13 @@ html[data-font=pixelify] {
   .compost-game.is-playing .compost-basket { width:52px; height:52px; }
   .compost-game.is-playing .compost-item { width:36px; height:36px; }
 }
+
+/* Game polish: no page-wide focus ring, no empty status pill, buddy clear of the score line while playing. */
+#view:focus { outline: none; }
+.compost-game .feedback:empty,
+.compost-game .feedback:has(> span:only-child:empty) { background: none; border-color: transparent; padding: 0; }
+.app:has(.compost-game.is-playing) .buddy-dock .buddy-say { opacity: 0; pointer-events: none; }
+@media (max-width: 1000px) {
+  .compost-game.is-playing .compost-score { padding-left: 52px; }
+}
+.arcade-meta { display: block; margin: 0; align-self: end; font-size: .875rem; font-weight: 700; color: var(--muted); }

@@ -390,6 +390,8 @@ try{
     for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),0,name+' is grouped under Games');
     assert.equal(await page.locator('.games-strip a[href="#games"]').count(),1,'home links to Games');
     await page.locator('#nav a',{hasText:'Games'}).click();await page.locator('.games-grid').waitFor();
+    assert.equal(await page.locator('.arcade-meta').count(),3,'each game card shows progress');
+    assert.match(await page.locator('.arcade-meta').first().innerText(),/Not played yet/);
     for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
     await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
     assert.equal(await page.locator('#nav a.active').innerText(),'Games','a game keeps Games active in the menu');
