@@ -1310,3 +1310,5 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 .prevent-kit .kit-friend svg{width:74%;height:74%;margin-bottom:12%}
 .prevent-kit .kit-lunch svg{width:82%;height:82%}
 main .prevent-kit button.kit-friend.kit-friend,main .prevent-kit button.kit-friend.kit-friend:hover,main .prevent-kit button.kit-friend.kit-friend:active{background:none;box-shadow:none;border:0;filter:none}
+/* Daily habit checkboxes: a 44px touch target so they are easy to tap on phones. */
+.daily-panel input[type=checkbox]{width:44px;height:44px;min-width:44px;min-height:44px;margin:0;cursor:pointer;accent-color:var(--green-deep)}
