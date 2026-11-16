@@ -389,7 +389,7 @@ try{
     assert.equal(await page.locator('#nav a',{hasText:'Games'}).count(),1,'Games in the menu');
     for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),0,name+' is grouped under Games');
     assert.equal(await page.locator('.games-strip a[href="#games"]').count(),1,'home links to Games');
-    await page.locator('#nav a',{hasText:'Games'}).click();
+    await page.locator('#nav a',{hasText:'Games'}).click();await page.locator('.games-grid').waitFor();
     for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
     await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
     assert.equal(await page.locator('#nav a.active').innerText(),'Games','a game keeps Games active in the menu');
