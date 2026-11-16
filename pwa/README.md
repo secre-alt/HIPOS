@@ -8,7 +8,7 @@ using installed Edge instead of Playwright Chromium.
 - `app.js`: routing, page rendering, report workflows, and delegated UI events.
 - `pwa-runtime.js`: installation, connection status, service worker registration,
   and user-controlled updates. Initialized once by `app.js`.
-- `home.js`, `guide.js`, `prevent.js`, `reuse.js`: page content and interactions.
+- `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
 - `games.js`: the Games hub page, the Home games strip, and the list of game routes
   that keep the single Games menu item highlighted.
 - `core.js`: report validation, transfer, backup, CSV, and PIN helpers.
@@ -24,7 +24,7 @@ under `dist/fonts/`.
 
 The stylesheet order preserves the existing cascade: base and navigation,
 field guide and theme, tools, buddy and games, settings, waste picker,
-layout refinements, Prevent and activities, then Reuse and Classify. Later rules can
+layout refinements, Prevent and activities, then Reuse, Classify, and Carry out. Later rules can
 override earlier rules. Keep this order when editing; grouping every rule
 for the same selector together can change the appearance.
 

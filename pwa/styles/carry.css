@@ -1,0 +1,52 @@
+/* Shared illustrated hero and rows; keep the four safety steps in reading order. */
+.carry-kit {
+  margin-bottom: 160px;
+}
+main .carry-kit button.kit-friend.kit-friend {
+  min-width: 44px;
+  min-height: 44px;
+}
+.carry-page .carry-steps {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.carry-page .prevent-tip {
+  margin: 0;
+  box-shadow: none;
+}
+.carry-page .prevent-tip:last-child {
+  grid-column: auto;
+  align-items: flex-start;
+}
+.carry-step-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 12px;
+  border-radius: 14px 4px 14px 4px;
+  background: var(--leaf-soft);
+  color: var(--ink);
+  font-size: .875rem;
+  font-weight: 700;
+}
+.carry-page .pill {
+  margin: 4px 0 12px;
+  white-space: normal;
+  line-height: 1.5;
+}
+.carry-page .carry-question {
+  margin-top: 16px;
+}
+.carry-page .button-link {
+  margin-top: 12px;
+  min-height: 44px;
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .carry-kit {
+    margin-bottom: 180px;
+  }
+}
