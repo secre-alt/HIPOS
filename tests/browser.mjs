@@ -233,7 +233,7 @@ try{
     await expect(p.getByRole('button',{name:'Show QR'})).toHaveCount(1);
     for(const name of ['Prevent','Reuse','Classify','Carry out','My reports']){
       await go(name);await p.reload();await expect(p.locator('#page-label')).toHaveText(name);await noOverflow();await touchTargets();
-      if(name==='Reuse')await expect(p.locator('.approval-label')).toHaveText('Requires school approval');
+      if(name==='Reuse')await expect(p.locator('.reuse-approval')).toHaveText('Requires school approval');
       if(name==='Carry out'){
         await expect(p.locator('#view')).toContainText('A pouch is optional.');
         await expect(p.locator('.carry-steps > li')).toHaveCount(4);
