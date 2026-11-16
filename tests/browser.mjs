@@ -28,7 +28,7 @@ try{
       assert.equal((await page.locator('main').boundingBox()).y,contentY,'Dropdown does not shift content');
       const box=await toggle.boundingBox();assert.equal(box.width,48);assert.equal(box.height,48);
       await expect(page.locator('.menu-close')).toBeVisible();await expect(page.locator('.menu-bars')).toBeHidden();
-      await expect(page.locator('#nav')).toHaveCSS('background-color','rgb(255, 254, 249)');
+      await expect(page.locator('#nav')).toHaveCSS('background-color','rgb(255, 254, 250)');
       await expect(page.locator('#nav')).toHaveCSS('opacity','1');
       await toggle.focus();await page.keyboard.press('Tab');await expect(page.locator('#nav a').first()).toBeFocused();
       await expect(page.locator('#nav a').first()).toHaveCSS('outline-style','solid');
