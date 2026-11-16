@@ -1,6 +1,7 @@
 // Scroll motion: content rises into view as it is scrolled to, tiles stagger in, the hero art
 // drifts slowly, and a thin progress line fills the top bar. Everything is progressive:
 // without JavaScript, IntersectionObserver or with "reduce motion" on, content is simply shown.
+import {gamePages} from './games.js';
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TARGETS='#view>*:not(.home-activities),.waste-choice,.home-guides>.card,.week-days li';
 let io=null;
@@ -45,12 +46,11 @@ export function initScrollEffects(){
     queued=false;
     const y=window.scrollY,max=Math.max(0,root.scrollHeight-window.innerHeight);
     const cards=[...document.querySelectorAll('#view .card,#view .prevent-tip,#view .reuse-item,#view .reuse-scheme')].filter(card=>card.getClientRects().length);
-    const gameCards=[...document.querySelectorAll('#view [data-back-to-top-card]')].filter(card=>card.getClientRects().length);
-    const finalSection=gameCards.at(-1)||cards.at(-1)||document.querySelector('#view')?.lastElementChild;
-    // Every page uses the same trigger: reaching its last visible card.
+    const finalSection=cards.at(-1)||document.querySelector('#view')?.lastElementChild;
+    // Non-game pages use the last visible card as their trigger.
     // Keep the shortcut visible below that card, including through the footer.
     const rect=finalSection?.getBoundingClientRect();
-    if(backToTop)backToTop.hidden=!rect||rect.top>=window.innerHeight;
+    if(backToTop)backToTop.hidden=gamePages.includes(window.location.hash.slice(1))||!rect||rect.top>=window.innerHeight;
     document.querySelector('aside')?.style.setProperty('--progress',Math.min(1,Math.max(0,y/Math.max(1,max))).toFixed(4));
     const art=document.querySelector('.hero-deco');
     if(art)art.style.setProperty('--sy',reduced()?'0':String(Math.min(Math.round(y),1200)));

@@ -21,7 +21,7 @@ const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answe
 
 export function sortGame(){
   start();
-  return `<section data-back-to-top-card class="card sort-game" id="sort-game" aria-labelledby="sort-heading">${miniBuddy('sort')}<h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
+  return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading">${miniBuddy('sort')}<h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
 }
 function body(){
   if(!game)return '';

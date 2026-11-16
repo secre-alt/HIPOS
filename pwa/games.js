@@ -8,7 +8,7 @@ const games = [
 ];
 export const gamesPage = () =>
   `<div class="home-guides games-grid">${games
-    .map(([id, number, title, body, action]) => `<a data-back-to-top-card class="card card-link" href="#${id}"><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="guide-link">${action}</span></a>`)
+    .map(([id, number, title, body, action]) => `<a class="card card-link" href="#${id}"><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="guide-link">${action}</span></a>`)
     .join("")}</div>`;
 // Shown on the Sorting game, Compost Catch and Buddy garden pages.
 export const gamesBack = () => '<p class="sort-promo"><a class="button-link secondary" href="#games">← All games</a></p>';

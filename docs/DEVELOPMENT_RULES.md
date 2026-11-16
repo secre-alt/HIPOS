@@ -9,13 +9,12 @@ change them; update the relevant documentation when it does.
   page controls.
 - Back to top floats at the lower right, aligned with the desktop content edge
   and above mobile navigation and the device safe area.
-- Show it when the last visible content card enters the viewport on each page;
+- Show it when the last visible content card enters the viewport on non-game pages;
   keep it available through the footer. Hide it when scrolling above that card.
 - Include custom card markup: Prevent uses `.prevent-tip`; Reuse ends with
   `.reuse-scheme`, after its `.reuse-item` cards.
-- The Games hub and game pages mark their content cards with
-  `data-back-to-top-card`. Use the last visible marked card as the trigger,
-  including after a game updates its content or shows results.
+- Hide Back to top on the Games hub, Sorting game, Compost Catch, and Buddy
+  garden, including their result screens. Use the shared `gamePages` route list.
 - Mobile shows only the arrow icon with an accessible name and a 48px tap target.
   Desktop shows the arrow and text.
 - Return keyboard focus to the page heading. Use smooth scrolling only when
