@@ -144,6 +144,7 @@ pairs.push(
  ['Great eye!','Matalas ang mata mo!'],
  ['Almost! Read the tip.','Malapit na! Basahin ang payo.'],
  ['Perfect round! Amazing!','Perpektong round! Kahanga-hanga!'],
+ ['Tap a buddy for a little tip.','Pindutin ang isang buddy para sa munting payo.'],
 // Compost Catch
  ['Compost Catch','Pagsalo ng Compost'],
  ['Catch the compost!','Saluhin ang compost!'],

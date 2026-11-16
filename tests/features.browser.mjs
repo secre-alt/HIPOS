@@ -88,7 +88,7 @@ try{
     }
     const en=await collect('en'),fil=await collect('fil'),missing=[];
     for(const pg of pages){const f=new Set(fil[pg]);for(const t of en[pg])if(f.has(t)&&!allowed.has(t))missing.push(`${pg}: ${t.slice(0,70)}`);}
-    assert.deepEqual([...new Set(missing)],[],'English text still shown with Filipino on');
+    const left=[...new Set(missing)];if(left.length)console.log('MISSING:',JSON.stringify(left));assert.deepEqual(left,[],'English text still shown with Filipino on');
   });
 
   await check('back up and restore reports',async()=>{
