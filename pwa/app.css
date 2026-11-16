@@ -1249,7 +1249,7 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 .challenge-panel[data-state=done] #challenge-feedback::before{content:'?';display:inline-grid;place-items:center;width:28px;height:28px;margin-right:8px;background:var(--leaf);color:#254b38;border-radius:14px 4px 14px 4px}
 .home-activities .daily-items label{gap:12px;min-height:56px;padding:12px 0;margin:0;border-radius:0;border-bottom:1px solid var(--line);cursor:pointer}
 .home-activities .daily-items input{width:24px;height:24px;min-height:24px;border-radius:6px;accent-color:var(--green-mid)}
-.home-activities .daily-items label:has(:checked) span{text-decoration:none;color:var(--muted)}
+.home-activities .daily-items label:has(:checked) span{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
 .home-activities #daily-progress{margin:16px 0 0;padding:8px 12px;border-radius:12px;font-size:.875rem;background:var(--leaf-soft);color:var(--ink)}
 .quiz-markers{display:flex;gap:8px;margin:20px 0 12px}
 .quiz-markers span{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:50%;color:var(--muted);font-size:.875rem}
