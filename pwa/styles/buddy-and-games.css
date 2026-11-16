@@ -389,6 +389,8 @@
 .hipos-avatar.do-spin {
   animation: av-spin .8s var(--ease);
 }
+.hipos-avatar.do-nod { animation: av-nod .4s var(--ease); }
+@keyframes av-nod { 35% { transform:translateY(3px) rotate(-5deg); } 70% { transform:rotate(3deg); } }
 @keyframes av-jump {
   0% {
     transform: translateY(0) scale(1);
@@ -929,6 +931,7 @@ input[type=checkbox]:checked {
   }
   .hipos-avatar.do-hop,
   .hipos-avatar.do-spin,
+  .hipos-avatar.do-nod,
   [data-mood=excited] .av-body,
   .sticker.earned svg,
   #view.page-in,
@@ -1303,8 +1306,9 @@ input[type=checkbox]:checked {
   display: grid;
   justify-items: center;
   align-content: center;
-  gap: 2px;
+  gap: 4px;
   width: 100%;
+  height: 100%;
   min-height: 112px;
   padding: 10px 6px;
   border-radius: 20px;
@@ -1320,9 +1324,22 @@ input[type=checkbox]:checked {
   background: #f4ecd1;
 }
 .garden-icon {
-  font-size: 2.2rem;
-  line-height: 1.1;
+  display: block;
+  width: 64px;
+  height: 64px;
 }
+.garden-icon svg { display:block; width:100%; height:100%; }
+:where(:root[data-theme=dark]) .garden-icon svg,
+:where(:root[data-theme=dark]) .garden-growth-art svg { stroke:#9bb7a1; }
+.garden-next { display:grid; gap:8px; margin:16px 0; padding:16px; border:1px dashed var(--line); border-radius:12px; }
+.garden-next p { margin:0; }
+.garden-next progress { width:100%; height:12px; accent-color:var(--green); }
+.garden-growth { display:flex; align-items:center; gap:12px; width:100%; margin:12px 0; padding:12px; border:1px dashed var(--line); border-radius:12px; text-align:left; }
+.garden-growth-art { display:block; flex:0 0 64px; }
+.garden-growth-art svg { display:block; width:64px; height:64px; }
+.garden-growth ul { list-style:none; padding:0; margin:4px 0 0; font-size:.875rem; }
+.garden-growth p { margin:0; }
+.garden-growth > div { min-width:0; }
 .garden-name {
   font-weight: 800;
   font-size: 0.875rem;

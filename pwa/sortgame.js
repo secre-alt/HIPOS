@@ -4,12 +4,13 @@
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,miniBuddy} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,miniBuddy,carePoints,gardenState} from './buddy-fx.js';
+import {gardenGrowth} from './garden.js';
 import {celebrate} from './motion.js';
 
 const ROUND=6;
 const pool=()=>[...waste.map(([title,suitable,body],i)=>({title,suitable,body,art:wasteArt(i)})),...moreWaste.map(([title,suitable,body],i)=>({title,suitable,body,art:moreWasteArt(i)}))];
-let game=null,lastTitles=[];
+let game=null,lastTitles=[],gardenSummary={};
 
 export function makeRound(random=Math.random,previous=[]){
   const shuffle=a=>{const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
@@ -19,7 +20,8 @@ export function makeRound(random=Math.random,previous=[]){
 }
 const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[]};lastTitles=game.items.map(x=>x.title);};
 
-export function sortGame(){
+export function sortGame(summary={}){
+  gardenSummary=summary;
   start();
   return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading">${miniBuddy('sort')}<h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
 }
@@ -41,7 +43,7 @@ function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
   const review=game.review.length?`<details class="sort-review"><summary>Review what you learned</summary><ul>${game.review.map(item=>`<li><strong>${e(item.title)}</strong><p>${e(item.body)}</p></li>`).join('')}</ul></details>`:'';
-  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p><p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
+  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p>${game.growth||''}<p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
 }
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
@@ -58,15 +60,19 @@ function answer(choice){
   else{cheer('retry');}
 }
 function advance(){
-  if(!game)return;game.i++;game.answered=false;
-  const box=document.querySelector('#sort-body');box.innerHTML=body();
+  if(!game||!game.answered||game.i>=game.items.length)return;game.i++;game.answered=false;
+  const box=document.querySelector('#sort-body');
   if(game.i>=game.items.length){
+    const before=gardenState(carePoints(gardenSummary));
     recordSort(game.score,game.items.length);giveGameTreat('sort');
+    game.growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
+    box.innerHTML=body();
     if(game.score===game.items.length){celebrate();cheer('complete');}
     else{cheer('complete');}
     box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});
     return true; // round finished: the caller refreshes stickers
   }
+  box.innerHTML=body();
   fitGame();
 }
 // ---- input: click on bins/next/again, and pointer dragging of the item ----

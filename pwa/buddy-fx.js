@@ -249,8 +249,8 @@ export function animate(kind){
   if(!cheersOn()||reduced())return;
   document.querySelectorAll('.hipos-avatar').forEach(svg=>{
     if(svg.closest('.buddy-chip,.buddy-say,.sticker'))return;
-    svg.classList.remove('do-hop','do-spin');void svg.getBoundingClientRect();svg.classList.add(kind==='spin'?'do-spin':'do-hop');
-    setTimeout(()=>svg.classList.remove('do-hop','do-spin'),900);
+    svg.classList.remove('do-hop','do-spin','do-nod');void svg.getBoundingClientRect();svg.classList.add(kind==='spin'?'do-spin':kind==='nod'?'do-nod':'do-hop');
+    setTimeout(()=>svg.classList.remove('do-hop','do-spin','do-nod'),900);
   });
 }
 // A few sparkles from an element. Skipped for reduced motion.

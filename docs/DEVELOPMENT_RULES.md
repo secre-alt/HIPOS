@@ -47,6 +47,14 @@ change them; update the relevant documentation when it does.
   daily completion once per local calendar day, after all three habits, the
   challenge, and a quiz finished that day. Reloading must not replay it.
 
+## Games and garden
+
+- The garden grows from existing care points: treats, completed sorting and
+  compost rounds, and challenge days. Each of nine plots needs three points.
+  Game results show the actual stage changes after rewards are recorded; replaying
+  still earns a round point, with only one treat per game per local day.
+  Nothing wilts, and a completed garden must not claim further plant growth.
+
 ## Data and guidance
 
 - Reports and activity remain on the current browser and device. Do not imply

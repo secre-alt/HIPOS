@@ -1,4 +1,13 @@
 const pairs=[
+ ['Next bloom','Susunod na pamumulaklak'],['Progress to next bloom','Usad sa susunod na pamumulaklak'],
+ ['1 care point to the next bloom','1 puntos ng pag-aalaga bago ang susunod na pamumulaklak'],
+ ['2 care points to the next bloom','2 puntos ng pag-aalaga bago ang susunod na pamumulaklak'],
+ ['3 care points to the next bloom','3 puntos ng pag-aalaga bago ang susunod na pamumulaklak'],
+ ['Your garden grew','Lumago ang iyong hardin'],['Your garden is fully grown. Nothing wilts.','Ganap nang lumago ang iyong hardin. Walang nalalanta.'],
+ ['Good catch. More scraps for the compost.','Mahusay na salo. Dagdag na tira para sa compost.'],
+ ['Into the basket. You spotted a food scrap.','Sa basket. Nakakita ka ng tirang pagkain.'],
+ ['Let the plastic pass. Watch for food scraps.','Palampasin ang plastik. Abangan ang tirang pagkain.'],
+ ['Keep the basket for food scraps. You can try again.','Para sa tirang pagkain ang basket. Maaari kang sumubok muli.'],
  ['Round progress','Usad ng round'],
  ['Good practice. Try another round.','Magandang pagsasanay. Subukan ang isa pang round.'],
  ['Catch food scraps','Saluhin ang tirang pagkain'],['Let plastic pass','Palampasin ang plastik'],

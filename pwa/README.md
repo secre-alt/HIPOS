@@ -11,9 +11,11 @@ using installed Edge instead of Playwright Chromium.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
 - `games.js`: the Games hub page, the Home games strip, and the list of game routes
   that keep the single Games menu item highlighted.
-- `game-art.js`: shared, decorative SVG illustrations for game previews and Compost Catch.
+- `game-art.js`: shared, decorative SVG illustrations for game previews,
+  Compost Catch, and the garden's four growth stages and nine plants.
 - `sortgame.js`, `compost.js`, `garden.js`: game rendering and interactions.
   Compost Catch pauses when hidden and requires an explicit resume.
+  `garden.js` also renders shared garden progress on completed game results.
 - `core.js`: report validation, transfer, backup, CSV, and PIN helpers.
 - `content.js`, `i18n.js`: guidance content and translations.
 - Activity, buddy, audio, and preference modules remain named for their features.

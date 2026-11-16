@@ -15,7 +15,7 @@ test('cheers vary by event and suppress bursts without queuing',()=>{
   assert.equal(pick('complete',{preview:true}),null);
   for(const cheer of Object.values(CHEERS)){
     assert.ok(SFX_NAMES.includes(cheer.sound));
-    assert.ok(['hop','spin'].includes(cheer.motion));
+    assert.ok(['hop','spin','nod'].includes(cheer.motion));
     assert.equal(new Set(cheer.lines).size,cheer.lines.length);
   }
 });

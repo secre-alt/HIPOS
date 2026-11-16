@@ -3,7 +3,8 @@
 // Runs entirely on this device. Nothing is scored against a student or sent anywhere.
 import {escapeHTML as e} from './core.js';
 import {gameArt} from './game-art.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordCompost,giveGameTreat} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordCompost,giveGameTreat,carePoints,gardenState} from './buddy-fx.js';
+import {gardenGrowth} from './garden.js';
 
 const ITEMS=[
   {name:'Banana peel',art:'peel',good:true},
@@ -16,7 +17,7 @@ const ITEMS=[
   {name:'Plastic wrapper',art:'wrapper',good:false},
 ];
 const TOTAL=18,SPAWN_MS=1100,FALL=21,BASKET_STEP=8,CATCH_Y=78,CATCH_RANGE=12;
-let g=null,raf=0,last=0;
+let g=null,raf=0,last=0,gardenSummary={};
 
 // Build a fair sequence: about two thirds compostable, never the same item twice in a row.
 export function makeSequence(random=Math.random){
@@ -30,7 +31,8 @@ export function makeSequence(random=Math.random){
   return seq;
 }
 
-export function compostGame(){
+export function compostGame(summary={}){
+  gardenSummary=summary;
   return `<section class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
   <h2 id="compost-heading">Compost Catch</h2>
   <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span><button type="button" class="secondary" data-compost-pause hidden>Pause</button></div>
@@ -70,9 +72,11 @@ function finish(){
   const field=document.querySelector('#compost-field'),controls=document.querySelector('#compost-controls');
   const perfect=g.caught===g.good;
   const line=perfect?'Perfect! Every compostable scrap caught.':g.caught>=g.good-3?'Great catching!':'Good practice. Try another round.';
-  if(field)field.innerHTML=`<div class="compost-done">${gameArt('flower')}<h3>You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p><p class="compost-takeaway">Catch food scraps. Let plastic pass.</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a></div></div>`;
-  controls&&(controls.hidden=true);
+  const before=gardenState(carePoints(gardenSummary));
   recordCompost(g.caught,g.good);giveGameTreat('compost');
+  const growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
+  if(field)field.innerHTML=`<div class="compost-done"><h3>You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${growth}<p class="compost-takeaway">Catch food scraps. Let plastic pass.</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a></div></div>`;
+  controls&&(controls.hidden=true);
   document.dispatchEvent(new CustomEvent('hipos-game-done'));
   cheer('complete');
   setStatus('');
@@ -92,8 +96,8 @@ function frame(now){
     const onBasket=f.y>=CATCH_Y&&f.y<=CATCH_Y+8&&Math.abs(f.x-g.basket)<CATCH_RANGE;
     if(onBasket&&!f.done){
       f.done=true;f.el.remove();g.resolved++;
-      if(f.item.good){g.caught++;setStatus('Into the compost!','success-feedback',f.item.name);sparkle(basketEl(),5);sound('coin');buzz(8);animate('hop');}
-      else{setStatus('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','',f.item.name);sound('oops');}
+      if(f.item.good){g.caught++;setStatus('Into the compost!','success-feedback',f.item.name);sparkle(basketEl(),5);buzz(8);if(!cheer('catch'))sound('coin');}
+      else{setStatus('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','',f.item.name);if(!cheer('miss'))sound('oops');}
       setScore();
       continue;
     }
