@@ -197,6 +197,8 @@
   min-width: 44px;
   min-height: 44px;
   padding: 0;
+}
+:is(.settings-toggle, #menu-toggle) {
   border: 2px solid #7dbb3a;
   border-radius: 24px 24px 16px 24px;
   background: var(--leaf);
@@ -204,25 +206,25 @@
   box-shadow: 0 3px 0 #7dbb3a;
   transition: transform .18s ease, box-shadow .18s ease;
 }
-.settings-toggle:hover {
+:is(.settings-toggle, #menu-toggle):hover {
   background: #c8f78e;
   color: var(--green-deep);
   transform: translateY(-2px);
   box-shadow: 0 5px 0 #7dbb3a;
 }
-.settings-toggle:active {
+:is(.settings-toggle, #menu-toggle):active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #7dbb3a;
 }
-.settings-toggle svg {
+:is(.settings-toggle, #menu-toggle) svg {
   stroke-width: 2.5;
 }
 @media (prefers-reduced-motion: reduce) {
-  .settings-toggle {
+  :is(.settings-toggle, #menu-toggle) {
     transition: none;
   }
-  .settings-toggle:hover,
-  .settings-toggle:active {
+  :is(.settings-toggle, #menu-toggle):hover,
+  :is(.settings-toggle, #menu-toggle):active {
     transform: none;
   }
 }

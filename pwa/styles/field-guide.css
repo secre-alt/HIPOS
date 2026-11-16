@@ -356,7 +356,10 @@
   padding: 12px 16px;
 }
 #dismiss-install {
-  border-radius: 8px;
+  border-radius: 18px 18px 12px 18px;
+}
+:is(.install-banner-icon, #dismiss-install) svg {
+  stroke-width: 2.5;
 }
 .install-banner-icon {
   display: none;

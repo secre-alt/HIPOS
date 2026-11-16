@@ -42,14 +42,7 @@ aside {
   display: none;
   width: 48px;
   height: 48px;
-  padding: 12px;
-  border: 1px solid #779b87;
-  border-radius: 10px;
-  color: var(--surface);
-  background: transparent;
-}
-#menu-toggle:hover {
-  background: #245540;
+  padding: 10px;
 }
 nav {
   display: flex;

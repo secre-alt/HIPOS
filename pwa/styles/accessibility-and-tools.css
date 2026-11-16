@@ -39,8 +39,7 @@
   color: #143026;
 }
 :where(:root[data-theme=dark]) aside,
-:where(:root[data-theme=dark]) .brand,
-:where(:root[data-theme=dark]) #menu-toggle {
+:where(:root[data-theme=dark]) .brand {
   color: #fffef9;
 }
 :where(:root[data-theme=dark]) button:focus-visible,
