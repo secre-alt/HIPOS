@@ -6,6 +6,7 @@ import {initFontStyle} from './fontstyle.js';
 import {avatarEditor,avatarClick,refreshAvatars,syncUnlocks,greeting} from './avatar.js';
 import {buddySay,tapBuddy,applyMood,animate,sparkle,buzz,sound,giveTreat,syncStickers,earnedKeys,stats,stickerBook,initBuddySettings} from './buddy-fx.js';
 import {sortGame,fitGame,sortClick,sortPointerDown,sortPointerMove,sortPointerUp} from './sortgame.js';
+import {compostGame,initCompost} from './compost.js';
 import {answerQuiz,nextQuestion,restartQuiz,updateHabit,localDay,checklist} from './activities.js';
 import {home,selectWaste,reuseArt,wasteArt} from './home.js';
 import {revealOnScroll,initScrollEffects} from './motion.js';
@@ -52,7 +53,7 @@ function onWaste(button){
   const item=waste[Number(button.dataset.waste)];if(!item)return;
   buddySay(item[1]?'Nice! Keep it clean and dry.':'Careful! Ask school staff for this one.');animate('hop');sound('boop');
 }
-const PAGE_LINES={classify:'Let us sort it out!',sort:'Ready to sort? Let us play!',reuse:'Reuse is the best!',prevent:'Less waste starts here!',carry:'Clean and dry only. Remember?',avatar:'Ooh, make me look great!'};
+const PAGE_LINES={classify:'Let us sort it out!',sort:'Ready to sort? Let us play!',compost:'Catch the compost!',reuse:'Reuse is the best!',prevent:'Less waste starts here!',carry:'Clean and dry only. Remember?',avatar:'Ooh, make me look great!'};
 const greeted=new Set();let firstRender=true;
 function save(next){try{localStorage.setItem(KEY,JSON.stringify(next));data=next;}catch{throw Error('Could not save. Browser storage may be full or disabled. Your change was not saved.');}}
 const card=(title,body,note='')=>`<article class="card"><h3>${e(title)}</h3>${body.startsWith('Requires school approval')?'<span class="approval-label">Requires school approval</span>':''}<p>${e(body)}</p>${note?`<p class="note">${e(note)}</p>`:''}</article>`;
@@ -115,7 +116,7 @@ const versionCard=()=>`<article class="card version-card"><h3>App version</h3><p
 const intro=(title,body)=>`<section class="intro"><h1>${title}</h1><p>${body}</p></section>`;
 const options=items=>items.map(s=>`<option>${e(s)}</option>`).join('');
 const date=t=>new Date(t).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
-function current(){const p=location.hash.slice(1)||'home';return [...links.map(x=>x[0]),'privacy','avatar','sort'].includes(p)?p:'home';}
+function current(){const p=location.hash.slice(1)||'home';return [...links.map(x=>x[0]),'privacy','avatar','sort','compost'].includes(p)?p:'home';}
 function stopCamera(){cameraToken++;stream?.getTracks().forEach(t=>t.stop());stream=null;}
 dialog.addEventListener('close',stopCamera);
 function modal(html){stopCamera();document.querySelector('#dialog-body').innerHTML=html;if(!dialog.open)dialog.showModal();}
@@ -131,11 +132,13 @@ if(!unlocked||page!=='staff')staffFilter=noStaffFilter();
 if(page==='staff'){if(!unlocked)view.innerHTML=intro('Staff review','Import and review reports on this device.')+`<form id="pin-form" class="card"><h2>${data.pin?'Unlock this device':'Set a local staff PIN'}</h2><p>A local PIN helps keep the review screen private. It does not verify school employment or encrypt browser storage.</p><label for="pin">${data.pin?'PIN':'Choose a PIN (6–12 digits)'}</label><input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" minlength="6" maxlength="12" autocomplete="${data.pin?'current-password':'new-password'}" required>${data.pin?'':'<label for="confirm">Confirm PIN</label><input id="confirm" name="confirm" type="password" inputmode="numeric" pattern="[0-9]{6,12}" autocomplete="new-password" required>'}<div class="actions"><button ${busy?'disabled':''}>${data.pin?'Unlock':'Set PIN and continue'}</button></div></form>`;
 else view.innerHTML=intro('A clearer picture.','Review each concern before adding it to this device.')+`<div class="actions"><button data-action="scan">Scan report QR</button><button class="secondary" data-action="manual">Paste transfer text</button>${data.imports.length?'<button class="secondary" data-action="export-csv">Export CSV</button>':''}<button class="secondary" data-action="lock">Lock staff area</button></div><div class="stats">${statuses.map(s=>`<div><strong>${data.imports.filter(r=>r.status===s).length}</strong><span>${s}</span></div>`).join('')}</div>${data.imports.length?staffFilters():''}<div id="staff-list">${staffListHTML()}</div>`;}
 if(page==='avatar')view.innerHTML=intro('Meet your buddy.','Pick a character and make it yours. Your buddy stays on this device and is never part of a report.')+avatarEditor()+stickerBook();
-if(page==='sort')view.innerHTML=intro('Sorting game','A quick, friendly game. Nothing is graded or sent anywhere.')+sortGame();
+if(page==='sort')view.innerHTML=intro('Sorting game','A quick, friendly game. Nothing is graded or sent anywhere.')+sortGame()+'<p class="sort-promo"><a class="button-link secondary" href="#compost">Try Compost Catch →</a></p>';
+if(page==='compost')view.innerHTML=intro('Compost Catch','Catch the scraps that can be composted. Nothing is graded or sent anywhere.')+compostGame();
 if(page==='privacy')view.innerHTML=intro('Private by choice. Local by default.','HIPOS is an offline-first school project prototype.')+card('Offline access','Open once online and wait for “Ready offline”. Install from the browser menu or the Install app button. On iPhone or iPad, use Safari → Share → Add to Home Screen. The first visit needs a connection; later visits use cached files.')+card('Storage and sharing','Reports and the staff PIN verifier are stored only in this browser, on this origin. Browser data can be cleared or evicted. Reports do not sync between devices. QR data is readable by anyone who scans it and is not encrypted. Back up important fictional test reports with transfer text.')+card('Your activity on this device','Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server or shared through report QR codes. Browser storage may be cleared or unavailable.')+card('Staff access','The local PIN is a convenience lock, not school authentication. It does not encrypt stored reports. Staff mode locks when the app is hidden. Use only fictional data for testing.')+card('Permissions','The camera is used only when you start scanning. Frames are processed on this device and not uploaded. Denying permission leaves manual text import available.')+card('Moving from Android','The PWA does not automatically access an Android app’s SQLite database. HIPOS1 QR reports can be transferred individually. There is no server or automatic submission.')+card('Installation and hosting','Installation, camera access, and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved records.')+versionCard();
 revealOnScroll();if(page==='reports')updateStorageStatus();
 view.classList.remove('page-in');void view.offsetWidth;view.classList.add('page-in');
 if(page==='sort')fitGame();
+if(page==='compost')initCompost();
 checkBuddyUnlocks();
 if(!firstRender&&PAGE_LINES[page]&&!greeted.has(page)){greeted.add(page);buddySay(PAGE_LINES[page]);animate('hop');}
 firstRender=false;

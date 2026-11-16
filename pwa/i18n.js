@@ -144,6 +144,33 @@ pairs.push(
  ['Great eye!','Matalas ang mata mo!'],
  ['Almost! Read the tip.','Malapit na! Basahin ang payo.'],
  ['Perfect round! Amazing!','Perpektong round! Kahanga-hanga!'],
+// Compost Catch
+ ['Compost Catch','Pagsalo ng Compost'],
+ ['Catch the compost!','Saluhin ang compost!'],
+ ['Catch the scraps that can be composted. Nothing is graded or sent anywhere.','Saluhin ang mga tirang maaaring i-compost. Walang grado at walang ipinapadala kahit saan.'],
+ ['Catch only the scraps that can be composted. Use the arrow keys, the buttons, or drag across the field.','Saluhin lamang ang mga tirang maaaring i-compost. Gamitin ang arrow keys, ang mga button, o i-drag sa field.'],
+ ['Start','Simulan'],
+ ['Play again','Maglaro muli'],
+ ['Move basket left','Ilipat ang basket pakaliwa'],
+ ['Move basket right','Ilipat ang basket pakanan'],
+ ['◀ Left','◀ Kaliwa'],
+ ['Right ▶','Kanan ▶'],
+ ['Into the compost!','Papunta sa compost!'],
+ ['Not compost. That goes in the dry-waste pouch.','Hindi compost. Sa dry-waste pouch ito napupunta.'],
+ ['Oops, that one could have been composted.','Ay, puwede sana itong i-compost.'],
+ ['Perfect! Every compostable scrap caught.','Perpekto! Nasalo mo ang lahat ng tirang maaaring i-compost.'],
+ ['Great catching!','Galing ng pagsalo!'],
+ ['Good practice. Watch the labels as they fall.','Magandang pagsasanay. Bantayan ang mga bumabagsak.'],
+ ['Perfect catch! Amazing!','Perpektong salo! Kahanga-hanga!'],
+ ['Try Compost Catch →','Subukan ang Pagsalo ng Compost →'],
+ ['Banana peel','Balat ng saging'],
+ ['Apple core','Tangkay ng mansanas'],
+ ['Eggshell','Balat ng itlog'],
+ ['Leftover rice','Tirang kanin'],
+ ['Vegetable scraps','Tirang gulay'],
+ ['Juice box','Kahon ng juice'],
+ ['Plastic spoon','Plastik na kutsara'],
+ ['Plastic wrapper','Plastik na balot'],
  ['Round complete! Nice work.','Tapos ang round! Magaling.'],
  ['Bottle packed. Nice!','Naisilid ang bote. Ayos!'],
  ['Lunchbox ready. Yay!','Handa na ang lunchbox. Yey!'],
@@ -181,7 +208,7 @@ export function translate(text){
   const importPrefix='Nothing was imported. Ask the student to show the QR from My reports, or copy its complete transfer text.';
   if(trimmed.startsWith(importPrefix+' '))return translate(importPrefix)+' '+translate(trimmed.slice(importPrefix.length+1));
   if(trimmed.startsWith('Status for '))return 'Katayuan para sa '+trimmed.slice(11);
-  const patterns=[[/^Item (\d+) of (\d+)$/,m=>`Aytem ${m[1]} sa ${m[2]}`],[/^You sorted (\d+) of (\d+) right\.$/,m=>`Tama ang ${m[1]} sa ${m[2]} na na-uri mo.`],[/^Treats shared: (\d+)$/,m=>`Mga treat na naibahagi: ${m[1]}`],[/^(\d+) of (\d+) stickers collected\. Stickers stay yours once you earn them\.$/,m=>`${m[1]} sa ${m[2]} sticker ang nakolekta. Sa iyo na ang mga sticker kapag nakuha mo.`],[/^New sticker: (.+)!$/,m=>`Bagong sticker: ${m[1].split(', ').map(translate).join(', ')}!`],[/^New buddy extra unlocked: (.+)\. Open My buddy to try it\.$/,m=>`Bagong dagdag para sa buddy: ${m[1].split(', ').map(translate).join(', ')}. Buksan ang Aking buddy para subukan.`],[/^(\d+) day streak$/,m=>`${m[1]} araw na tuloy-tuloy`],[/^Best: (\d+) days?$/,m=>`Pinakamahaba: ${m[1]} araw`],[/^(\d) of 7 days active$/,m=>`${m[1]} sa 7 araw ang aktibo`],[/^Showing (\d+) of (\d+) reports?$/,m=>`Ipinapakita ang ${m[1]} sa ${m[2]} ulat`],[/^(\d+) items?$/,m=>`${m[1]} aytem`],[/^(\d+) of (\d+) items$/,m=>`${m[1]} sa ${m[2]} aytem`],[/^Restored (\d+) reports?\.(?: (\d+) already on this device\.)?(?: (\d+) could not be read\.)?$/,m=>`Naibalik ang ${m[1]} ulat.${m[2]?` ${m[2]} ang nasa device na ito na.`:''}${m[3]?` ${m[3]} ang hindi mabasa.`:''}`],[/^(\d) of 3 actions completed today( · Ready for today)?$/,m=>`${m[1]} sa 3 gawain ang natapos ngayon${m[2]?' · Handa na para ngayon':''}`],[/^Question (\d) of 3$/,m=>`Tanong ${m[1]} sa 3`],[/^(\d) of 3 correct$/,m=>`${m[1]} sa 3 ang tama`],[/^Saved reports \((\d+)\)$/,m=>`Mga naka-save na ulat (${m[1]})`]];
+  const patterns=[[/^Caught (\d+) of (\d+) compostable scraps$/,m=>`Nahuli ${m[1]} sa ${m[2]} na tirang maaaring i-compost`],[/^You caught (\d+) of (\d+) compostable scraps\.$/,m=>`Nakasalo ka ng ${m[1]} sa ${m[2]} na tirang maaaring i-compost.`],[/^Item (\d+) of (\d+)$/,m=>`Aytem ${m[1]} sa ${m[2]}`],[/^You sorted (\d+) of (\d+) right\.$/,m=>`Tama ang ${m[1]} sa ${m[2]} na na-uri mo.`],[/^Treats shared: (\d+)$/,m=>`Mga treat na naibahagi: ${m[1]}`],[/^(\d+) of (\d+) stickers collected\. Stickers stay yours once you earn them\.$/,m=>`${m[1]} sa ${m[2]} sticker ang nakolekta. Sa iyo na ang mga sticker kapag nakuha mo.`],[/^New sticker: (.+)!$/,m=>`Bagong sticker: ${m[1].split(', ').map(translate).join(', ')}!`],[/^New buddy extra unlocked: (.+)\. Open My buddy to try it\.$/,m=>`Bagong dagdag para sa buddy: ${m[1].split(', ').map(translate).join(', ')}. Buksan ang Aking buddy para subukan.`],[/^(\d+) day streak$/,m=>`${m[1]} araw na tuloy-tuloy`],[/^Best: (\d+) days?$/,m=>`Pinakamahaba: ${m[1]} araw`],[/^(\d) of 7 days active$/,m=>`${m[1]} sa 7 araw ang aktibo`],[/^Showing (\d+) of (\d+) reports?$/,m=>`Ipinapakita ang ${m[1]} sa ${m[2]} ulat`],[/^(\d+) items?$/,m=>`${m[1]} aytem`],[/^(\d+) of (\d+) items$/,m=>`${m[1]} sa ${m[2]} aytem`],[/^Restored (\d+) reports?\.(?: (\d+) already on this device\.)?(?: (\d+) could not be read\.)?$/,m=>`Naibalik ang ${m[1]} ulat.${m[2]?` ${m[2]} ang nasa device na ito na.`:''}${m[3]?` ${m[3]} ang hindi mabasa.`:''}`],[/^(\d) of 3 actions completed today( · Ready for today)?$/,m=>`${m[1]} sa 3 gawain ang natapos ngayon${m[2]?' · Handa na para ngayon':''}`],[/^Question (\d) of 3$/,m=>`Tanong ${m[1]} sa 3`],[/^(\d) of 3 correct$/,m=>`${m[1]} sa 3 ang tama`],[/^Saved reports \((\d+)\)$/,m=>`Mga naka-save na ulat (${m[1]})`]];
   for(const [regex,format] of patterns){const match=trimmed.match(regex);if(match)return text.replace(trimmed,format(match));}
   return text;
 }

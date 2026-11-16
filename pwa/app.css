@@ -1132,3 +1132,30 @@ main:has(>#update-banner:not([hidden]))>#update-banner{margin-top:56px}
 
 main:has(>#update-banner:not([hidden]))>#view>.intro:first-child{padding-top:12px}
 @media(max-width:760px){main:has(>#update-banner:not([hidden]))>#view>.intro:first-child{padding-top:4px}}
+/* Match the space on either side of the mobile buddy row. */
+@media(max-width:1000px){.buddy-dock{top:calc(80px + env(safe-area-inset-top))}#view{padding-top:40px}}
+@media(max-width:760px){#view{padding-top:56px}}
+/* Font preview in Settings: shows the combo with the real classes, so it updates live. */
+.font-preview{display:grid;gap:8px;margin-top:14px;padding:14px;border-radius:18px;background:var(--leaf-soft,#eef2e3)}
+.fp-greeting{justify-self:start;padding:4px 12px;border-radius:999px;background:var(--surface);color:var(--green-deep);font-weight:700;font-size:.875rem}
+.fp-title{margin:0;font-size:1.375rem;line-height:1.2;color:var(--heading,var(--green-deep))}
+.fp-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.fp-chip{padding:4px 12px;border-radius:999px;background:var(--leaf);color:var(--green-deep);font-weight:800;font-size:.875rem}
+.fp-button{padding:8px 16px;border-radius:14px;background:var(--green);color:#fff;font-weight:700;font-size:.9375rem;box-shadow:0 3px 0 #0a2a20}
+.fp-body{margin:0;font-size:.875rem;line-height:1.5;color:var(--muted)}
+.font-use{margin:10px 0 0;font-weight:600;font-size:.875rem}
+.font-preview *{max-width:100%}
+@media(prefers-color-scheme:dark){.fp-greeting{background:#12251e;color:#cdeeb0}.font-preview{background:#17342a}}
+/* Compost Catch: falling scraps and a basket the buddy moves left and right. */
+.compost-game{position:relative}
+.compost-field{position:relative;height:min(52vh,360px);min-height:260px;margin:12px 0;overflow:hidden;border-radius:24px;background:linear-gradient(#e9f5dc,#cfeab2);touch-action:none;user-select:none}
+.compost-field:focus-visible{outline:3px solid var(--green-deep);outline-offset:3px}
+.compost-start{position:absolute;inset:0;display:grid;place-items:center}
+.compost-item{position:absolute;transform:translateX(-50%);font-size:2rem;line-height:1;pointer-events:none}
+.compost-basket{position:absolute;bottom:2%;left:50%;transform:translateX(-50%);font-size:2.6rem;line-height:1;transition:left .12s ease}
+.compost-controls{display:flex;gap:10px;justify-content:center}
+.compost-controls button{min-height:48px;min-width:120px}
+.compost-score{margin:8px 0 0;font-weight:700;text-align:center}
+.compost-done{display:grid;place-items:center;align-content:center;gap:8px;height:100%;padding:16px;text-align:center}
+.compost-done h3{margin:0}
+@media(prefers-color-scheme:dark){.compost-field{background:linear-gradient(#17342a,#1f4a3a)}}
