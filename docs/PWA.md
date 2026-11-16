@@ -44,6 +44,8 @@ The **Text size** control (in **Settings**, the gear in the header) (Standard, L
 
 **Compost Catch** (Sort it out → Try Compost Catch, or `#compost`) is a short falling-scraps game. The buddy's basket moves with the arrow keys, the Left and Right buttons, or by dragging across the field. Only compostable scraps should be caught. Nothing is stored or sent. Its round-building rules are unit tested in `tests/compost.test.mjs`.
 
+Compost Catch and **Buddy garden** are in the main menu. Finishing a Compost Catch or Sorting round earns a sticker (Compost helper, Compost champ for a perfect round) and one treat per game per day. The garden has nine plots that grow from care already recorded on the device (habit treats, sorting and compost rounds, challenge days), three points per plot; nothing wilts or is lost, and two garden stickers (Green thumb, Garden party) are earned along the way. The rules (`gardenState`, game treats) are unit tested in `tests/buddy-fx.test.mjs`.
+
 The **Font style** picker (Settings → Text & readability) uses bundled game fonts as combos: the chosen font styles headings, the buddy greeting bubble, streak and badge chips and buttons, while body text keeps Nunito (falling back to Segoe UI or the system font if Nunito is not installed). Pixelify Sans is limited to small accents. "Use this font for all text" applies it everywhere. A live preview in Settings shows the combo.
 
 ## Buddy personality, sorting game and stickers

@@ -9,6 +9,7 @@ import { avatarEditor, avatarClick, refreshAvatars, syncUnlocks, greeting } from
 import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
+import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
 import { home, selectWaste, wasteArt } from "./home.js";
 import { revealOnScroll, initScrollEffects } from "./motion.js";
@@ -22,7 +23,7 @@ import { preventPage, interactWithKit } from "./prevent.js";
 const view = document.querySelector("#view"), dialog = document.querySelector("#dialog");
 view.addEventListener("click", interactWithKit);
 view.addEventListener("click", interactWithReuse);
-const links = [["home", "Home"], ["prevent", "Prevent"], ["reuse", "Reuse"], ["classify", "Classify"], ["carry", "Carry out"], ["reports", "My reports"], ["staff", "Staff review"]];
+const links = [["home", "Home"], ["prevent", "Prevent"], ["reuse", "Reuse"], ["classify", "Classify"], ["carry", "Carry out"], ["compost", "Compost Catch"], ["garden", "Buddy garden"], ["reports", "My reports"], ["staff", "Staff review"]];
 const KEY = "hipos.pwa.v1";
 let data = { reports: [], imports: [], pin: null }, unlocked = false, pending = null, stream = null, cameraToken = 0, busy = false, unlockAttempts = 0, unlockAfter = 0;
 try {
@@ -107,7 +108,8 @@ function onWaste(button) {
   animate("hop");
   sound("boop");
 }
-const PAGE_LINES = { classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
+document.addEventListener("hipos-game-done", () => checkBuddyUnlocks(true));
+const PAGE_LINES = { classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
 const greeted = /* @__PURE__ */ new Set();
 let firstRender = true;
 function save(next) {
@@ -221,7 +223,7 @@ const options = (items) => items.map((s) => `<option>${e(s)}</option>`).join("")
 const date = (t) => new Date(t).toLocaleDateString(void 0, { year: "numeric", month: "short", day: "numeric" });
 function current() {
   const p = location.hash.slice(1) || "home";
-  return [...links.map((x) => x[0]), "privacy", "avatar", "sort", "compost"].includes(p) ? p : "home";
+  return [...links.map((x) => x[0]), "privacy", "avatar", "sort", "compost", "garden"].includes(p) ? p : "home";
 }
 function stopCamera() {
   cameraToken++;
@@ -266,6 +268,7 @@ function render() {
   }
   if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device and is never part of a report.") + avatarEditor() + stickerBook();
   if (page === "sort") view.innerHTML = intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + sortGame() + '<p class="sort-promo"><a class="button-link secondary" href="#compost">Try Compost Catch →</a></p>';
+  if (page === "garden") view.innerHTML = intro("Buddy garden", "Your flowers grow from the care you give. Nothing wilts and nothing is sent anywhere.") + gardenPage(summaryNow());
   if (page === "compost") view.innerHTML = intro("Compost Catch", "Catch the scraps that can be composted. Nothing is graded or sent anywhere.") + compostGame();
   if (page === "privacy") view.innerHTML = intro("Private by choice. Local by default.", "HIPOS is an offline-first school project prototype.") + card("Offline access", "Open once online and wait for “Ready offline”. Install from the browser menu or the Install app button. On iPhone or iPad, use Safari → Share → Add to Home Screen. The first visit needs a connection; later visits use cached files.") + card("Storage and sharing", "Reports and the staff PIN verifier are stored only in this browser, on this origin. Browser data can be cleared or evicted. Reports do not sync between devices. QR data is readable by anyone who scans it and is not encrypted. Back up important fictional test reports with transfer text.") + card("Your activity on this device", "Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server or shared through report QR codes. Browser storage may be cleared or unavailable.") + card("Staff access", "The local PIN is a convenience lock, not school authentication. It does not encrypt stored reports. Staff mode locks when the app is hidden. Use only fictional data for testing.") + card("Permissions", "The camera is used only when you start scanning. Frames are processed on this device and not uploaded. Denying permission leaves manual text import available.") + card("Moving from Android", "The PWA does not automatically access an Android app’s SQLite database. HIPOS1 QR reports can be transferred individually. There is no server or automatic submission.") + card("Installation and hosting", "Installation, camera access, and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved records.") + versionCard();
   revealOnScroll();
@@ -275,6 +278,7 @@ function render() {
   view.classList.add("page-in");
   if (page === "sort") fitGame();
   if (page === "compost") initCompost();
+  if (page === "garden") initGarden();
   checkBuddyUnlocks();
   if (!firstRender && PAGE_LINES[page] && !greeted.has(page)) {
     greeted.add(page);

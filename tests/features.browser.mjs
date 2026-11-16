@@ -279,7 +279,7 @@ try{
     assert.ok(await page.locator('#buddy-say').isHidden(),'cheers off hides the bubble');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
     assert.ok(await page.locator('.sticker.earned').count()>=1,'first step sticker earned');
-    assert.equal(await page.locator('.sticker').count(),11);
+    assert.equal(await page.locator('.sticker').count(),15);
     assert.ok(await page.locator('[data-mood]').count()>=1,'buddy has a mood');
     // Filipino
     await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
@@ -358,6 +358,22 @@ try{
     if(!/Lilita/i.test(f.h)||!/Lilita/i.test(f.c))throw new Error('display font not applied: '+JSON.stringify(f));
     if(/Lilita/i.test(f.b))throw new Error('body should keep reading font: '+f.b);
     await page.keyboard.press('Escape');await close(s);
+  });
+  await check('menu lists Compost Catch and Buddy garden; the garden shows nine plots, grows from care, Filipino',async()=>{
+    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
+    for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),1,name+' in the menu');
+    await page.locator('#nav a',{hasText:'Buddy garden'}).click();
+    await page.locator('#garden .garden-plot').first().waitFor();
+    assert.equal(await page.locator('#garden .garden-plot').count(),9);
+    assert.equal(await page.locator('#garden .garden-plot[data-stage="3"]').count(),0,'a fresh garden has no blooms');
+    await page.evaluate(()=>{const raw=JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}');raw.treats=4;raw.sorts=1;localStorage.setItem('hipos.buddy.v1',JSON.stringify(raw));});
+    await page.reload();await page.locator('#garden .garden-plot').first().waitFor();
+    assert.equal(await page.locator('#garden .garden-plot[data-stage="3"]').count(),1,'five points: one bloom');
+    await page.locator('#garden .garden-plot').first().click();
+    await page.locator('#buddy-say .buddy-say-text',{hasText:'in bloom'}).waitFor({state:'attached'});
+    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
+    assert.match(await page.locator('#garden .garden-count').textContent(),/namumulaklak/);
+    await close(s);
   });
   await check('no CSP violations or console errors across all pages and features',async()=>{
     assert.deepEqual(cspViolations,[],'CSP violations');

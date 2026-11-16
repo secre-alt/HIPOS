@@ -14,7 +14,7 @@ test('settings default to cheers on, sound off, default theme',()=>{
 test('one treat per habit per day: ticking again cannot farm treats',()=>{
   assert.equal(fx.giveTreat(0,'2026-11-15'),true);assert.equal(fx.giveTreat(0,'2026-11-15'),false);
   assert.equal(fx.giveTreat(1,'2026-11-15'),true);assert.equal(fx.giveTreat(0,'2026-11-16'),true);
-  assert.equal(fx.giveTreat(3,'2026-11-16'),false);assert.equal(fx.giveTreat(-1,'2026-11-16'),false);
+  assert.equal(fx.giveTreat(5,'2026-11-16'),false);assert.equal(fx.giveTreat(-1,'2026-11-16'),false);
   assert.equal(fx.stats().treats,3);
 });
 test('taps and finished sorting rounds are counted',()=>{
@@ -24,14 +24,14 @@ test('taps and finished sorting rounds are counted',()=>{
 test('stickers come from badges and counters, are kept, and are announced once',()=>{
   const week={badges:[badge('first'),badge('habits',false)],challengeDays:0};
   const first=fx.syncStickers(week).map(t=>t.key).sort();
-  assert.deepEqual(first,['first','perfect','sort1']);
+  assert.deepEqual(first,['first','garden1','perfect','sort1']);
   assert.deepEqual(fx.syncStickers(week),[],'already collected');
   for(let i=0;i<7;i++)fx.recordTap();
   assert.deepEqual(fx.syncStickers({badges:[],challengeDays:3}).map(t=>t.key).sort(),['challenge3','tap10']);
-  assert.match(fx.stickerBook(),/5 of 11 stickers collected/);
+  assert.match(fx.stickerBook(),/6 of 15 stickers collected/);
 });
 test('damaged saved data falls back safely and is sanitized',async()=>{
-  localStorage.setItem('hipos.buddy.v1','{"taps":-5,"treats":"x","sorts":2.5,"stickers":["nope","first"],"seasons":["wika","bad","default"],"treatDays":{"bad":1,"2026-11-15":9}}');
+  localStorage.setItem('hipos.buddy.v1','{"taps":-5,"treats":"x","sorts":2.5,"stickers":["nope","first"],"seasons":["wika","bad","default"],"treatDays":{"bad":1,"2026-11-15":40}}');
   const fresh=await import('../pwa/buddy-fx.js?fresh1');const s=fresh.stats();
   assert.deepEqual([s.taps,s.treats,s.sorts],[0,0,0]);assert.deepEqual(s.stickers,['first']);assert.deepEqual(s.seasons,['wika']);assert.deepEqual(s.treatDays,{});
   localStorage.setItem('hipos.buddy.v1','not json');
@@ -67,4 +67,27 @@ test('music styles are listed, selectable and safe to switch without Web Audio',
   for(const id of ['lofi','sakura','arcade','rain','city','musicbox'])assert.ok(audio.MUSIC_STYLES.includes(id),id);
   audio.music.setStyle('arcade');assert.equal(audio.music.style,'arcade');
   audio.music.setStyle('nope');assert.equal(audio.music.style,'lofi');
+});
+test('garden grows from care points: three per plot, nothing is lost, complete at 27',()=>{
+  const g0=fx.gardenState(0);assert.equal(g0.blooms,0);assert.equal(g0.plots[0].stage,0);
+  const g4=fx.gardenState(4);assert.deepEqual([g4.plots[0].stage,g4.plots[1].stage,g4.plots[2].stage,g4.blooms],[3,1,0,1]);
+  assert.equal(fx.gardenState(26).complete,false);assert.equal(fx.gardenState(27).complete,true);
+  assert.equal(fx.gardenState(500).blooms,9,'extra care never overflows');
+  assert.equal(fx.gardenState(-3).points,0);
+});
+test('game treats are one per game per day and do not disturb habit treats',()=>{
+  const before=fx.stats().treats;
+  assert.equal(fx.giveGameTreat('compost','2026-12-01'),true);
+  assert.equal(fx.giveGameTreat('compost','2026-12-01'),false,'only once a day');
+  assert.equal(fx.giveGameTreat('sort','2026-12-01'),true,'each game has its own treat');
+  assert.equal(fx.giveGameTreat('other','2026-12-01'),false);
+  assert.equal(fx.stats().treats,before+2);
+});
+test('compost rounds earn stickers; a perfect round earns the champ sticker',()=>{
+  const week={badges:[],challengeDays:0};
+  fx.recordCompost(8,12);
+  assert.ok(fx.syncStickers(week).some(t=>t.key==='compost1'));
+  assert.ok(!fx.earnedKeys(week).has('compostperfect'));
+  fx.recordCompost(12,12);
+  assert.ok(fx.earnedKeys(week).has('compostperfect'));
 });

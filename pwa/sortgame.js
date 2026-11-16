@@ -4,7 +4,7 @@
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,miniBuddy} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,miniBuddy} from './buddy-fx.js';
 import {celebrate} from './motion.js';
 
 const ROUND=6;
@@ -58,7 +58,7 @@ function advance(){
   if(!game)return;game.i++;game.answered=false;
   const box=document.querySelector('#sort-body');box.innerHTML=body();
   if(game.i>=game.items.length){
-    recordSort(game.score,game.items.length);
+    recordSort(game.score,game.items.length);giveGameTreat('sort');
     if(game.score===game.items.length){celebrate();cheer('complete');}
     else{cheer('complete');}
     box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});

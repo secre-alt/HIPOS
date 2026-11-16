@@ -1269,3 +1269,71 @@ input[type=checkbox]:checked {
     padding-top: 0;
   }
 }
+
+/* Buddy garden: nine plots that grow from care already given. */
+.garden {
+  position: relative;
+}
+.garden > h2 {
+  padding-right: 52px;
+}
+.garden-count {
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.garden-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.garden-plot {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 112px;
+  padding: 10px 6px;
+  border-radius: 20px;
+  background: linear-gradient(#e9f5dc, #d6ecb9);
+  color: var(--green-deep);
+  text-align: center;
+}
+.garden-plot[data-stage="0"] {
+  background: #efe6d2;
+  opacity: 0.85;
+}
+.garden-plot[data-stage="3"] {
+  background: linear-gradient(#fff4d6, #ffe3ec);
+}
+.garden-icon {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+.garden-name {
+  font-weight: 800;
+  font-size: 0.875rem;
+}
+.garden-stage {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.garden-plot.wiggle .garden-icon {
+  animation: garden-wiggle 0.5s ease;
+}
+@keyframes garden-wiggle {
+  25% { transform: rotate(-12deg) scale(1.1); }
+  75% { transform: rotate(10deg) scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .garden-plot.wiggle .garden-icon { animation: none; }
+}
+@media (prefers-color-scheme: dark) {
+  .garden-plot { background: linear-gradient(#17342a, #1f4a3a); color: #e1efe4; }
+  .garden-plot[data-stage="0"] { background: #2b2a22; }
+  .garden-plot[data-stage="3"] { background: linear-gradient(#3a3a22, #3a2a33); }
+  .garden-stage { color: #b9cfc0; }
+}
