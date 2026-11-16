@@ -45,11 +45,13 @@ export function initScrollEffects(){
     queued=false;
     const y=window.scrollY,max=Math.max(0,root.scrollHeight-window.innerHeight);
     const schoolCard=document.querySelector('#view .school-info');
-    // On Home, keep the shortcut available from School information onward.
-    // Other pages retain the bottom-of-page trigger.
-    if(backToTop)backToTop.hidden=schoolCard
-      ?schoolCard.getBoundingClientRect().top>=window.innerHeight
-      :max-y>32;
+    const cards=[...document.querySelectorAll('#view .card')].filter(card=>card.getClientRects().length);
+    const finalSection=cards.at(-1)||document.querySelector('#view')?.lastElementChild;
+    // Home starts at School information; other pages start at their final card.
+    // For a tall final section, wait until its closing portion comes into view.
+    const section=schoolCard||finalSection,rect=section?.getBoundingClientRect();
+    const threshold=rect?(schoolCard?rect.top:Math.max(rect.top,rect.bottom-window.innerHeight*.75)):Infinity;
+    if(backToTop)backToTop.hidden=threshold>=window.innerHeight&&max-y>32;
     document.querySelector('aside')?.style.setProperty('--progress',Math.min(1,Math.max(0,y/Math.max(1,max))).toFixed(4));
     const art=document.querySelector('.hero-deco');
     if(art)art.style.setProperty('--sy',reduced()?'0':String(Math.min(Math.round(y),1200)));
@@ -60,6 +62,8 @@ export function initScrollEffects(){
   window.addEventListener('hashchange',schedule);
   // Content and font loading can change the bottom without a scroll event.
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedule).observe(document.body);
+  const view=document.querySelector('#view');
+  if(view&&typeof MutationObserver!=='undefined')new MutationObserver(schedule).observe(view,{childList:true,subtree:true});
   schedule();
 }
 
