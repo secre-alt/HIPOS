@@ -24,66 +24,6 @@
   font-size: 1.0625rem;
   line-height: 1.65;
 }
-.reuse-scene {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  height: 232px;
-  max-width: 360px;
-  justify-self: center;
-}
-.reuse-scene-object {
-  position: absolute;
-  bottom: 30px;
-  display: grid;
-  place-items: end center;
-  aspect-ratio: 1;
-  animation: kit-bob 3.6s ease-in-out infinite;
-}
-.reuse-scene-object::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 6%;
-  width: 92%;
-  aspect-ratio: 1;
-  translate: -50% 0;
-  z-index: -1;
-  border-radius: 50%;
-  background: var(--disc);
-}
-.reuse-scene-object svg {
-  position: relative;
-  display: block;
-  width: 74%;
-  height: 74%;
-  margin-bottom: 12%;
-  overflow: visible;
-}
-.reuse-scene-lunch {
-  --disc: #d5f3ea;
-  left: 7%;
-  width: 44%;
-  rotate: -4deg;
-}
-.reuse-scene-lunch svg {
-  width: 82%;
-  height: 82%;
-}
-.reuse-scene-bottle {
-  --disc: #cfe3f7;
-  right: 25%;
-  width: 26%;
-  rotate: 3deg;
-  animation-delay: -1.2s;
-}
-.reuse-scene-utensils {
-  --disc: #ffe9b0;
-  right: 5%;
-  width: 25%;
-  rotate: 6deg;
-  animation-delay: -2.4s;
-}
 .reuse-cycle {
   display: flex;
   align-items: center;
@@ -251,11 +191,6 @@
     gap: 16px;
     padding: 8px 0 24px;
   }
-  .reuse-scene {
-    grid-row: 1;
-    height: 210px;
-    max-width: 340px;
-  }
   .reuse-hero h1 {
     font-size: clamp(2rem, 8vw, 2.75rem);
     margin-bottom: 16px;
@@ -313,10 +248,13 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .reuse-scene-object {
-    animation: none;
-  }
   .reuse-friend {
     transition: none;
   }
+}
+
+/* Keep every hero helper at least 44px even on narrow screens. */
+main .reuse-scene button.kit-friend.kit-friend {
+  min-width: 44px;
+  min-height: 44px;
 }

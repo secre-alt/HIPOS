@@ -9,12 +9,12 @@ function object(index) {
   return `<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" fill="none" stroke="#254b38" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${shapes[index]}${index < 2 ? '<circle cx="43" cy="59" r="2" fill="#254b38"/><circle cx="57" cy="59" r="2" fill="#254b38"/><path d="M46 66q4 4 8 0"/>' : ""}</svg>`;
 }
 function scene() {
-  return `<div class="reuse-scene-object reuse-scene-lunch">${object(1)}</div><div class="reuse-scene-object reuse-scene-bottle">${object(0)}</div><div class="reuse-scene-object reuse-scene-utensils">${object(2)}</div>`;
+  return '<span class="kit-ground" aria-hidden="true"></span>' + [[1, "lunch", "lunchbox"], [0, "bottle", "bottle"], [2, "buddy", "utensils"]].map(([index, position, name]) => `<button type="button" class="kit-friend kit-${position}" data-reuse-tip="${index}" aria-label="Get a care tip: ${name}" aria-pressed="false">${object(index)}</button>`).join("") + '<p class="kit-tip" role="status" aria-live="polite" aria-atomic="true">Tap a buddy for a little tip.</p>';
 }
 export function reusePage() {
   const [title, body, note] = reuse[3];
   return `<div class="reuse-page">
-  <section class="reuse-hero" aria-labelledby="reuse-title"><div><h1 id="reuse-title">Use it. Wash it.<br>Use it again.</h1><p>Personal reusables work best when school rules and safe washing come first.</p></div><div class="reuse-scene" aria-hidden="true">${scene()}</div></section>
+  <section class="reuse-hero" aria-labelledby="reuse-title"><div><h1 id="reuse-title">Use it. Wash it.<br>Use it again.</h1><p>Personal reusables work best when school rules and safe washing come first.</p></div><div class="reuse-scene prevent-kit">${scene()}</div></section>
   <ol class="reuse-cycle" aria-label="Reuse routine"><li><span aria-hidden="true">1</span>Use</li><li><span aria-hidden="true">2</span>Wash</li><li><span aria-hidden="true">3</span>Use again</li></ol>
   <div class="reuse-items">${reuse.slice(0, 3).map(([heading, text], index) => `<article class="reuse-item"><button type="button" class="reuse-friend reuse-friend-${index}" data-reuse-tip="${index}" aria-label="Get a care tip: ${e(heading)}">${object(index)}<span class="reuse-leaf" aria-hidden="true"></span></button><div class="reuse-item-copy"><h2>${e(heading)}</h2><p>${e(text)}</p><p class="reuse-care" role="status" aria-live="polite" aria-atomic="true">Tap your little helper for a care tip.</p></div></article>`).join("")}</div>
   <section class="reuse-scheme" aria-labelledby="reuse-scheme-title"><span class="reuse-approval">Requires school approval</span><h2 id="reuse-scheme-title">${e(title)}</h2><p>${e(body)}</p><p class="reuse-disclaimer">${e(note)}</p></section>
@@ -28,7 +28,14 @@ export function interactWithReuse(event) {
   const messages = careTips[Number(button.dataset.reuseTip)];
   if (!messages) return;
   const turn = turns.get(button) || 0;
-  button.closest(".reuse-item").querySelector(".reuse-care").textContent = messages[turn % messages.length];
+  const kit = button.closest(".reuse-scene");
+  if (kit) {
+    kit.dataset.active = ["bottle", "lunch", "leaf"][Number(button.dataset.reuseTip)];
+    kit.querySelectorAll("[data-reuse-tip]").forEach((helper) => helper.setAttribute("aria-pressed", String(helper === button)));
+    kit.querySelector(".kit-tip").textContent = messages[turn % messages.length];
+  } else {
+    button.closest(".reuse-item").querySelector(".reuse-care").textContent = messages[turn % messages.length];
+  }
   turns.set(button, turn + 1);
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const drawing = button.querySelector("svg");
