@@ -33,7 +33,10 @@ export function interactWithKit(event){
   const messages=tips[button.dataset.kit];
   if(!messages)return;
   const turn=turns.get(button)||0;
-  button.closest('.prevent-kit').querySelector('.kit-tip').textContent=messages[turn%messages.length];
+  const kit=button.closest('.prevent-kit');
+  kit.dataset.active=button.dataset.kit;
+  kit.querySelectorAll('[data-kit]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  kit.querySelector('.kit-tip').textContent=messages[turn%messages.length];
   turns.set(button,turn+1);
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
     const drawing=button.querySelector('svg');
