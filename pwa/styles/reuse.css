@@ -25,14 +25,64 @@
   line-height: 1.65;
 }
 .reuse-scene {
+  position: relative;
+  isolation: isolate;
   width: 100%;
+  height: 232px;
   max-width: 360px;
   justify-self: center;
 }
-.reuse-scene > svg {
+.reuse-scene-object {
+  position: absolute;
+  bottom: 30px;
+  display: grid;
+  place-items: end center;
+  aspect-ratio: 1;
+  animation: kit-bob 3.6s ease-in-out infinite;
+}
+.reuse-scene-object::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: 92%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--disc);
+}
+.reuse-scene-object svg {
+  position: relative;
   display: block;
-  width: 100%;
-  height: auto;
+  width: 74%;
+  height: 74%;
+  margin-bottom: 12%;
+  overflow: visible;
+}
+.reuse-scene-lunch {
+  --disc: #d5f3ea;
+  left: 7%;
+  width: 44%;
+  rotate: -4deg;
+}
+.reuse-scene-lunch svg {
+  width: 82%;
+  height: 82%;
+}
+.reuse-scene-bottle {
+  --disc: #cfe3f7;
+  right: 25%;
+  width: 26%;
+  rotate: 3deg;
+  animation-delay: -1.2s;
+}
+.reuse-scene-utensils {
+  --disc: #ffe9b0;
+  right: 5%;
+  width: 25%;
+  rotate: 6deg;
+  animation-delay: -2.4s;
 }
 .reuse-cycle {
   display: flex;
@@ -65,52 +115,60 @@
 }
 .reuse-items {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 .reuse-item {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
+  gap: 20px;
   min-width: 0;
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: var(--surface);
 }
+.reuse-item:last-child {
+  grid-column: 1 / -1;
+  align-items: center;
+}
+.reuse-item-copy {
+  min-width: 0;
+  max-width: 64ch;
+}
 .reuse-item h2 {
-  margin: 20px 0 12px;
+  margin: 0 0 8px;
   font-size: 1.375rem;
   line-height: 1.25;
   color: var(--heading,var(--ink));
 }
-.reuse-item > p {
-  margin: 0 0 20px;
+.reuse-item-copy > p {
+  margin: 0;
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.65;
 }
 .reuse-item .reuse-care {
-  align-self: stretch;
-  margin: auto 0 0;
-  padding: 12px;
-  border-radius: 12px;
+  margin: 16px 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid #87aa68;
+  border-radius: 0 8px 8px 0;
   background: var(--leaf-soft);
   color: var(--ink);
   font-size: .875rem;
   line-height: 1.5;
-  min-height: 88px;
 }
 .reuse-friend {
   position: relative;
   display: block;
-  width: 88px;
-  height: 88px;
+  flex: 0 0 80px;
+  width: 80px;
+  height: 80px;
   min-width: 44px;
   min-height: 44px;
   padding: 0;
   border: 0;
-  border-radius: 24px;
+  border-radius: 20px;
   background: #dceee3;
   box-shadow: none;
   cursor: pointer;
@@ -195,7 +253,8 @@
   }
   .reuse-scene {
     grid-row: 1;
-    max-width: 220px;
+    height: 210px;
+    max-width: 340px;
   }
   .reuse-hero h1 {
     font-size: clamp(2rem, 8vw, 2.75rem);
@@ -227,11 +286,25 @@
     padding: 20px;
     border-radius: 20px;
   }
-  .reuse-item .reuse-care {
-    min-height: 0;
+  .reuse-item {
+    gap: 16px;
+  }
+  .reuse-friend {
+    flex-basis: 64px;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  .reuse-item h2 {
+    font-size: 1.25rem;
   }
 }
 @media (max-width: 360px) {
+  .reuse-item,
+  .reuse-item:last-child {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .reuse-cycle {
     gap: 8px;
   }
@@ -240,6 +313,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .reuse-scene-object {
+    animation: none;
+  }
   .reuse-friend {
     transition: none;
   }
