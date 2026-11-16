@@ -49,6 +49,10 @@ change them; update the relevant documentation when it does.
 
 ## Games and garden
 
+- Compost Catch supports held movement buttons, arrow keys, and captured pointer
+  dragging. Clear held input on release, cancellation, pause, window blur, and exit.
+  Pause preserves the visible field. Pace is selected between rounds; practice
+  slows falling items and spawning while preserving the same care reward rules.
 - Buddy keeps its shared floating position on game routes.
   Individual games share a centered 880px content column.
   Keep the object and destinations, or the compost field and movement controls,

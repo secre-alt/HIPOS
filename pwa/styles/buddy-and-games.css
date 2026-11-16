@@ -712,6 +712,7 @@
   border-style: solid;
   box-shadow: 0 0 0 3px var(--green-mid);
 }
+.sort-bin.is-answer { border-style:solid; outline:2px solid var(--green-mid); outline-offset:2px; }
 .sort-bin.is-wrong {
   border-style: solid;
   box-shadow: 0 0 0 3px var(--coral);

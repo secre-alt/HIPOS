@@ -16,8 +16,9 @@ const ITEMS=[
   {name:'Plastic spoon',art:'spoon',good:false},
   {name:'Plastic wrapper',art:'wrapper',good:false},
 ];
-const TOTAL=18,SPAWN_MS=1100,FALL=21,BASKET_STEP=8,CATCH_Y=78,CATCH_RANGE=12;
-let g=null,raf=0,last=0,gardenSummary={};
+const TOTAL=18,BASKET_STEP=8,CATCH_Y=78,CATCH_RANGE=12,MOVE_SPEED=70;
+const PACES={regular:{spawn:1100,fall:21},practice:{spawn:1500,fall:14}};
+let g=null,raf=0,last=0,gardenSummary={},pace='regular',feedbackTimer=0;
 
 // Build a fair sequence: about two thirds compostable, never the same item twice in a row.
 export function makeSequence(random=Math.random){
@@ -35,8 +36,8 @@ export function compostGame(summary={}){
   gardenSummary=summary;
   return `<section class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
   <h2 id="compost-heading">Compost Catch</h2>
-  <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span></div>
-  <p class="note">Catch only the scraps that can be composted. Use the arrow keys, the buttons, or drag across the field.</p>
+  <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span><label class="compost-pace" for="compost-pace"><span>Round pace</span><select id="compost-pace"><option value="regular" ${pace==='regular'?'selected':''}>Regular</option><option value="practice" ${pace==='practice'?'selected':''}>Practice (slower)</option></select></label></div>
+  <p class="note">Catch only food scraps. Hold the arrow keys or movement buttons, or drag the basket.</p>
   <div class="compost-hud" id="compost-hud" hidden><div class="compost-hud-row"><p class="compost-score" id="compost-score" aria-live="off"></p><button type="button" class="secondary" data-compost-pause hidden>Pause</button></div><progress id="compost-progress" max="18" value="0" aria-label="Round progress"></progress></div>
   <div class="compost-field" id="compost-field" tabindex="0" role="application" aria-label="Compost Catch field. Use left and right arrow keys to move the basket.">
     <div class="compost-start" id="compost-start"><div class="arcade-ready"><h3>Good scraps. Great catches.</h3><div class="compost-legend"><div>${gameArt('carrot')}<strong>Catch food scraps</strong></div><div>${gameArt('wrapper')}<strong>Let plastic pass</strong></div></div><button type="button" data-compost-start>Start</button></div></div>
@@ -54,6 +55,13 @@ function setStatus(text,kind='',item=''){const s=document.querySelector('#compos
 function setScore(){const s=document.querySelector('#compost-score');if(s&&g)s.textContent=`Caught ${g.caught} of ${g.good} compostable scraps`;const progress=document.querySelector('#compost-progress');if(progress&&g)progress.value=g.resolved;}
 function basketEl(){return document.querySelector('#compost-basket');}
 function moveBasket(x){if(!g||g.paused)return;g.basket=Math.max(CATCH_RANGE,Math.min(100-CATCH_RANGE,x));const b=basketEl();if(b)b.style.left=g.basket+'%';}
+function catchFeedback(good){
+  clearTimeout(feedbackTimer);
+  const basket=basketEl();if(!basket)return;
+  basket.classList.remove('caught-food','caught-plastic');
+  basket.classList.add(good?'caught-food':'caught-plastic');
+  feedbackTimer=setTimeout(()=>basket.classList.remove('caught-food','caught-plastic'),350);
+}
 
 function spawn(){
   const item=g.seq[g.spawned++];
@@ -67,6 +75,7 @@ function spawn(){
 }
 
 function finish(){
+  document.querySelector('#compost-pace').disabled=false;
   document.querySelector('#compost-game')?.classList.remove('is-playing');
   const playfield=document.querySelector('#compost-field');playfield?.style.removeProperty('height');
   document.querySelector('[data-compost-pause]')?.setAttribute('hidden','');
@@ -77,7 +86,7 @@ function finish(){
   const before=gardenState(carePoints(gardenSummary));
   recordCompost(g.caught,g.good);giveGameTreat('compost');
   const growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
-  if(field)field.innerHTML=`<div class="compost-done"><h3>You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${growth}<p class="compost-takeaway">Catch food scraps. Let plastic pass.</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a></div></div>`;
+  if(field)field.innerHTML=`<div class="compost-done"><h3>You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p><p class="compost-takeaway">${g.pace==='practice'?'Practice pace':'Regular pace'}</p>${growth}<p class="compost-takeaway">Catch food scraps. Let plastic pass.</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a></div></div>`;
   controls&&(controls.hidden=true);
   document.dispatchEvent(new CustomEvent('hipos-game-done'));
   cheer('complete');
@@ -90,14 +99,16 @@ function frame(now){
   if(!g||!document.querySelector('#compost-field')){raf=0;g=null;return;}
   if(g.paused){raf=0;return;}
   const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(g.direction)moveBasket(g.basket+g.direction*MOVE_SPEED*dt);
   g.clock+=dt*1000;
-  if(g.spawned<TOTAL&&g.clock>=(g.spawned)*SPAWN_MS)spawn();
+  if(g.spawned<TOTAL&&g.clock>=(g.spawned)*g.spawn)spawn();
   const keep=[];
   for(const f of g.falling){
-    f.y+=FALL*dt;f.el.style.top=f.y+'%';
+    f.y+=g.fall*dt;f.el.style.top=f.y+'%';
     const onBasket=f.y>=CATCH_Y&&f.y<=CATCH_Y+8&&Math.abs(f.x-g.basket)<CATCH_RANGE;
     if(onBasket&&!f.done){
       f.done=true;f.el.remove();g.resolved++;
+      catchFeedback(f.item.good);
       if(f.item.good){g.caught++;setStatus('Into the compost!','success-feedback',f.item.name);sparkle(basketEl(),5);buzz(8);if(!cheer('catch'))sound('coin');}
       else{setStatus('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','',f.item.name);if(!cheer('miss'))sound('oops');}
       setScore();
@@ -119,6 +130,15 @@ let cleanupCompost=()=>{};
 export function initCompost(){
   cleanupCompost();
   const field=document.querySelector('#compost-field');if(!field)return;
+  const root=document.querySelector('#compost-game'),keys=new Set();
+  let hold=null,drag=null;
+  const direction=()=>{if(g)g.direction=hold?hold.direction:Number(keys.has('ArrowRight'))-Number(keys.has('ArrowLeft'));};
+  const clearInput=()=>{
+    keys.clear();
+    const previousHold=hold,previousDrag=drag;hold=null;drag=null;direction();
+    if(previousHold?.button.hasPointerCapture?.(previousHold.id))previousHold.button.releasePointerCapture(previousHold.id);
+    if(previousDrag!==null&&field.hasPointerCapture?.(previousDrag))field.releasePointerCapture(previousDrag);
+  };
   const fit=()=>{
     if(!g)return;
     const hud=document.querySelector('#compost-hud'),controls=document.querySelector('#compost-controls');
@@ -134,6 +154,7 @@ export function initCompost(){
   const fitAfterText=()=>{fit();cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fit);};
   const togglePause=(force=false)=>{
     if(!g)return;
+    clearInput();
     g.paused=force||!g.paused;
     document.querySelector('[data-compost-pause]').textContent=g.paused?'Resume':'Pause';
     field.classList.toggle('is-paused',g.paused);
@@ -141,18 +162,24 @@ export function initCompost(){
     if(g.paused){
       cancelAnimationFrame(raf);raf=0;
       const overlay=document.createElement('div');overlay.className='compost-paused';
-      overlay.innerHTML='<button type="button" data-compost-pause>Resume</button>';field.appendChild(overlay);
+      overlay.innerHTML='<div class="compost-pause-panel"><strong>Paused</strong><button type="button" data-compost-pause>Resume</button></div>';field.appendChild(overlay);
       if(!document.hidden)overlay.querySelector('button').focus();
     }else{last=performance.now();raf=requestAnimationFrame(frame);field.focus({preventScroll:true});}
   };
   const visibility=()=>{if(document.hidden)togglePause(true);};
-  const leave=()=>{cancelAnimationFrame(raf);cancelAnimationFrame(fitFrame);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);window.removeEventListener('resize',fitAfterText);};
+  const release=event=>{if(hold?.id===event.pointerId){hold=null;direction();}if(drag===event.pointerId)drag=null;};
+  const keyup=event=>{keys.delete(event.key);direction();};
+  const leave=()=>{clearInput();clearTimeout(feedbackTimer);cancelAnimationFrame(raf);cancelAnimationFrame(fitFrame);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);window.removeEventListener('resize',fitAfterText);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',clearInput);};
   document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',leave);cleanupCompost=leave;
   window.addEventListener('resize',fitAfterText);
+  window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);
+  window.addEventListener('keyup',keyup);window.addEventListener('blur',clearInput);
   const start=()=>{
+    clearInput();clearTimeout(feedbackTimer);
     cancelAnimationFrame(raf);
     const seq=makeSequence();
-    g={paused:false,seq,good:seq.filter(x=>x.good).length,spawned:0,resolved:0,falling:[],caught:0,basket:50,clock:0};
+    const select=document.querySelector('#compost-pace');pace=Object.hasOwn(PACES,select.value)?select.value:'regular';select.disabled=true;
+    g={paused:false,direction:0,pace,...PACES[pace],seq,good:seq.filter(x=>x.good).length,spawned:0,resolved:0,falling:[],caught:0,basket:50,clock:0};
     field.classList.remove('is-paused');
     field.innerHTML=`<div class="compost-basket" id="compost-basket" aria-hidden="true">${gameArt('basket')}</div>`;
     const pause=document.querySelector('[data-compost-pause]');pause.hidden=false;pause.textContent='Pause';
@@ -165,22 +192,32 @@ export function initCompost(){
     last=performance.now();raf=requestAnimationFrame(frame);
     buddySay('Catch the compost!',{ms:2500});
   };
-  document.querySelector('#compost-game')?.addEventListener('click',event=>{
+  root.addEventListener('click',event=>{
     if(event.target.closest('[data-compost-start]'))start();
     else if(event.target.closest('[data-compost-pause]'))togglePause();
-    else if(event.target.closest('[data-compost-left]'))moveBasket((g?.basket??50)-BASKET_STEP);
-    else if(event.target.closest('[data-compost-right]'))moveBasket((g?.basket??50)+BASKET_STEP);
+    else if(event.detail===0&&event.target.closest('[data-compost-left]'))moveBasket((g?.basket??50)-BASKET_STEP);
+    else if(event.detail===0&&event.target.closest('[data-compost-right]'))moveBasket((g?.basket??50)+BASKET_STEP);
   });
-  field.addEventListener('keydown',event=>{
-    if(!g)return;
-    if(event.key==='ArrowLeft'){event.preventDefault();moveBasket(g.basket-BASKET_STEP);}
-    if(event.key==='ArrowRight'){event.preventDefault();moveBasket(g.basket+BASKET_STEP);}
+  root.addEventListener('pointerdown',event=>{
+    const button=event.target.closest('[data-compost-left],[data-compost-right]');
+    if(!button||!g||g.paused||hold||event.button>0||event.isPrimary===false)return;
+    hold={id:event.pointerId,button,direction:button.hasAttribute('data-compost-left')?-1:1};
+    try{button.setPointerCapture?.(event.pointerId);}catch{/* Capture may be unavailable for synthetic or cancelled pointers. */}
+    moveBasket(g.basket+hold.direction*BASKET_STEP);direction();
+  });
+  root.addEventListener('lostpointercapture',release);
+  root.addEventListener('keydown',event=>{
+    if(!g||g.paused||!['ArrowLeft','ArrowRight'].includes(event.key)||event.target.closest('select'))return;
+    event.preventDefault();keys.add(event.key);direction();
+    if(!event.repeat)moveBasket(g.basket+(event.key==='ArrowLeft'?-BASKET_STEP:BASKET_STEP));
   });
   field.addEventListener('pointermove',event=>{
-    if(!g||event.buttons===0&&event.pointerType==='mouse')return;
+    if(!g||drag!==event.pointerId)return;
     const r=field.getBoundingClientRect();moveBasket(((event.clientX-r.left)/r.width)*100);
   });
   field.addEventListener('pointerdown',event=>{
-    if(!g)return;const r=field.getBoundingClientRect();moveBasket(((event.clientX-r.left)/r.width)*100);
+    if(!g||g.paused||drag!==null||event.button>0||event.isPrimary===false||event.target.closest('button'))return;
+    drag=event.pointerId;try{field.setPointerCapture?.(event.pointerId);}catch{/* Keep direct movement available without capture. */}
+    const r=field.getBoundingClientRect();moveBasket(((event.clientX-r.left)/r.width)*100);
   });
 }

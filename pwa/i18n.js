@@ -1,4 +1,8 @@
 const pairs=[
+ ['Round pace','Bilis ng round'],['Regular','Karaniwan'],['Practice (slower)','Pagsasanay (mas mabagal)'],
+ ['Regular pace','Karaniwang bilis'],['Practice pace','Bilis para sa pagsasanay'],
+ ['Paused','Naka-pause'],['Correct destination','Tamang lalagyan'],
+ ['Catch only food scraps. Hold the arrow keys or movement buttons, or drag the basket.','Tirang pagkain lamang ang saluhin. Pindutin nang matagal ang arrow keys o mga button sa paggalaw, o i-drag ang basket.'],
  ['Next bloom','Susunod na pamumulaklak'],['Progress to next bloom','Usad sa susunod na pamumulaklak'],
  ['1 care point to the next bloom','1 puntos ng pag-aalaga bago ang susunod na pamumulaklak'],
  ['2 care points to the next bloom','2 puntos ng pag-aalaga bago ang susunod na pamumulaklak'],

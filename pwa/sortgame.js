@@ -51,6 +51,10 @@ function answer(choice){
   game.answered=true;if(right)game.score++;
   else game.review.push(item);
   document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice)b.classList.add(right?'is-right':'is-wrong');});
+  const destination=document.querySelector(`[data-sort-bin="${item.suitable?'yes':'no'}"]`);
+  destination.classList.add('is-answer');
+  destination.setAttribute('aria-label',destination.querySelector('strong').textContent+' · Correct destination');
+  destination.querySelector('.sort-bin-icon').innerHTML='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 16 6 6L25 10"/></svg>';
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
