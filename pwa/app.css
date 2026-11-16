@@ -1227,3 +1227,47 @@ html[data-font=pixelify]{--font-display:"HIPOS Pixelify Sans",ui-monospace,syste
 }
 @media(max-width:360px){.prevent-tip{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.prevent-tip{transition:none}}
+
+/* Home activity stations share the Prevent page's small illustrated objects. */
+.home-activities{gap:20px;align-items:start}
+.home-activities>.card{padding:24px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:none;min-width:0}
+.home-activities>.challenge-panel{padding-right:132px;background:var(--leaf-soft)}
+.home-activities h2{padding-right:84px;margin:0 0 16px;min-height:64px;display:flex;align-items:center;font-size:1.5rem;line-height:1.25}
+.home-activities .challenge-panel h2{min-height:0;padding-right:0;margin:8px 0 12px}
+.home-activities .challenge-panel>.guide-number{display:block;max-width:none;margin:0;padding:0;border-radius:0;background:none;color:var(--muted);font-size:.875rem;font-weight:600}
+.home-activities p{color:var(--muted);line-height:1.65;margin-bottom:16px}
+.home-activities .challenge-panel>.muted{font-size:.875rem;margin-bottom:0}
+.home-activities .actions{gap:12px;margin-top:20px}
+.home-activities .actions button{min-height:44px;padding:10px 16px;border-radius:12px;box-shadow:none}
+.home-activities .activity-art{position:absolute;top:24px;right:24px;display:block;width:64px;height:64px;min-width:64px;min-height:64px;padding:0;border:0;border-radius:18px;background:#f4e6bf;box-shadow:none;overflow:visible;transition:background-color .16s ease}
+.home-activities .activity-art-habits{background:#f7e0d1}
+.home-activities .activity-art-challenge{width:80px;height:80px;background:#dceee3}
+.activity-art svg{display:block;width:100%;height:100%}
+.activity-leaf{position:absolute;right:-3px;top:-4px;width:12px;height:18px;border:2px solid #254b38;border-radius:12px 2px 12px 2px;background:#b9e780;transform:rotate(24deg)}
+.home-activities .activity-art:hover{background:#e5edcf;transform:none}
+.home-activities #challenge-feedback:not(:empty){margin:16px 0 0;color:var(--ink);font-weight:600}
+.challenge-panel[data-state=done] #challenge-feedback::before{content:'?';display:inline-grid;place-items:center;width:28px;height:28px;margin-right:8px;background:var(--leaf);color:#254b38;border-radius:14px 4px 14px 4px}
+.home-activities .daily-items label{gap:12px;min-height:56px;padding:12px 0;margin:0;border-radius:0;border-bottom:1px solid var(--line);cursor:pointer}
+.home-activities .daily-items input{width:24px;height:24px;min-height:24px;border-radius:6px;accent-color:var(--green-mid)}
+.home-activities .daily-items label:has(:checked) span{text-decoration:none;color:var(--muted)}
+.home-activities #daily-progress{margin:16px 0 0;padding:8px 12px;border-radius:12px;font-size:.875rem;background:var(--leaf-soft);color:var(--ink)}
+.quiz-markers{display:flex;gap:8px;margin:20px 0 12px}
+.quiz-markers span{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:50%;color:var(--muted);font-size:.875rem}
+.quiz-markers .is-current{border:2px solid #87aa68;color:var(--ink)}
+.quiz-markers .is-finished{background:var(--leaf-soft);border-color:#87aa68;color:var(--ink)}
+.home-activities .quiz-step{margin:0 0 12px;font-size:.875rem}
+.home-activities .quiz-options{gap:12px}
+.home-activities .quiz-options button{padding:12px 16px;border-radius:12px;min-height:48px;box-shadow:none}
+.home-activities .quiz-options button[aria-pressed=true]{border-color:#87aa68;background:var(--leaf-soft);color:var(--ink);opacity:1;box-shadow:inset 3px 0 #87aa68}
+.home-activities #quiz-summary{display:flex;align-items:center;gap:12px}
+.home-activities #quiz-summary::before{content:'?';display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:18px 6px 18px 6px;background:var(--leaf-soft);color:var(--ink)}
+@media(max-width:760px){
+ .home-activities{grid-template-columns:minmax(0,1fr);gap:16px}
+ .home-activities>.card{padding:20px;border-radius:20px}
+ .home-activities h2{padding-right:76px;font-size:1.375rem}
+ .home-activities .activity-art{top:20px;right:20px}
+ .home-activities .activity-art-challenge{width:64px;height:64px;min-width:64px}
+ .home-activities .challenge-panel>.guide-number{max-width:calc(100% - 76px);min-height:64px;display:flex;align-items:center}
+ .home-activities .challenge-panel h2{margin-top:16px}
+}
+@media(prefers-reduced-motion:reduce){.home-activities .activity-art{transition:none}}

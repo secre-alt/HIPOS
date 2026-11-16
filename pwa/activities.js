@@ -1,4 +1,4 @@
-import {miniBuddy} from './buddy-fx.js';
+import {activityArt} from './activity-art.js';
 import {escapeHTML as e} from './core.js';
 import {recordChecklist,refreshWeekly} from './engagement.js';
 import {celebrate} from './motion.js';
@@ -15,7 +15,7 @@ export function readDaily(storage=localStorage,day=localDay()){
 export function checklist(){
   let daily,error='';
   try{daily=readDaily();}catch{daily={day:localDay(),checked:habits.map(()=>false)};error='Saved checklist could not be read. Changes will only be shown if they can be saved.';}
-  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}">${miniBuddy('habits')}<h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
+  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}">${activityArt('habits')}<h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
 }
 function progress(checked){return `${checked.filter(Boolean).length} of ${habits.length} actions completed today${checked.every(Boolean)?' · Ready for today':''}`;}
 export function updateHabit(input){
@@ -73,19 +73,20 @@ function loadQuiz(){
 function score(){return session.answers.reduce((total,answer,i)=>total+Number(answer===questionBank[session.ids[i]].correct),0);}
 export function quiz(){
   loadQuiz();
-  return `<section class="quiz-panel card" aria-labelledby="quiz-heading">${miniBuddy('quiz')}<h2 id="quiz-heading">A quick sorting check</h2><p>Three questions. Learn why each item belongs where it does.</p><div id="quiz-content">${quizContent()}</div><p id="quiz-storage" role="status">${e(quizError)}</p></section>`;
+  return `<section class="quiz-panel card" aria-labelledby="quiz-heading">${activityArt('quiz')}<h2 id="quiz-heading">A quick sorting check</h2><p>Three questions. Learn why each item belongs where it does.</p><div id="quiz-content">${quizContent()}</div><p id="quiz-storage" role="status">${e(quizError)}</p></section>`;
 }
+function quizMarkers(){return `<div class="quiz-markers" aria-hidden="true">${[0,1,2].map(i=>`<span class="${i<session.position?'is-finished':i===session.position?'is-current':''}">${i+1}</span>`).join('')}</div>`;}
 function quizContent(){
-  if(session.position===3)return `<h3 tabindex="-1" id="quiz-summary">${score()} of 3 correct</h3><p>Clean, dry and nonhazardous only. Ask authorized staff about unsuitable waste.</p><p>Keep learning with the handling guide.</p><a class="button-link secondary" href="#${questionBank[session.ids[0]].guide}">Review a related guide</a><div class="actions"><button data-quiz-restart>Try again</button></div>`;
+  if(session.position===3)return `${quizMarkers()}<h3 tabindex="-1" id="quiz-summary">${score()} of 3 correct</h3><p>Clean, dry and nonhazardous only. Ask authorized staff about unsuitable waste.</p><p>Keep learning with the handling guide.</p><a class="button-link secondary" href="#${questionBank[session.ids[0]].guide}">Review a related guide</a><div class="actions"><button data-quiz-restart>Try again</button></div>`;
   const q=questionBank[session.ids[session.position]],answered=session.answers.length>session.position;
-  return `<p class="quiz-step">Question ${session.position+1} of 3</p><h3 id="quiz-question" tabindex="-1">${e(q.title)}</h3><div class="quiz-options" role="group" aria-labelledby="quiz-question"><button class="secondary" data-answer="0" ${answered?'disabled':''}>Suitable if clean and dry</button><button class="secondary" data-answer="1" ${answered?'disabled':''}>Keep out of the pouch</button></div><div id="quiz-feedback" role="status" aria-live="polite" aria-atomic="true">${answered?answerFeedback(q):''}</div><button data-quiz-next ${answered?'':'hidden'}>${session.position===2?'See results':'Next question'}</button>`;
+  return `${quizMarkers()}<p class="quiz-step">Question ${session.position+1} of 3</p><h3 id="quiz-question" tabindex="-1">${e(q.title)}</h3><div class="quiz-options" role="group" aria-labelledby="quiz-question"><button class="secondary" data-answer="0" aria-pressed="${answered&&session.answers[session.position]===0}" ${answered?'disabled':''}>Suitable if clean and dry</button><button class="secondary" data-answer="1" aria-pressed="${answered&&session.answers[session.position]===1}" ${answered?'disabled':''}>Keep out of the pouch</button></div><div id="quiz-feedback" role="status" aria-live="polite" aria-atomic="true">${answered?answerFeedback(q):''}</div><button data-quiz-next ${answered?'':'hidden'}>${session.position===2?'See results':'Next question'}</button>`;
 }
 function answerFeedback(q){return `<p><strong>${session.answers[session.position]===q.correct?'Correct.':'Let’s check that.'}</strong> ${e(q.explanation)}</p>`;}
 export function answerQuiz(button){
   if(session.position===3||session.answers.length>session.position)return;
   const answer=Number(button.dataset.answer);if(answer!==0&&answer!==1)return;
   session.answers.push(answer);saveQuiz();
-  document.querySelectorAll('[data-answer]').forEach(el=>{el.disabled=true;});
+  document.querySelectorAll('[data-answer]').forEach(el=>{el.disabled=true;el.setAttribute('aria-pressed',String(Number(el.dataset.answer)===answer));});
   document.querySelector('#quiz-feedback').innerHTML=answerFeedback(questionBank[session.ids[session.position]]);
   document.querySelector('[data-quiz-next]').hidden=false;
   document.querySelector('#quiz-storage').textContent=quizError;

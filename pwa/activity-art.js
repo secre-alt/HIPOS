@@ -1,0 +1,6 @@
+const shapes={
+  challenge:'<path d="M27 78V20m0 4c16-14 28 13 47-1v31c-19 14-31-13-47 1" fill="#bedf94"/><path d="M44 39q0-12 17-12 2 17-12 17m-5 0 12-12" fill="#91cbb0"/><path d="M19 80h29"/>',
+  quiz:'<rect x="17" y="23" width="25" height="36" rx="4" fill="#fff8df"/><path d="M23 32h13m-13 8h10"/><rect x="59" y="18" width="13" height="9" rx="2" fill="#e5bf79"/><rect x="54" y="27" width="23" height="33" rx="6" fill="#a8d9c9"/><path d="M12 57h34l-4 23H16Zm39 0h34l-4 23H55Z" fill="#e5bf79"/>',
+  habits:'<path d="M39 24v-7h22v7"/><rect x="24" y="23" width="52" height="60" rx="16" fill="#edbc9e"/><rect x="33" y="52" width="34" height="23" rx="7" fill="#f6dbad"/><path d="M42 36h16m-9 22v7"/><circle cx="41" cy="44" r="2" fill="#254b38"/><circle cx="59" cy="44" r="2" fill="#254b38"/><path d="M46 47q4 4 8 0"/>',
+};
+export function activityArt(kind){return `<button type="button" class="mini-buddy secondary activity-art activity-art-${kind}" data-buddy-tap data-hint="${kind}" aria-label="Ask your buddy for a hint"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" fill="none" stroke="#254b38" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${shapes[kind]}</svg><span class="activity-leaf" aria-hidden="true"></span></button>`;}
