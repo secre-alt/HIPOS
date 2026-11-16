@@ -724,6 +724,11 @@
 .sort-done .actions {
   justify-content: center;
 }
+.sort-review { margin:16px 0; border:1px solid var(--line); border-radius:12px; text-align:left; }
+.sort-review summary { display:list-item; min-height:48px; padding:12px 16px; cursor:pointer; font-weight:600; }
+.sort-review ul { padding:0 16px 0 36px; }
+.sort-review li + li { margin-top:16px; }
+.sort-review p { margin:4px 0; }
 #sort-feedback {
   margin-top: 12px;
 }

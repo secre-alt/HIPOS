@@ -1,4 +1,11 @@
 const pairs=[
+ ['Round progress','Usad ng round'],
+ ['Good practice. Try another round.','Magandang pagsasanay. Subukan ang isa pang round.'],
+ ['Catch food scraps','Saluhin ang tirang pagkain'],['Let plastic pass','Palampasin ang plastik'],
+ ['Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','Huwag isama ang plastik sa compost. Ilagay lamang sa supot ng tuyong basura kung malinis at tuyo.'],
+ ['This scrap can be composted. Try catching it next time.','Maaaring i-compost ang tirang ito. Subukang saluhin sa susunod.'],
+ ['Review what you learned','Balikan ang iyong natutuhan'],
+ ['Only clean, dry, nonhazardous items belong in the pouch.','Malinis, tuyo, at hindi mapanganib na bagay lamang ang ilalagay sa supot.'],
  ['Catch · Keep · Grow','Salo · Ingat · Palago'],
  ['Good scraps. Great catches.','Tirang pagkain. Husay sa pagsalo.'],
  ['Catch food scraps. Let plastic pass.','Saluhin ang tirang pagkain. Palampasin ang plastik.'],

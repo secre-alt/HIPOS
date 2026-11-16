@@ -17,7 +17,7 @@ export function makeRound(random=Math.random,previous=[]){
   const yes=fresh(shuffle(all.filter(x=>x.suitable))).slice(0,ROUND/2),no=fresh(shuffle(all.filter(x=>!x.suitable))).slice(0,ROUND/2);
   return shuffle([...yes,...no]);
 }
-const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answered:false};lastTitles=game.items.map(x=>x.title);};
+const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[]};lastTitles=game.items.map(x=>x.title);};
 
 export function sortGame(){
   start();
@@ -40,12 +40,14 @@ const hand='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="
 function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
-  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p><div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
+  const review=game.review.length?`<details class="sort-review"><summary>Review what you learned</summary><ul>${game.review.map(item=>`<li><strong>${e(item.title)}</strong><p>${e(item.body)}</p></li>`).join('')}</ul></details>`:'';
+  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p><p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
 }
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
   const item=game.items[game.i],right=(choice==='yes')===item.suitable;
   game.answered=true;if(right)game.score++;
+  else game.review.push(item);
   document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice)b.classList.add(right?'is-right':'is-wrong');});
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');

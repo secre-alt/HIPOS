@@ -171,18 +171,22 @@ main:has(> #update-banner:not([hidden])) > #view > .intro:first-child {
   min-width: 120px;
 }
 .compost-score {
-  margin: 8px 0 0;
-  font-weight: 700;
-  text-align: center;
+  margin: 0;
+  font-weight: 600;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
 }
+.compost-hud { display:grid; gap:8px; margin:12px 0; }
+.compost-hud progress { width:100%; height:8px; accent-color:var(--green); }
 .compost-done {
   display: grid;
   place-items: center;
-  align-content: center;
+  align-content: safe center;
   gap: 8px;
   height: 100%;
   padding: 16px;
   text-align: center;
+  overflow-y: auto;
 }
 .compost-done h3 {
   margin: 0;
@@ -556,11 +560,16 @@ html[data-font=pixelify] {
 .arcade-ready svg,.compost-done > svg { width:80px; height:80px; }
 .arcade-ready h3 { margin:0; font-family:var(--font-display); font-size:1.5rem; }
 .arcade-ready p { margin:4px 0 16px; }
-.compost-start { z-index:2; background:var(--surface); }
+.compost-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:16px 0; }
+.compost-legend > div { display:grid; justify-items:center; gap:4px; }
+.compost-legend svg { width:56px; height:56px; }
+.compost-legend strong { font-size:.875rem; font-weight:600; }
+.compost-start { z-index:2; background:var(--surface); overflow-y:auto; align-items:safe center; }
 .compost-paused { position:absolute; inset:0; z-index:3; display:grid; place-items:center; background:var(--surface); }
 .compost-game .feedback { min-height:32px; margin:8px 0; }
 .compost-done { position:relative; z-index:2; background:var(--surface); }
 .compost-done .actions { justify-content:center; }
+.compost-takeaway { margin:0; font-size:.875rem; color:var(--muted); }
 .compost-controls button { flex:1; max-width:240px; }
 .compost-item svg,.compost-basket svg { display:block; width:100%; height:100%; }
 @media (max-width:600px) {
