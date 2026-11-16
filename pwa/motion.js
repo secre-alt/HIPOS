@@ -44,7 +44,12 @@ export function initScrollEffects(){
   const update=()=>{
     queued=false;
     const y=window.scrollY,max=Math.max(0,root.scrollHeight-window.innerHeight);
-    if(backToTop)backToTop.hidden=max-y>32;
+    const schoolCard=document.querySelector('#view .school-info');
+    // On Home, keep the shortcut available from School information onward.
+    // Other pages retain the bottom-of-page trigger.
+    if(backToTop)backToTop.hidden=schoolCard
+      ?schoolCard.getBoundingClientRect().top>=window.innerHeight
+      :max-y>32;
     document.querySelector('aside')?.style.setProperty('--progress',Math.min(1,Math.max(0,y/Math.max(1,max))).toFixed(4));
     const art=document.querySelector('.hero-deco');
     if(art)art.style.setProperty('--sy',reduced()?'0':String(Math.min(Math.round(y),1200)));
