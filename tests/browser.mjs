@@ -118,7 +118,7 @@ try{
     const go=async name=>{await p.getByRole('button',{name:'Menu',exact:true}).click();await p.getByRole('link',{name,exact:true}).click();await expect(p.locator('#page-label')).toHaveText(name==='Home'?'Your daily guide':name);};
     const noOverflow=async()=>assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`No overflow at ${width}px`);
     const touchTargets=async()=>{
-      const bad=await p.locator('button,a,input,select,textarea').evaluateAll(elements=>elements.filter(el=>{const r=el.getBoundingClientRect(),style=getComputedStyle(el);return r.width>0&&r.height>0&&r.top>=0&&style.visibility!=='hidden'&&(r.height<44||r.width<44);}).map(el=>el.textContent.trim()));
+      const bad=await p.locator('button,a,input,select,textarea').evaluateAll(elements=>elements.filter(el=>{const r=el.getBoundingClientRect(),style=getComputedStyle(el);return r.width>0&&r.height>0&&r.top>=0&&style.visibility!=='hidden'&&(r.height<44||r.width<44);}).map(el=>`${el.tagName}#${el.id}.${el.className} "${el.textContent.trim()}" aria=${el.getAttribute('aria-label')||''} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
       assert.deepEqual(bad,[],`44px touch targets at ${width}px`);
     };
     await p.goto('http://localhost:4174');
