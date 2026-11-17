@@ -154,8 +154,9 @@
     font: inherit; font-size: .72rem; font-weight: 700; line-height: 1.2;
     color: var(--muted); text-align: center; text-decoration: none; white-space: normal;
   }
-  .mobile-bottom-nav > a[aria-current=page],
-  .mobile-bottom-nav .mobile-more > button.is-current { color: var(--ink); font-weight: 800; }
+  .mobile-bottom-nav :is(a, button):is(:hover, :active, [aria-current=page], .is-current) { background: transparent; }
+  .mobile-bottom-nav > a:is(:hover, [aria-current=page]),
+  .mobile-bottom-nav .mobile-more > button:is(:hover, .is-current) { color: var(--muted); }
   .mobile-bottom-nav > a:not(.mobile-classify) > svg,
   #mobile-more-toggle > svg { box-sizing: content-box; padding: 5px 13px; border-radius: 16px; }
   .mobile-bottom-nav > a[aria-current=page] > svg,
@@ -164,17 +165,17 @@
   .mobile-bottom-nav :is(a, button, span) { text-decoration: none; }
   :root[data-theme=dark] .mobile-bottom-nav > a[aria-current=page] > svg,
   :root[data-theme=dark] #mobile-more-toggle.is-current > svg { background: #304b2e; color: #c4f48d; box-shadow: inset 0 0 0 1px #b9f26b20; }
-  .mobile-classify[aria-current=page] .classify-disc { box-shadow: 0 3px 10px #0c312624, inset 0 0 0 4px #ffffff66; }
+  .mobile-classify[aria-current=page] .classify-disc svg { stroke-width: 2.8; }
   .mobile-bottom-nav a::after { display: none; }
   .mobile-bottom-nav svg { flex-shrink: 0; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .mobile-bottom-nav > a.mobile-classify { justify-content: flex-end; position: relative; padding-top: 48px; }
-  .classify-disc { position: absolute; top: -36px; display: grid; place-items: center; width: 68px; height: 68px; border: 0; box-sizing: border-box; box-shadow: 0 3px 10px #0c312624; border-radius: 50%; background: #bdf56c; color: #173d2c; }
+  .classify-disc { position: absolute; top: -32px; display: grid; place-items: center; width: 60px; height: 60px; border: 2px solid #7dbb3a; box-sizing: border-box; box-shadow: 0 3px 0 #7dbb3a; border-radius: 26px 26px 26px 18px; background: var(--leaf); color: var(--green-deep); }
   .classify-disc svg { width: 28px; height: 28px; stroke-width: 2.3; }
   .mobile-more { position: relative; min-width: 0; }
   #mobile-more-panel { position: absolute; bottom: calc(100% + 12px); right: 4px; width: 180px; padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 8px 28px #0004; }
   #mobile-more-panel[hidden] { display: none; }
   #mobile-more-panel a { display: flex; align-items: center; min-height: 48px; padding: 8px 14px; margin: 0; border-radius: 10px; color: var(--ink); font-size: .95rem; text-decoration: none; }
-  #mobile-more-panel a:is(:hover, [aria-current=page]) { background: var(--leaf); color: var(--green-deep); }
+  #mobile-more-panel a:is(:hover, [aria-current=page]) { background: transparent; color: var(--ink); font-weight: 800; }
   .mobile-bottom-nav :is(a, button):focus-visible { outline: 2px solid var(--green); outline-offset: -3px; }
   :root[data-theme=dark] nav.mobile-bottom-nav { --mobile-nav-surface: #0f1f19ee; --mobile-nav-shadow: #0008; }
   #menu-toggle { display: none; }
