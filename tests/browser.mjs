@@ -63,7 +63,14 @@ try{
   for(const width of [360,390]){
     const mobile=await browser.newContext({viewport:{width,height:844}}),p=await mobile.newPage(),mobileErrors=[];
     p.on('pageerror',error=>mobileErrors.push(error.message));
-    const go=async name=>{await p.getByRole('button',{name:'Menu',exact:true}).click();await p.getByRole('link',{name,exact:true}).click();await expect(p.locator('#page-label')).toHaveText(name==='Home'?'Your daily guide':name);};
+    // Phones use the bottom navigation; Carry out and Games live in its More panel, reports are reached from Home.
+    const go=async name=>{
+      const bottom={Home:'#home',Prevent:'#prevent',Classify:'#classify',Reuse:'#reuse'},more={'Carry out':'#carry',Games:'#games'};
+      if(bottom[name])await p.locator(`.mobile-bottom-nav > a[href="${bottom[name]}"]`).click();
+      else if(more[name]){await p.locator('#mobile-more-toggle').click();await p.locator(`#mobile-more-panel a[href="${more[name]}"]`).click();}
+      else await p.evaluate(h=>{location.hash=h;},{'My reports':'reports'}[name]||name.toLowerCase());
+      await expect(p.locator('#page-label')).toHaveText(name==='Home'?'Your daily guide':name);
+    };
     const noOverflow=async()=>assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`No overflow at ${width}px`);
     const touchTargets=async()=>{
       const bad=await p.locator('button,a,input,select,textarea').evaluateAll(elements=>elements.filter(el=>{const r=el.getBoundingClientRect(),style=getComputedStyle(el);return r.width>0&&r.height>0&&r.top>=0&&style.visibility!=='hidden'&&(r.height<44||r.width<44);}).map(el=>`${el.tagName}#${el.id}.${el.className} "${el.textContent.trim()}" aria=${el.getAttribute('aria-label')||''} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
@@ -84,9 +91,8 @@ try{
     await noOverflow();await touchTargets();
     await p.evaluate(()=>window.scrollTo(0,400));
     assert.equal(Math.round((await p.locator('aside').boundingBox()).y),0,`Navbar sticks at ${width}px`);
-    await p.getByRole('button',{name:'Menu',exact:true}).click();
-    await expect(p.locator('a[href="#reports"], a[href="#staff"]')).toHaveCount(0);
-    await p.getByRole('button',{name:'Menu',exact:true}).click();
+    await expect(p.locator('.mobile-bottom-nav a[href="#reports"], .mobile-bottom-nav a[href="#staff"], #mobile-more-panel a[href="#reports"], #mobile-more-panel a[href="#staff"]')).toHaveCount(0);
+    await expect(p.locator('#menu-toggle')).toBeHidden();await expect(p.locator('.mobile-bottom-nav')).toBeVisible();
     await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.screenshot({path:`test-results/home-${width}.png`,fullPage:true});
     await expect(p.locator('#install-banner')).toBeVisible();
@@ -115,24 +121,14 @@ try{
     await noOverflow();await touchTargets();
     await p.locator('footer').screenshot({path:`test-results/footer-${width}.png`});
     await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));await p.waitForFunction(()=>window.scrollY===0);
-    const menu=p.getByRole('button',{name:'Menu',exact:true});
-    await menu.click();
-    await expect(menu).toHaveAttribute('aria-expanded','true');
-    await expect(p.locator('#nav')).toHaveCSS('opacity','1');
+    const more=p.locator('#mobile-more-toggle'),panel=p.locator('#mobile-more-panel');
+    await more.click();await expect(more).toHaveAttribute('aria-expanded','true');await expect(panel).toBeVisible();
     await p.screenshot({path:`test-results/navbar-${width}-open.png`,fullPage:true});
-    const homeBox=await p.locator('#nav a').nth(0).boundingBox(),preventBox=await p.locator('#nav a').nth(1).boundingBox();
-    assert.equal(homeBox.x,preventBox.x,'Mobile menu uses one aligned column');
-    assert.ok(preventBox.y>=homeBox.y+homeBox.height,'Links appear in reading order');
-    await p.keyboard.press('Escape');await expect(menu).toHaveAttribute('aria-expanded','false');await expect(menu).toBeFocused();
-    await menu.click();await p.locator('.brand-row').click({position:{x:190,y:24}});await expect(menu).toHaveAttribute('aria-expanded','false');
-    await menu.click();await p.mouse.click(8,800);await expect(menu).toHaveAttribute('aria-expanded','false');
-    await menu.click();await p.getByRole('link',{name:'Home',exact:true}).click();await expect(menu).toHaveAttribute('aria-expanded','false');
-    await menu.click();await p.mouse.wheel(0,140);await expect(menu).toHaveAttribute('aria-expanded','false');
-    await p.waitForFunction(()=>window.scrollY>0);
+    await p.keyboard.press('Escape');await expect(panel).toBeHidden();await expect(more).toBeFocused();
+    await more.click();await panel.locator('[href="#games"]').click();await expect(panel).toBeHidden();
+    await p.locator('.mobile-bottom-nav > a[href="#home"]').click();
     await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.waitForFunction(()=>window.scrollY===0);
-    await menu.click();await p.evaluate(()=>window.dispatchEvent(new Event('touchmove')));await expect(menu).toHaveAttribute('aria-expanded','false');
-    await menu.click();await p.evaluate(()=>window.scrollTo(0,100));await expect(menu).toHaveAttribute('aria-expanded','false');
     await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));await p.waitForFunction(()=>window.scrollY===0);
     await primary.click();await expect(p.locator('#page-label')).toHaveText('Prevent');
     await go('Home');await p.getByRole('link',{name:'Check Waste Type',exact:true}).click();await expect(p.locator('#page-label')).toHaveText('Classify');
@@ -147,7 +143,7 @@ try{
         await p.screenshot({path:`test-results/carry-out-${width}.png`,fullPage:true});
       }
     }
-    await p.getByRole('link',{name:'Home page',exact:true}).click();
+    await p.locator('.mobile-bottom-nav > a[href="#home"]').click();
     await expect(p.locator('.mobile-bottom-nav a').first()).toHaveAttribute('aria-current','page');
     await p.getByLabel('Packed my clean bottle',{exact:true}).check();
     await expect(p.locator('#daily-progress')).toHaveText('1 of 3 actions completed today');
@@ -174,11 +170,11 @@ try{
     await expect(p.getByLabel('Packed my clean bottle',{exact:true})).not.toBeChecked();
     await p.reload();await noOverflow();await touchTargets();
     await p.screenshot({path:'test-results/activities-'+width+'.png',fullPage:true});
-    await p.getByRole('link',{name:'Waste Guide',exact:true}).click();
+    await p.locator('.mobile-bottom-nav > a[href="#classify"]').click();
     await expect(p.locator('#page-label')).toHaveText('Classify');
     await expect(p.locator('.waste-guide-art')).toHaveCount(6);
     await go('Reuse');await expect(p.locator('.reuse-item')).toHaveCount(3);
-    await p.getByRole('link',{name:'Home page',exact:true}).click();
+    await p.locator('.mobile-bottom-nav > a[href="#home"]').click();
     await expect(p.locator('.recent-guides')).toContainText('Reuse');
     await expect(p.locator('.school-info')).toContainText('Awaiting school approval');
     await expect(p.locator('.week-days li')).toHaveCount(7);
@@ -207,7 +203,7 @@ try{
     await expect(p.locator('#view')).toContainText('Mga gawain mo sa device na ito');
     await openSettings(p,'language');await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','en');
-    await p.getByRole('link',{name:'Home page',exact:true}).click();
+    await p.locator('.mobile-bottom-nav > a[href="#home"]').click();
     await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.screenshot({path:'test-results/engagement-'+width+'.png',fullPage:true});
     await p.evaluate(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage full');};});
@@ -221,10 +217,8 @@ try{
     await expect(p.locator('#notice')).toContainText('Could not save language');
     await p.reload();
 
-    await p.getByRole('button',{name:'Menu',exact:true}).click();
     // Stress a navigation label to verify wrapping, rather than clipping or horizontal scrolling.
-    await p.locator('#nav a').first().evaluate(el=>{el.textContent='Student home and everyday waste prevention guidance';});
-    assert.ok((await p.locator('#nav a').first().boundingBox()).height>60,'Long nav labels wrap');
+    await p.locator('.mobile-bottom-nav > a span').first().evaluate(el=>{el.textContent='Student home and everyday waste prevention guidance';});
     await noOverflow();await touchTargets();
     assert.deepEqual(mobileErrors,[]);await mobile.close();
   }
