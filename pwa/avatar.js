@@ -1,4 +1,4 @@
-// HIPOS buddy avatars (Leaf, Bottle, Paper): layered inline SVG, no images or network.
+// HIPOS buddy avatars (Leaf, Bottle, Paper, Hippo): layered inline SVG, no images or network.
 // The choice is a tiny config saved on this device only. It is never part of report QR codes.
 // Visible labels are English here; i18n.js translates them like the rest of the interface.
 
@@ -73,6 +73,31 @@ export const CHARACTERS = [
 <path d="M38 14 H70 L94 38 V94 Q94 106 82 106 H38 Q26 106 26 94 V26 Q26 14 38 14 Z" fill="${hex}" stroke="rgba(47,58,51,.16)" stroke-width="2" stroke-linejoin="round"/>
 <path d="M70 14 V32 Q70 38 76 38 H94 Z" fill="${dark}" stroke="rgba(47,58,51,.16)" stroke-width="2" stroke-linejoin="round"/>
 <path d="M40 92 H80 M40 99 H66" fill="none" stroke="${line}" stroke-width="2.6" stroke-linecap="round" opacity=".55"/>`;
+    },
+  },
+  {
+    // The app's namesake: a chubby, round hippo with tiny ears and a big soft snout.
+    id: 'hippo',
+    name: 'Hippo',
+    colors: ['#B9A6E6', '#8FD3F4', '#F7B6C8', '#A8D5A2'],
+    faceY: 52,
+    top: { x: 60, y: 22 },
+    sl: { x: 44, y: 33 },
+    sr: { x: 76, y: 33 },
+    corner: { x: 98, y: 26 },
+    body(hex) {
+      const dark = shade(hex, -0.22);
+      const snout = shade(hex, 0.4);
+      const nose = shade(hex, -0.4);
+      return `
+<ellipse cx="43" cy="105" rx="11" ry="6" fill="${dark}"/>
+<ellipse cx="77" cy="105" rx="11" ry="6" fill="${dark}"/>
+<circle cx="33" cy="30" r="10" fill="${hex}"/><circle cx="33" cy="31" r="5.2" fill="${BLUSH}" opacity=".7"/>
+<circle cx="87" cy="30" r="10" fill="${hex}"/><circle cx="87" cy="31" r="5.2" fill="${BLUSH}" opacity=".7"/>
+<ellipse cx="60" cy="64" rx="42" ry="43" fill="${hex}"/>
+<ellipse cx="60" cy="79" rx="31" ry="23" fill="${snout}"/>
+<ellipse cx="50" cy="76" rx="3.2" ry="4.4" fill="${nose}" opacity=".6"/><ellipse cx="70" cy="76" rx="3.2" ry="4.4" fill="${nose}" opacity=".6"/>
+<ellipse cx="38" cy="38" rx="6" ry="11" transform="rotate(30 38 38)" fill="#fff" opacity=".34"/>`;
     },
   },
 ];
@@ -392,18 +417,18 @@ const getConfig = () => current || (current = loadAvatar());
 export const currentConfig = () => getConfig();
 
 const chip = (key, value, label, override, cfg) =>
-  `<button type="button" class="buddy-chip" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${String(cfg[key]) === String(value)}">${renderAvatar(override, { size: 56, decorative: true })}<span>${label}</span></button>`;
+  `<button type="button" class="buddy-chip secondary" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${String(cfg[key]) === String(value)}">${renderAvatar(override, { size: 56, decorative: true })}<span>${label}</span></button>`;
 
 const lockIcon = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" focusable="false"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const accessoryChip = (a, cfg) => {
   const locked = isLocked(a);
   const art = renderAvatar({ ...cfg, accessory: a.id }, { size: 56, decorative: true, teaser: true });
-  if (!locked) return `<button type="button" class="buddy-chip" data-avatar-key="accessory" data-avatar-value="${a.id}" aria-pressed="${cfg.accessory === a.id}">${art}<span>${a.name}</span></button>`;
-  return `<button type="button" class="buddy-chip is-locked" data-avatar-key="accessory" data-avatar-value="${a.id}" aria-disabled="true">${art}<span>${a.name}</span><span class="buddy-hint">${lockIcon}<span>${a.hint}</span></span></button>`;
+  if (!locked) return `<button type="button" class="buddy-chip secondary" data-avatar-key="accessory" data-avatar-value="${a.id}" aria-pressed="${cfg.accessory === a.id}">${art}<span>${a.name}</span></button>`;
+  return `<button type="button" class="buddy-chip secondary is-locked" data-avatar-key="accessory" data-avatar-value="${a.id}" aria-disabled="true">${art}<span>${a.name}</span><span class="buddy-hint">${lockIcon}<span>${a.hint}</span></span></button>`;
 };
 
 const swatch = (key, value, hex, label, cfg) =>
-  `<button type="button" class="buddy-swatch" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${cfg[key] === value}" aria-label="${label}"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><circle ${key === 'bg' ? `class="av-bg" data-bg="${value}" ` : ''}cx="12" cy="12" r="11" fill="${hex}" stroke="rgba(47,58,51,.35)" stroke-width="1"/></svg></button>`;
+  `<button type="button" class="buddy-swatch secondary" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${cfg[key] === value}" aria-label="${label}"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><circle ${key === 'bg' ? `class="av-bg" data-bg="${value}" ` : ''}cx="12" cy="12" r="11" fill="${hex}" stroke="rgba(47,58,51,.35)" stroke-width="1"/></svg></button>`;
 
 export function avatarEditor() {
   const cfg = getConfig();

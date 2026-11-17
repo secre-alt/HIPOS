@@ -96,3 +96,10 @@ test('sorting, treat, tap and season extras unlock from extra keys',()=>{
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1','sort5','treat10','season-christmas','season-earth']}).map(a=>a.id).sort(),['backpack','charm','globe','santa']);
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1']}),[]);
 });
+test('the Hippo buddy is a selectable character with four colors and anchors inside the picture',()=>{
+  const hippo=CHARACTERS.find(c=>c.id==='hippo');assert.ok(hippo);assert.equal(hippo.name,'Hippo');assert.equal(hippo.colors.length,4);
+  for(const point of [hippo.top,hippo.sl,hippo.sr,hippo.corner])assert.ok(point.x>0&&point.x<120&&point.y>0&&point.y<120);
+  assert.equal(normalizeConfig({character:'hippo',color:3}).color,3);
+  assert.match(renderAvatar({character:'hippo',color:1,face:2,accessory:'none',bg:0}),/role="img" aria-label="Hippo"/);
+  assert.equal(normalizeConfig({character:'hippo',color:9}).color,0,'unknown colors fall back');
+});
