@@ -23,6 +23,7 @@ dragging, pause/resume, practice pace, and reward checks.
   `garden.js` also renders shared garden progress on completed game results.
 - `core.js`: shared HTML escaping and legacy report-format helpers (reporting UI is retired).
 - `content.js`, `i18n.js`: guidance content and translations.
+- `buddy-voice.js`: optional local speech and chirp alternation, cooldown, and cancellation.
 - Activity, buddy, audio, and preference modules remain named for their features.
 
 ## Styles

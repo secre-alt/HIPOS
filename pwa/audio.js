@@ -48,6 +48,7 @@ function tone(bus,{f,t=0,len=.15,type='sine',vol=.2,to,send=false,attack=.008}){
 // Names already used by the app (pop, boop, chime, tada, oops) keep working; the rest are new.
 const arp=(midis,step,o)=>midis.map((m,i)=>({f:hz(m),t:i*step,...o}));
 const SFX={
+  buddy:()=>[{f:420,to:760,len:.12,type:'triangle',vol:.13},{f:680,to:520,t:.15,len:.16,type:'sine',vol:.16},{f:540,to:820,t:.34,len:.11,type:'triangle',vol:.10}],
   tick:()=>[{f:hz(88),len:.05,type:'triangle',vol:.12}],
   pop:()=>[{f:520,to:1100,len:.09,vol:.22}],
   boop:()=>[{f:hz(64),len:.09,type:'triangle',vol:.2},{f:hz(71),t:.07,len:.1,type:'triangle',vol:.2}],

@@ -38,6 +38,11 @@ change them; update the relevant documentation when it does.
 
 ## Buddy and sound
 
+- Buddy voice is independently optional and off by default. Use only installed local
+  voices matching the UI language; fall back to synthesized chirps. Alternate speech
+  and chirps with a seven-second cooldown, no queued chatter, and a user gesture.
+  Stop speech on hiding, voice/cheers disabling, language changes, or Settings closing.
+
 - Background music and sound effects have separate controls; music is off by
   default. Respect saved volume and browser requirements for a user gesture.
 - Keep music styles distinct, with a translated mood description and a
