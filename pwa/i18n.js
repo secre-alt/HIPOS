@@ -4,6 +4,7 @@ const pairs=[
  ['Playing Buddy voice.','Pinatutugtog ang boses ni Buddy.'],['Buddy is already speaking. Try again in a moment.','Nagsasalita pa si Buddy. Subukan muli mamaya.'],
  ['Cute sounds only: no matching offline voice is installed.','Huni lamang: walang naka-install na katugmang offline na boses.'],
  ['Lovely!','Ang saya!'],['A little hiccup','May kaunting aberya'],['A little heads-up','Munting paalala'],['Dismiss notification','Isara ang abiso'],['Nickname saved. Looking cute!','Na-save ang palayaw. Ang cute!'],['Buddy look saved!','Na-save ang hitsura ng buddy!'],
+ ['A little name for your little friend. Saved only on this device.','Munting pangalan para sa munting kaibigan mo. Sa device na ito lang naka-save.'],['e.g. Luna','hal. Luna'],['Use default name','Gamitin ang default na pangalan'],['Your name was not saved. Try again.','Hindi na-save ang pangalan. Subukan muli.'],
  ['Buddy nickname','Palayaw ng buddy'],['Save nickname','I-save ang palayaw'],['Up to 24 characters. Leave blank to use Your buddy.','Hanggang 24 na karakter. Iwanang blangko para gamitin ang Ang buddy mo.'],
  ['Your buddy stays on this device.','Nananatili sa device na ito ang iyong buddy.'],
  ['Your saved activity stays on this device.','Nananatili sa device na ito ang iyong mga naka-save na gawain.'],

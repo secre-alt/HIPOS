@@ -12,10 +12,25 @@ export function loadNickname() {
 export function saveNickname(value) {
   try { localStorage.setItem(NICKNAME_KEY, normalizeNickname(value)); return true; } catch { return false; }
 }
+export function nicknameInput(input) {
+  const form = input.closest('form');
+  form.querySelector('#buddy-nickname-count').textContent = input.value.length + '/24';
+  form.querySelector('#buddy-nickname-error').textContent = '';
+  input.removeAttribute('aria-invalid');
+}
+export function resetNickname(form) {
+  const input = form.querySelector('#buddy-nickname');
+  input.value = '';
+  submitNickname(form);
+  input.focus({ preventScroll: true });
+}
 export function submitNickname(form) {
   const input = form.querySelector('#buddy-nickname');
   input.value = normalizeNickname(input.value);
   const saved = saveNickname(input.value);
+  nicknameInput(input);
+  input.setAttribute('aria-invalid', String(!saved));
+  form.querySelector('#buddy-nickname-error').textContent = saved ? '' : 'Your name was not saved. Try again.';
   const heading = document.querySelector('#buddy-name');
   if (heading) {
     const nickname = loadNickname();
@@ -490,7 +505,7 @@ export function avatarEditor() {
   const cfg = getConfig();
   const ch = CHARACTERS.find((c) => c.id === cfg.character);
   return `<div id="avatar-editor" class="buddy-editor">
-  <form class="card buddy-nickname" id="buddy-nickname-form"><label for="buddy-nickname">Buddy nickname</label><p class="note" id="buddy-nickname-help">Up to 24 characters. Leave blank to use Your buddy.</p><div class="buddy-row"><input id="buddy-nickname" name="nickname" type="text" maxlength="24" autocomplete="off" aria-describedby="buddy-nickname-help" value="${esc(loadNickname())}"><button type="submit">Save nickname</button></div></form>
+  <form class="card buddy-nickname" id="buddy-nickname-form"><div class="nickname-intro"><span class="nickname-portrait" aria-hidden="true">${renderAvatar(cfg, { size: 64, decorative: true })}</span><div><label for="buddy-nickname">Buddy nickname</label><p class="note" id="buddy-nickname-help">A little name for your little friend. Saved only on this device.</p></div></div><div class="nickname-controls"><div class="nickname-field"><input id="buddy-nickname" name="nickname" type="text" maxlength="24" autocomplete="off" placeholder="e.g. Luna" aria-describedby="buddy-nickname-help buddy-nickname-error" value="${esc(loadNickname())}"><span id="buddy-nickname-count" data-no-translate aria-hidden="true">${loadNickname().length}/24</span></div><button type="submit">Save nickname</button><button type="button" class="secondary nickname-reset" id="buddy-nickname-reset">Use default name</button></div><p id="buddy-nickname-error" class="nickname-error" role="status" aria-live="polite"></p></form>
   <section class="card buddy-stage" aria-label="Your buddy"><h2 id="buddy-name" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><button type="button" class="buddy-stage-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(cfg, { size: 200, decorative: true })}</button><div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
   <section class="card buddy-options">
     <div class="buddy-group"><h2>Buddy</h2><div class="buddy-row">${CHARACTERS.map((c) => chip('character', c.id, c.name, { ...cfg, character: c.id, color: 0 }, cfg)).join('')}</div></div>

@@ -7,7 +7,7 @@ import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSumm
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initFontStyle } from "./fontstyle.js";
-import { avatarEditor, avatarClick, submitNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
+import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
@@ -232,6 +232,7 @@ document.addEventListener("click", async (event) => {
       const result = sortClick(b);
       if (result === "finished") checkBuddyUnlocks(true);
     }
+    if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {
       avatarClick(b);
       applyMood();
@@ -261,6 +262,7 @@ document.addEventListener("submit", (event) => {
 });
 document.addEventListener("input", (event) => {
   if (event.target.id === "guide-search") applyGuideFilter();
+  if (event.target.id === "buddy-nickname") nicknameInput(event.target);
 });
 document.addEventListener("change", (event) => {
   if (event.target.hasAttribute("data-habit")) {

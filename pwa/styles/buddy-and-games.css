@@ -111,6 +111,22 @@
   width: 100%;
   flex: 1 1 180px;
   min-height: 44px;
+  padding-right: 64px;
+}
+.nickname-intro { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.nickname-portrait { flex: 0 0 64px; transform: rotate(-5deg); }
+.nickname-intro label { font-size: 1.15rem; font-weight: 800; }
+.nickname-intro .note { margin: 4px 0 0; line-height: 1.5; }
+.nickname-controls { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; }
+.nickname-field { position: relative; flex: 1 1 220px; min-width: 0; }
+#buddy-nickname-count { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .75rem; pointer-events: none; }
+.nickname-controls button { margin: 0; min-height: 52px; }
+.nickname-error:empty { display: none; }
+.nickname-error { margin: 12px 0 0; color: var(--ink); font-weight: 700; }
+.buddy-nickname input[aria-invalid=true] { border-color: #c98c73; }
+@media (max-width: 480px) {
+  .nickname-field { flex-basis: 100%; }
+  .nickname-controls button { flex: 1 1 120px; }
 }
 .buddy-stage h2 { overflow-wrap: anywhere; max-width: 100%; }
 .buddy-strip h2 { overflow-wrap: anywhere; }

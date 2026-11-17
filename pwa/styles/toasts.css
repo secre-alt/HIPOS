@@ -1,7 +1,7 @@
 /* A tiny leaf companion carries local feedback above navigation and dialogs. */
 .toast-host {
   position: fixed;
-  inset: auto auto max(24px, env(safe-area-inset-bottom)) 24px;
+  inset: calc(88px + env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) auto auto;
   margin: 0;
   padding: 0;
   width: min(390px, calc(100vw - 32px));
@@ -56,9 +56,8 @@
 }
 .toast-close:hover { background: var(--leaf-soft); }
 .toast-close:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-@keyframes toast-arrive { from { opacity: 0; transform: translateY(8px) rotate(-1deg); } to { opacity: 1; transform: none; } }
+@keyframes toast-arrive { from { opacity: 0; transform: translateY(-8px) rotate(-1deg); } to { opacity: 1; transform: none; } }
 @media (max-width: 760px) {
-  .toast-host { left: 16px; bottom: calc(100px + env(safe-area-inset-bottom)); }
-  body:has(.back-to-top-row:not([hidden])) .toast-host { bottom: calc(148px + env(safe-area-inset-bottom)); }
+  .toast-host { top: calc(80px + env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); }
 }
 @media (prefers-reduced-motion: reduce) { .toast-card { animation: none; } }

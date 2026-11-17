@@ -22,6 +22,8 @@ try {
     await page.screenshot({path:`test-results/toasts/${width}-${theme}.png`});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no overflow');
     const bounds=await toast.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width);
+    assert.ok(bounds.y>=64&&bounds.y<120, "toast sits below the header");
+    assert.ok(width-(bounds.x+bounds.width)<=25, "toast aligns right");
     await toast.hover();await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'hover pauses timer');
     await toast.getByRole('button',{name:'Dismiss notification'}).click();await toast.waitFor({state:'hidden'});
     await page.evaluate(()=>document.querySelector('#notice').textContent='<img src=x onerror=alert(1)>');
