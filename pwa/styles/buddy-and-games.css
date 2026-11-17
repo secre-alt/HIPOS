@@ -641,13 +641,8 @@
   width: min(200px, 60vw);
   height: auto;
 }
-/* Sorting tabletop: illustrated materials carry the color; controls stay quiet.
+/* Sorting game: buddy-style characters and the original stacked board.
    Direction informed by unslop by Damir Sokolovsky, CC BY 4.0 (https://heydamir.design/unslop). */
-.sort-game.tabletop-game { --table-surface:#f8f4e7; --table-line:#d9dfcb; background:var(--table-surface); border:1px solid var(--table-line); border-radius:28px; padding:24px; box-shadow:0 8px 0 #173d2c08; }
-:root[data-theme=dark] .tabletop-game { --table-surface:#162e26; --table-line:#3c5443; }
-.tabletop-game > h2 { margin-bottom:12px; padding-right:0; font-size:1.5rem; }
-.tabletop-game .sort-instruction { text-align:center; color:var(--ink); font-family:var(--font-body); }
-.tabletop-game .sort-round { padding-bottom:12px; border-bottom:1px solid var(--table-line); }
 .sort-promo {
   margin: 0 0 16px;
 }
@@ -661,18 +656,20 @@
   place-items: center;
   min-height: 0;
   margin: 16px 0;
-  padding: 0;
-  background: transparent;
+  padding: 10px;
+  border-radius: 24px;
+  background: var(--leaf-soft);
   touch-action: none;
 }
 .sort-item {
   display: grid;
   justify-items: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 10px 20px;
   max-width: 100%;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 3px 0 #173d2c08;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -687,8 +684,8 @@
   box-shadow: var(--shadow-lg);
 }
 .sort-item .item-art {
-  width: 136px;
-  height: 136px;
+  width: 88px;
+  height: 88px;
   margin-bottom: 0;
 }
 .sort-item.sorted {
@@ -722,9 +719,9 @@
   justify-items: center;
   gap: 4px;
   align-content: start;
-  min-height: 160px;
+  min-height: 128px;
   padding: 8px 12px 12px;
-  border: 2px solid transparent;
+  border: 2px solid var(--line);
   border-radius: 18px;
   background: transparent;
   color: var(--ink);
@@ -1024,7 +1021,7 @@ input[type=checkbox]:checked {
   box-shadow: none;
   color: inherit;
 }
-.sort-bin, .sort-bin:disabled { box-shadow:none; color:var(--ink); opacity:1; background:transparent; }
+.sort-bin, .sort-bin:disabled { box-shadow:none; color:var(--ink); opacity:1; background:var(--leaf-soft); }
 .sort-bin.is-answer { background:#e4edcf; outline:2px solid #60824d; }
 :root[data-theme=dark] .sort-bin.is-answer { background:#273e2a; outline-color:#a3c680; }
 .sort-bin.is-wrong { border-color:#c5826b; background:#f5e8dd; }
@@ -1043,7 +1040,7 @@ input[type=checkbox]:checked {
   background: var(--leaf-soft);
   transform: none;
 }
-.sort-bin.secondary { border:2px solid transparent; }
+.sort-bin.secondary { border:2px solid var(--line); }
 .sort-bin.secondary.is-wrong { border-color:#c5826b; }
 .sort-bin.secondary.hover { border:2px dashed var(--green-mid); }
 .sort-bin.secondary:hover:not(:disabled) {
@@ -1074,17 +1071,15 @@ input[type=checkbox]:checked {
 .sort-item strong { font-size:1.25rem; line-height:1.3; max-width:360px; }
 .sort-item .item-art svg { width:88%; height:88%; filter:drop-shadow(0 4px 0 #173d2c12); }
 .sort-bin-icon { display:block; line-height:0; }
-.sort-bin-icon svg { width:144px; max-width:100%; height:100px; }
+.sort-bin-icon svg { width:88px; max-width:100%; height:80px; }
 .sort-bin strong { font-size:1.125rem; line-height:1.25; }
 .sort-bin small { font-size:.8125rem; line-height:1.35; font-family:var(--font-body); }
 .sort-answer-label::before { content:''; display:inline-block; width:5px; height:9px; margin-right:8px; border:solid currentColor; border-width:0 2px 2px 0; transform:rotate(45deg); }
-.tabletop-game .sort-answer-panel { border:0; border-top:1px solid var(--table-line); border-radius:0; background:transparent; padding:12px 0 0; }
 @media (max-width:480px) {
- .sort-game.tabletop-game { padding:16px; border-radius:24px; }
- .sort-item .item-art { width:112px; height:112px; }
+ .sort-item .item-art { width:88px; height:88px; }
  .sort-item strong { font-size:1.125rem; }
  .sort-bin { min-height:136px; padding:6px; }
- .sort-bin-icon svg { width:112px; height:80px; }
+ .sort-bin-icon svg { width:80px; height:72px; }
  .sort-bin strong { font-size:1rem; }
  .sort-bin small { font-size:.75rem; }
 }
@@ -1099,11 +1094,12 @@ input[type=checkbox]:checked {
 @media (max-height:600px) {
   .sort-item .item-art { width:64px; height:64px; }
   .sort-item strong, .sort-bin strong { font-size:1rem; }
-  .sort-stage { margin:8px 0; }
+  .sort-stage { margin:8px 0; padding:4px; }
+  .sort-item { padding:4px 8px; }
   .sort-bin-icon svg { width:80px; height:48px; }
   .sort-bin { min-height:112px; }
 }
-@media (min-width:900px), (max-height:600px) and (min-width:500px) {
+@media (max-height:600px) and (min-width:500px) {
   #sort-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:8px; }
   #sort-body > :not(.sort-stage):not(.sort-bins) { grid-column:1/-1; }
   #sort-body .sort-stage { grid-column:1; grid-row:3; margin:0; align-self:center; }

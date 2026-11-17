@@ -25,8 +25,8 @@ dragging, pause/resume, practice pace, and reward checks.
 - `game-art.js`: shared, decorative SVG illustrations for game previews,
   Compost Catch, and the garden's four growth stages and nine plants.
 - `sortgame.js`, `compost.js`, `garden.js`: game rendering and interactions.
-  Sorting uses local SVG pouch and school-helper illustrations on a responsive
-  tabletop; the destination artwork remains visible while reviewing answers.
+  Sorting uses the shared buddy faces for local SVG item and destination
+  characters, with a stacked item-above-choices layout and compact landscape mode.
   Compost Catch pauses when hidden and requires an explicit resume; it supports
   held controls and an optional slower practice pace between rounds.
   `garden.js` also renders shared garden progress on completed game results.

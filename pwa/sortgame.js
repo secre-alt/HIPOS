@@ -1,6 +1,7 @@
 // "Sort it out!": a friendly one-item-at-a-time sorting game built from the Waste Guide items.
 // Drag the item onto a bin, or just tap a bin (keyboard users can Tab to a bin and press Enter).
 // Nothing is scored against the student; the only thing kept is sticker progress on this device.
+import { FACES } from './avatar.js';
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
@@ -9,7 +10,9 @@ import {gardenGrowth} from './garden.js';
 import {celebrate} from './motion.js';
 
 const ROUND=6;
-const pool=()=>[...waste.map(([title,suitable,body],i)=>({title,suitable,body,art:wasteArt(i)})),...moreWaste.map(([title,suitable,body],i)=>({title,suitable,body,art:moreWasteArt(i)}))];
+const buddyFace=(x,y,scale)=>'<g transform="translate('+x+' '+y+') scale('+scale+')">'+FACES[0].draw()+'</g>';
+const buddyItemArt=art=>art.replace('</svg>',buddyFace(48,56,.65)+'</svg>');
+const pool=()=>[...waste.map(([title,suitable,body],i)=>({title,suitable,body,art:buddyItemArt(wasteArt(i))})),...moreWaste.map(([title,suitable,body],i)=>({title,suitable,body,art:buddyItemArt(moreWasteArt(i))}))];
 let game=null,lastTitles=[],gardenSummary={};
 
 export function makeRound(random=Math.random,previous=[]){
@@ -23,7 +26,7 @@ const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answe
 export function sortGame(summary={}){
   gardenSummary=summary;
   start();
-  return `<section class="card sort-game tabletop-game" id="sort-game" aria-labelledby="sort-heading"><h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
+  return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading"><h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
 }
 function body(){
   if(!game)return '';
@@ -37,9 +40,9 @@ function body(){
   <div class="sort-answer-panel" hidden><div id="sort-feedback" class="feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
   <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></div>`;
 }
-// Local illustrations give both destinations a physical place on the tabletop.
-const pouch='<svg viewBox="0 0 160 112" width="160" height="112" aria-hidden="true" focusable="false"><ellipse cx="80" cy="102" rx="56" ry="7" fill="#163d2c" opacity=".12"/><path d="M48 23Q80 9 112 23L126 87Q128 101 110 101H50Q32 101 34 87Z" fill="#bad98e" stroke="#466747" stroke-width="2.5"/><path d="M49 25Q80 39 111 25" fill="none" stroke="#466747" stroke-width="3"/><path d="M58 26Q50 5 65 5Q76 5 75 31M85 31Q84 5 95 5Q110 5 102 26" fill="none" stroke="#466747" stroke-width="4" stroke-linecap="round"/><path d="M42 57L39 86Q38 94 50 94H110Q122 94 121 86L118 57" fill="none" stroke="#90b267" stroke-width="2" stroke-dasharray="3 4"/><rect x="60" y="50" width="40" height="32" rx="9" fill="#f6f5df"/><path d="M79 73Q63 61 86 55Q95 67 79 73ZM78 76L85 61" fill="#79a760" stroke="#466747" stroke-width="2" stroke-linecap="round"/></svg>';
-const hand='<svg viewBox="0 0 160 112" width="160" height="112" aria-hidden="true" focusable="false"><ellipse cx="80" cy="103" rx="55" ry="6" fill="#163d2c" opacity=".12"/><path d="M33 100V81Q33 59 64 57H94Q124 59 124 81V100Z" fill="#8cbac4" stroke="#3c626b" stroke-width="2.5"/><path d="M66 59L79 75L93 59M79 75V99" fill="#f9f6e8" stroke="#3c626b" stroke-width="2"/><path d="M67 47V60Q79 69 91 60V47" fill="#e7b58e" stroke="#855d44" stroke-width="2"/><ellipse cx="79" cy="32" rx="25" ry="28" fill="#f1c9a2" stroke="#855d44" stroke-width="2"/><path d="M54 31Q46 1 76 1Q110 -2 104 32Q92 20 89 13Q77 28 54 31Z" fill="#594439"/><circle cx="69" cy="34" r="2" fill="#413c35"/><circle cx="89" cy="34" r="2" fill="#413c35"/><path d="M73 44Q79 49 85 44" fill="none" stroke="#855d44" stroke-width="2" stroke-linecap="round"/><rect x="97" y="73" width="16" height="21" rx="3" fill="#f9f6e8"/><path d="M101 79H109M101 84H109" stroke="#3c626b" stroke-width="2"/><path d="M23 73Q14 66 17 55Q19 50 24 55L27 61V44Q29 39 32 44L34 61L38 52Q41 48 43 53L40 76" fill="#f1c9a2" stroke="#855d44" stroke-width="2" stroke-linejoin="round"/></svg>';
+// Destination mascots share the actual buddy face artwork.
+const pouch='<svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><ellipse cx="60" cy="110" rx="35" ry="5" fill="#173d2c" opacity=".12"/><path d="M31 35Q60 25 89 35L98 94Q100 107 86 107H34Q20 107 22 94Z" fill="#B8E26A"/><path d="M41 36V26Q41 8 60 8Q79 8 79 26V36" fill="none" stroke="#63924c" stroke-width="5" stroke-linecap="round"/><path d="M32 36Q60 48 88 36" fill="none" stroke="#63924c" stroke-width="3"/>'+buddyFace(60,72,.85)+'</svg>';
+const hand='<svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><ellipse cx="60" cy="111" rx="36" ry="5" fill="#173d2c" opacity=".12"/><rect x="28" y="71" width="64" height="39" rx="18" fill="#8FD3F4"/><path d="M49 77L60 91L71 77" fill="#fff6dc"/><rect x="75" y="86" width="11" height="14" rx="3" fill="#fff6dc"/><rect x="25" y="13" width="70" height="71" rx="30" fill="#FFD6B0"/><path d="M25 42Q19 9 58 7Q99 5 95 42Q77 37 71 23Q55 40 25 42Z" fill="#755b4b"/>'+buddyFace(60,55,.85)+'</svg>';
 function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
