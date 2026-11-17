@@ -1,5 +1,5 @@
 // Browser checks for: production headers (CSP), dark mode, scroll motion, Filipino completeness,
-// back up / restore, and the in-app update flow. Runs against a copy of dist/ served with the
+// removed reporting routes, and the in-app update flow. Runs against a copy of dist/ served with the
 // same headers as vercel.json. Set PW_CHANNEL=msedge to use Edge instead of bundled Chromium.
 import {chromium} from '@playwright/test';
 import assert from 'node:assert/strict';
@@ -7,7 +7,6 @@ import {spawn,spawnSync} from 'node:child_process';
 import {cp,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {randomUUID} from 'node:crypto';
 
 const PORT=Number(process.env.FEATURES_PORT||4175),base=`http://localhost:${PORT}/`;
 if(spawnSync(process.execPath,['scripts/build-pwa.mjs'],{stdio:'inherit'}).status!==0)process.exit(1);
@@ -75,7 +74,7 @@ try{
   });
 
   await check('Filipino is complete on every page (only the bilingual label and a name stay English)',async()=>{
-    const pages=['home','prevent','reuse','classify','carry','reports','privacy'],allowed=new Set(['Language / Wika','Rencruxx']);
+    const pages=['home','prevent','reuse','classify','carry','privacy'],allowed=new Set(['Language / Wika','Rencruxx']);
     async function collect(lang){
       const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'});
       await s.page.evaluate(l=>localStorage.setItem('hipos.language',l),lang);await s.page.reload();await s.page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
@@ -91,43 +90,19 @@ try{
     const left=[...new Set(missing)];if(left.length)console.log('MISSING:',JSON.stringify(left));assert.deepEqual(left,[],'English text still shown with Filipino on');
   });
 
-  await check('back up and restore reports',async()=>{
-    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
-    await page.evaluate(()=>{location.hash='reports';});
-    await page.getByRole('heading',{name:'Back up and restore'}).waitFor();
-    await page.waitForFunction(()=>document.querySelector('#storage-status')?.textContent.length>20,null,{timeout:5000});
-    await noticeHas(page,'').catch(()=>{});
-    await page.getByRole('button',{name:'Download backup'}).click();
-    await noticeHas(page,'No reports to back up yet.');
-    await page.fill('#description','Please clarify the handling steps.');
-    await page.getByRole('button',{name:'Save on this device'}).click();
-    await page.getByRole('heading',{name:'Saved reports (1)'}).waitFor();
-    const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download backup'}).click()]);
-    assert.match(download.suggestedFilename(),/^hipos-backup-\d{4}-\d{2}-\d{2}\.json$/);
-    const file=join(work,'backup.json');await download.saveAs(file);
-    const backup=JSON.parse(await readFile(file,'utf8'));
-    assert.equal(backup.type,'HIPOS-BACKUP');assert.equal(backup.reports.length,1);assert.ok(!/pin|salt/i.test(JSON.stringify(backup)));
-    // delete, then restore
-    page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete'}).click();
-    await page.getByRole('heading',{name:'Saved reports (0)'}).waitFor();
-    await page.setInputFiles('#restore-file',file);
-    await page.getByRole('heading',{name:'Saved reports (1)'}).waitFor();await noticeHas(page,'Restored 1 report.');
-    // restoring the same file again adds nothing
-    await page.setInputFiles('#restore-file',file);await noticeHas(page,'Restored 0 reports. 1 already on this device.');
-    // not a backup
-    const junk=join(work,'junk.json');await writeFile(junk,'{"hello":"world"}');
-    await page.setInputFiles('#restore-file',junk);await noticeHas(page,'That file is not a HIPOS backup.');
-    // one good and one tampered report
-    const good={type:'HIPOS1',id:randomUUID(),category:'Other',area:'Canteen',description:'A fresh concern from another phone.',createdAt:Date.now()-60000};
-    const mixed=join(work,'mixed.json');await writeFile(mixed,JSON.stringify({type:'HIPOS-BACKUP',version:1,exportedAt:new Date().toISOString(),reports:[good,{...good,id:randomUUID(),category:'Not a category'}]}));
-    await page.setInputFiles('#restore-file',mixed);await noticeHas(page,'Restored 1 report. 1 could not be read.');
-    await page.getByRole('heading',{name:'Saved reports (2)'}).waitFor();
-    // Filipino
-    const more={...good,id:randomUUID(),description:'Isa pang concern mula sa ibang phone.'};
-    const fil=join(work,'fil.json');await writeFile(fil,JSON.stringify({type:'HIPOS-BACKUP',version:1,exportedAt:new Date().toISOString(),reports:[more]}));
-    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.getByRole('button',{name:'Ibalik mula sa backup'}).waitFor();
-    await page.setInputFiles('#restore-file',fil);await noticeHas(page,'Naibalik ang 1 ulat.');
-    await close(s);
+  await check('removed reporting routes preserve legacy storage and open Home',async()=>{
+    const {ctx,page}=await open();
+    const legacy=JSON.stringify({reports:[{description:'Fictional saved concern'}],imports:[],pin:null});
+    await page.evaluate(value=>localStorage.setItem('hipos.pwa.v1',value),legacy);
+    for(const route of ['reports','staff']){
+      await page.goto(base+'#'+route);
+      await page.waitForFunction(()=>document.querySelector('#page-label').textContent==='Your daily guide');
+      assert.equal(await page.locator('a[href="#reports"],a[href="#staff"],#report-form,#pin-form,[data-action="scan"]').count(),0);
+      assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.pwa.v1')),legacy);
+    }
+    const manifest=await (await page.request.get(base+'manifest.webmanifest')).json();
+    assert.ok(manifest.shortcuts.every(item=>!['./#reports','./#staff'].includes(item.url)));
+    await close({ctx,page});
   });
 
   await check('Waste Guide: search (English and Filipino words), filter chips, safe empty state',async()=>{
@@ -149,50 +124,6 @@ try{
     await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
     assert.equal(await page.locator('label[for=guide-search]').innerText(),'Hanapin sa gabay');
     await page.fill('#guide-search','karton');assert.match(await page.locator('#guide-count').innerText(),/^\d+ sa 16 aytem$/);
-    await close(s);
-  });
-
-  await check('staff review: filter reports, export CSV (formula-safe), Filipino',async()=>{
-    const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
-    const mk=(category,area,description,minutes)=>JSON.stringify({type:'HIPOS1',id:randomUUID(),category,area,description,createdAt:Date.now()-minutes*60000});
-    const reports=[mk('Excessive packaging','Canteen','Too much plastic on every snack, every day.',5),mk('Unsafe waste concern','Hallway','=HYPERLINK("http://example.com") please check, thanks',4),mk('Excessive packaging','Classroom','Lots of wrappers, in the bin "by the door".',3)];
-    await page.evaluate(()=>{location.hash='staff';});
-    await page.getByLabel('Choose a PIN').fill('123456');await page.getByLabel('Confirm PIN',{exact:true}).fill('123456');
-    await page.getByRole('button',{name:'Set PIN and continue'}).click();
-    assert.equal(await page.locator('.staff-filters').count(),0,'no filters before anything is imported');
-    for(const raw of reports){
-      await page.getByRole('button',{name:'Paste transfer text'}).click();
-      await page.getByLabel('Transfer text',{exact:true}).fill(raw);
-      await page.getByRole('button',{name:'Review report',exact:true}).click();
-      await page.getByRole('button',{name:'Confirm import'}).click();await noticeHas(page,'Report imported');
-    }
-    const cards=()=>page.locator('#staff-list article').count(),count=()=>page.locator('#staff-count').innerText();
-    assert.equal(await cards(),3);assert.equal(await count(),'Showing 3 of 3 reports');
-    assert.equal(await page.locator('[data-status]').count(),3,'status dropdowns are still one per report');
-    await page.locator('[data-status]').first().selectOption('Under Review');await noticeHas(page,'Review status saved.');
-    await page.selectOption('#filter-status','Under Review');assert.equal(await cards(),1);assert.equal(await count(),'Showing 1 of 3 reports');
-    await page.selectOption('#filter-status','');await page.selectOption('#filter-category','Excessive packaging');assert.equal(await cards(),2);
-    await page.selectOption('#filter-area','Canteen');assert.equal(await cards(),1);
-    await page.selectOption('#filter-status','Reviewed');assert.equal(await cards(),0);
-    assert.match(await page.locator('#staff-list').innerText(),/No reports match these filters\./);
-    await page.getByRole('button',{name:'Clear filters'}).click();assert.equal(await cards(),3);
-    assert.equal(await page.inputValue('#filter-status'),'');assert.equal(await page.inputValue('#filter-category'),'');
-    // export only what is shown
-    const parse=csv=>csv.replace(/^﻿/,'').trim().split('\r\n').map(line=>{const cells=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'&&line[i+1]==='"'){cur+='"';i++;}else if(ch==='"')q=false;else cur+=ch;}else if(ch==='"')q=true;else if(ch===','){cells.push(cur);cur='';}else cur+=ch;}cells.push(cur);return cells;});
-    async function exportCsv(name){const [d]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export CSV'}).click()]);assert.match(d.suggestedFilename(),/^hipos-reports-\d{4}-\d{2}-\d{2}\.csv$/);const f=join(work,name);await d.saveAs(f);return readFile(f,'utf8');}
-    await page.selectOption('#filter-category','Unsafe waste concern');
-    let csv=await exportCsv('one.csv');assert.ok(csv.startsWith('﻿'),'byte-order mark');
-    let rows=parse(csv);assert.equal(rows.length,2,'header plus the one filtered report');
-    assert.equal(rows[1][3],`'=HYPERLINK("http://example.com") please check, thanks`,'formula is neutralised and commas/quotes survive');
-    await page.getByRole('button',{name:'Clear filters'}).click();
-    csv=await exportCsv('all.csv');rows=parse(csv);assert.equal(rows.length,4);
-    assert.ok(rows.some(r=>r[3]==='Lots of wrappers, in the bin "by the door".'),'quotes and commas round-trip');
-    assert.deepEqual(rows[0],['Status','Category','School area','Description','Created','Report ID']);
-    // Filipino
-    await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(500);
-    assert.equal(await page.getByRole('button',{name:'I-export ang CSV'}).count(),1);
-    assert.equal(await count(),'Ipinapakita ang 3 sa 3 ulat');
-    assert.equal(await page.locator('#filter-heading').innerText(),'I-filter ang mga ulat');
     await close(s);
   });
 
@@ -226,7 +157,7 @@ try{
     assert.equal(await page.inputValue('#textsize'),'xlarge');assert.ok(await size()>base*1.2,'choice is remembered');
     for(const width of [360,390,768,1001,1280,1920]){
       await page.setViewportSize({width,height:900});
-      for(const pg of ['home','classify','reports','privacy']){
+      for(const pg of ['home','classify','privacy']){
         await page.evaluate(h=>{location.hash=h;},pg);await page.waitForTimeout(250);
         const over=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert.ok(over<=0,`horizontal overflow of ${over}px on #${pg} at ${width}px wide with Extra large text`);
@@ -240,7 +171,7 @@ try{
 
   await check('accessibility basics: names, one h1, unique ids, heading order, labels',async()=>{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s,problems=[];
-    for(const pg of ['home','prevent','reuse','classify','carry','reports','privacy']){
+    for(const pg of ['home','prevent','reuse','classify','carry','privacy']){
       await page.evaluate(h=>{location.hash=h;},pg);await page.waitForTimeout(300);
       const found=await page.evaluate(()=>{
         const out=[],visible=el=>!!(el.offsetWidth||el.offsetHeight||el.getClientRects().length)&&getComputedStyle(el).visibility!=='hidden';

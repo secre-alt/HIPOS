@@ -423,44 +423,6 @@ aside::after {
   color: var(--green-deep);
   border-color: var(--leaf);
 }
-/* ---- Staff review: filters ------------------------------------------- */
-.staff-filters {
-  margin: 8px 0 20px;
-  padding: 20px 24px;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: var(--shadow-sm);
-}
-.staff-filters h2 {
-  font-size: 1.125rem;
-  margin-bottom: 4px;
-}
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 16px;
-}
-.filter-grid label {
-  margin-top: 12px;
-}
-.staff-filters .note {
-  padding: 8px 0 0;
-  margin: 0;
-}
-.staff-filters .actions {
-  margin-top: 8px;
-}
-@media (max-width: 760px) {
-  .filter-grid {
-    grid-template-columns: 1fr;
-  }
-  .staff-filters {
-    padding: 16px;
-  }
-}
-:where(:root[data-theme=dark]) .staff-filters {
-  background: var(--surface);
-}
 /* ---- Streak, badges, celebration -------------------------------------- */
 .streak {
   display: flex;

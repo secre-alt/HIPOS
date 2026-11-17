@@ -65,10 +65,10 @@ change them; update the relevant documentation when it does.
 
 ## Data and guidance
 
-- Reports and activity remain on the current browser and device. Do not imply
-  that a saved report has been sent to school staff.
-- Keep report sharing voluntary and staff import explicitly confirmed.
-- A local staff PIN is a convenience lock, not identity verification or data
-  encryption. Preserve locking when the app is hidden.
+- HIPOS focuses on waste guidance, habits, games, and buddy progress. My Concerns
+  and Staff review are retired; do not reintroduce reporting navigation or workflows.
+- Leave legacy report storage (`hipos.pwa.v1`) untouched. Existing records are not
+  migrated, deleted, or loaded by the current UI.
+- Activity stays in the current browser and device; there is no synchronization.
 - Keep school approval placeholders until verified content and all required
-  metadata are supplied. Use fictional reports when testing.
+  metadata are supplied.

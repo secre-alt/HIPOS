@@ -9,7 +9,7 @@ Run `node tests/compost-experience.browser.mjs` for held movement, captured
 dragging, pause/resume, practice pace, and reward checks.
 
 - `index.html`: shared page shell, navigation, dialogs, and settings markup.
-- `app.js`: routing, page rendering, report workflows, and delegated UI events.
+- `app.js`: routing, page rendering, delegated UI events, and app information.
 - `pwa-runtime.js`: installation, connection status, service worker registration,
   and user-controlled updates. Initialized once by `app.js`.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
@@ -21,7 +21,7 @@ dragging, pause/resume, practice pace, and reward checks.
   Compost Catch pauses when hidden and requires an explicit resume; it supports
   held controls and an optional slower practice pace between rounds.
   `garden.js` also renders shared garden progress on completed game results.
-- `core.js`: report validation, transfer, backup, CSV, and PIN helpers.
+- `core.js`: shared HTML escaping and legacy report-format helpers (reporting UI is retired).
 - `content.js`, `i18n.js`: guidance content and translations.
 - Activity, buddy, audio, and preference modules remain named for their features.
 

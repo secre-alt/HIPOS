@@ -1,4 +1,9 @@
 const pairs=[
+ ['Your buddy stays on this device.','Nananatili sa device na ito ang iyong buddy.'],
+ ['Your saved activity stays on this device.','Nananatili sa device na ito ang iyong mga naka-save na gawain.'],
+ ['Your activity stays on this device.','Nananatili sa device na ito ang iyong mga gawain.'],
+ ['Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server. Browser storage may be cleared or unavailable.','Naka-save sa browser na ito ang mga pang-araw-araw na paalala, hamon, pag-usad sa pagsusulit, mga kamakailang gabay, iyong buddy, at piniling wika. Inaalis ang mas lumang lingguhang kasaysayan kapag nag-save ka ng bagong gawain. Hindi ipinapadala sa server ang mga rekord na ito. Maaaring mabura o hindi magamit ang storage ng browser.'],
+ ['Installation and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved activity.','Kailangan ng HTTPS para sa pag-install at offline caching sa production. Ang localhost ay angkop para sa development. Gamitin ang parehong web address upang ma-access ang iyong mga naka-save na gawain.'],
  ['Round pace','Bilis ng round'],['Regular','Karaniwan'],['Practice (slower)','Pagsasanay (mas mabagal)'],
  ['Regular pace','Karaniwang bilis'],['Practice pace','Bilis para sa pagsasanay'],
  ['Paused','Naka-pause'],['Correct destination','Tamang lalagyan'],

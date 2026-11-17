@@ -19,6 +19,8 @@ The local storage key, HIPOS1 protocol, bundled QR libraries, and service-worker
 
 ## Verification
 
-See [PWA test plan](PWA_TEST_PLAN.md) for automated checks, screenshot artifacts and remaining physical-device checks. Mobile browser checks cover 360px and 390px widths, offline guide reloads, saved reports and QR generation.
+See [PWA test plan](PWA_TEST_PLAN.md) for automated checks, screenshot artifacts and remaining physical-device checks. Mobile browser checks cover 360px and 390px widths, offline guide reloads and saved activity.
 
 Design review used the unslop workflow by [Damir Sokolovsky](https://heydamir.design/unslop), licensed CC BY 4.0.
+
+My Concerns and Staff review have since been retired. Current navigation and checks are documented in the PWA test plan.

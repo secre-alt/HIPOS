@@ -2,7 +2,6 @@ import {chromium,expect} from '@playwright/test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {mkdir} from 'node:fs/promises';
-import QRCode from 'qrcode';
 const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{stdio:'pipe',windowsHide:true,env:{...process.env,PORT:'4174'}});
 let browser;const openSettings=async(pg,cat)=>{await pg.locator('.settings-toggle:visible').click();const b=pg.locator(`[data-settings-category="${cat}"]`);if(await b.isVisible())await b.click();else await pg.selectOption('#settings-category',cat);};
 
@@ -26,7 +25,7 @@ try{
       const contentY=(await page.locator('main').boundingBox()).y;
       await toggle.click();await expect(page.locator('#nav')).toBeVisible();
       assert.equal((await page.locator('main').boundingBox()).y,contentY,'Dropdown does not shift content');
-      const box=await toggle.boundingBox();assert.equal(box.width,48);assert.equal(box.height,48);
+      const box=await toggle.boundingBox();assert.ok(Math.abs(box.width-48)<0.01);assert.ok(Math.abs(box.height-48)<0.01);
       await expect(page.locator('.menu-close')).toBeVisible();await expect(page.locator('.menu-bars')).toBeHidden();
       await expect(page.locator('#nav')).toHaveCSS('background-color','rgb(255, 254, 250)');
       await expect(page.locator('#nav')).toHaveCSS('opacity','1');
@@ -46,62 +45,11 @@ try{
     }
   }
   await page.setViewportSize({width:1280,height:900});
-  await page.getByRole('link',{name:'My reports',exact:true}).click();
-  await page.getByLabel('What needs attention?').fill('Please clarify the dry wrapper handling guide.');
-  await page.getByRole('button',{name:'Save on this device'}).click();
-  await page.getByRole('button',{name:'Show QR'}).click();
-  await page.locator('canvas#qr').waitFor({state:'attached'});
-  const raw=await page.getByLabel('Transfer text (alternative to scanning)').inputValue();
-  assert.equal(JSON.parse(raw).type,'HIPOS1');
-  await page.getByRole('button',{name:'Close',exact:true}).click();
-  await page.getByRole('link',{name:'Staff review',exact:true}).click();
-  await page.getByLabel('Choose a PIN').fill('123456');
-  await page.getByLabel('Confirm PIN',{exact:true}).fill('123456');
-  await page.getByRole('button',{name:'Set PIN and continue'}).click();
-  await page.getByRole('button',{name:'Paste transfer text'}).click();
-  await page.getByLabel('Transfer text',{exact:true}).fill(raw);
-  await page.getByRole('button',{name:'Review report',exact:true}).click();
-  assert.equal(await page.locator('[data-status]').count(),0,'Import requires confirmation');
-  await page.getByRole('button',{name:'Confirm import'}).click();
-  await page.locator('[data-status]').selectOption('Under Review');
-  await page.getByRole('button',{name:'Paste transfer text'}).click();
-  await page.getByLabel('Transfer text',{exact:true}).fill(raw);
-  await page.getByRole('button',{name:'Review report',exact:true}).click();
-  await page.getByText('Already on this device',{exact:true}).waitFor({state:'attached'});
-  await page.getByRole('button',{name:'Close',exact:true}).click();
-  await page.getByRole('button',{name:'Lock staff area'}).click();
-  await page.getByLabel('PIN',{exact:true}).fill('654321');
-  await page.getByRole('button',{name:'Unlock',exact:true}).click();
-  await page.getByText('Incorrect PIN.',{exact:true}).waitFor({state:'attached'});
-  await page.getByLabel('PIN',{exact:true}).fill('123456');
-  await page.getByRole('button',{name:'Unlock',exact:true}).click();
-  await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Permission denied','NotAllowedError');};});
-  await page.getByRole('button',{name:'Scan report QR'}).click();
-  await page.getByRole('heading',{name:'Camera permission is off'}).waitFor({state:'attached'});
-  await page.getByRole('button',{name:'Close',exact:true}).click();
-  await page.reload();
-  await page.getByRole('button',{name:'Unlock',exact:true}).waitFor({state:'attached'});
-  await page.getByLabel('PIN',{exact:true}).fill('123456');
-  await page.getByRole('button',{name:'Unlock',exact:true}).click();
-  await page.locator('[data-status]').waitFor({state:'attached'});
-  assert.equal(await page.locator('[data-status]').inputValue(),'Under Review');
-  await context.setOffline(true);
-  await page.reload();
-  await page.getByText('Offline · saved on device',{exact:true}).waitFor({state:'attached'});
-  for(const name of ['Prevent','Reuse','Classify','Carry out','My reports']){await page.getByRole('link',{name,exact:true}).click();await expect(page.locator('#page-label')).toHaveText(name);}
-  await expect(page.getByRole('button',{name:'Show QR'})).toHaveCount(1);
-  await page.getByRole('button',{name:'Show QR'}).click();
-  await page.locator('canvas#qr').waitFor({state:'attached'});
-  await page.getByRole('button',{name:'Close',exact:true}).click();
-  page.once('dialog',d=>d.accept());
-  await page.getByRole('button',{name:'Delete',exact:true}).click();
-  await page.reload();
-  assert.equal(await page.getByRole('button',{name:'Show QR'}).count(),0);
   await page.getByRole('link',{name:'Home',exact:true}).click();
   await expect(page.locator('#page-label')).toHaveText('Your daily guide');
   await page.evaluate(()=>window.scrollTo(0,400));
   assert.equal(Math.round((await page.locator('aside').boundingBox()).y),0,'Desktop navbar sticks to top');
-  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
   await mkdir('test-results',{recursive:true});
   await page.screenshot({path:'test-results/desktop.png',fullPage:true});
   const developer=page.getByRole('link',{name:'Rencruxx on Facebook, opens in a new tab',exact:true});
@@ -126,7 +74,7 @@ try{
     await p.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));});
     const primary=p.getByRole('link',{name:'Prevent Waste',exact:false});
     await expect(primary).toBeVisible();
-    assert.ok((await p.getByRole('link',{name:'Report a Concern',exact:true}).boundingBox()).y<700,'Core actions visible in first screen');
+    assert.ok((await p.getByRole('link',{name:'Check Waste Type',exact:true}).boundingBox()).y<700,'Core actions visible in first screen');
     await p.getByRole('button',{name:'Clean paper',exact:true}).click();
     await expect(p.locator('#waste-result')).toContainText('Suitable only if clean, dry and nonhazardous');
     await p.getByRole('button',{name:'Food scraps',exact:true}).click();
@@ -137,9 +85,9 @@ try{
     await p.evaluate(()=>window.scrollTo(0,400));
     assert.equal(Math.round((await p.locator('aside').boundingBox()).y),0,`Navbar sticks at ${width}px`);
     await p.getByRole('button',{name:'Menu',exact:true}).click();
-    await expect(p.getByRole('link',{name:'My reports',exact:true})).toBeVisible();
+    await expect(p.locator('a[href="#reports"], a[href="#staff"]')).toHaveCount(0);
     await p.getByRole('button',{name:'Menu',exact:true}).click();
-    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.screenshot({path:`test-results/home-${width}.png`,fullPage:true});
     await expect(p.locator('#install-banner')).toBeVisible();
     await expect(p.locator('#install-banner')).toHaveCSS('position','static');
@@ -166,7 +114,7 @@ try{
     await expect(p.getByRole('button',{name:'Download as app',exact:true})).toBeVisible();
     await noOverflow();await touchTargets();
     await p.locator('footer').screenshot({path:`test-results/footer-${width}.png`});
-    await p.evaluate(()=>window.scrollTo(0,0));await p.waitForFunction(()=>window.scrollY===0);
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));await p.waitForFunction(()=>window.scrollY===0);
     const menu=p.getByRole('button',{name:'Menu',exact:true});
     await menu.click();
     await expect(menu).toHaveAttribute('aria-expanded','true');
@@ -180,58 +128,16 @@ try{
     await menu.click();await p.mouse.click(8,800);await expect(menu).toHaveAttribute('aria-expanded','false');
     await menu.click();await p.getByRole('link',{name:'Home',exact:true}).click();await expect(menu).toHaveAttribute('aria-expanded','false');
     await menu.click();await p.mouse.wheel(0,140);await expect(menu).toHaveAttribute('aria-expanded','false');
-    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.waitForFunction(()=>window.scrollY>0);
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.waitForFunction(()=>window.scrollY===0);
     await menu.click();await p.evaluate(()=>window.dispatchEvent(new Event('touchmove')));await expect(menu).toHaveAttribute('aria-expanded','false');
     await menu.click();await p.evaluate(()=>window.scrollTo(0,100));await expect(menu).toHaveAttribute('aria-expanded','false');
-    await p.evaluate(()=>window.scrollTo(0,0));await p.waitForFunction(()=>window.scrollY===0);
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));await p.waitForFunction(()=>window.scrollY===0);
     await primary.click();await expect(p.locator('#page-label')).toHaveText('Prevent');
     await go('Home');await p.getByRole('link',{name:'Check Waste Type',exact:true}).click();await expect(p.locator('#page-label')).toHaveText('Classify');
-    await go('Home');await p.getByRole('link',{name:'Report a Concern',exact:true}).click();
-    await p.getByRole('heading',{name:'No reports saved on this device',exact:true}).waitFor({state:'attached'});
-    await p.getByRole('button',{name:'Write your first concern'}).click();await expect(p.getByLabel('What needs attention?')).toBeFocused();
-    await p.getByLabel('Category',{exact:true}).selectOption('Reusable-container concern');
-    await p.getByLabel('What needs attention?').fill('Please clarify where reusable containers are permitted.');
-    await noOverflow();await touchTargets();
-    await p.getByRole('button',{name:'Save on this device'}).click();
-    await expect(p.locator('#notice')).toHaveText('Saved on this device');
-    await p.getByRole('button',{name:'Show QR'}).click();
-    await p.getByRole('heading',{name:'QR ready to show',exact:true}).waitFor({state:'attached'});
-    const transfer=await p.getByLabel('Transfer text (alternative to scanning)').inputValue();
-    await touchTargets();await noOverflow();
-    await p.screenshot({path:`test-results/qr-${width}.png`,fullPage:true});
-    await p.getByRole('button',{name:'Close',exact:true}).click();
-
-    // A separate origin storage context represents the staff device.
-    const staffContext=await browser.newContext({viewport:{width,height:844}}),staff=await staffContext.newPage();
-    staff.on('pageerror',error=>mobileErrors.push(error.message));
-    await staff.goto('http://localhost:4174/#staff');
-    await staff.getByLabel('Choose a PIN').fill('123456');await staff.getByLabel('Confirm PIN',{exact:true}).fill('123456');
-    await staff.getByRole('button',{name:'Set PIN and continue'}).click();
-    await staff.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Permission denied','NotAllowedError');};});
-    await staff.getByRole('button',{name:'Scan report QR'}).click();await staff.getByRole('heading',{name:'Camera permission is off'}).waitFor({state:'attached'});
-    await expect(staff.getByRole('button',{name:'Try camera again'})).toBeVisible();
-    await staff.screenshot({path:`test-results/camera-denied-${width}.png`,fullPage:true});
-    await staff.locator('#dialog').getByRole('button',{name:'Paste transfer text',exact:true}).click();
-    await staff.getByLabel('Transfer text',{exact:true}).fill('{broken json');await staff.getByRole('button',{name:'Review report',exact:true}).click();
-    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor({state:'attached'});
-    await expect(staff.locator('#dialog-error')).toContainText('Nothing was imported.');
-    assert.equal(await staff.locator('[data-status]').count(),0);
-    await staff.screenshot({path:`test-results/invalid-qr-${width}.png`,fullPage:true});
-    await staff.getByLabel('Transfer text',{exact:true}).fill(transfer);await staff.getByRole('button',{name:'Review report',exact:true}).click();
-    await staff.getByRole('button',{name:'Confirm import'}).click();await expect(staff.locator('#notice')).toHaveText('Report imported');
-    await expect(p.locator('#notice')).not.toHaveText('Report imported');
-    // Feed an actual non-HIPOS QR image through a synthetic camera stream.
-    const badQR=await QRCode.toDataURL('Not a HIPOS report',{width:480,margin:4});
-    await staff.evaluate(async dataURL=>{navigator.mediaDevices.getUserMedia=async()=>{const img=new Image();img.src=dataURL;await img.decode();const canvas=document.createElement('canvas');canvas.width=canvas.height=480;canvas.getContext('2d').drawImage(img,0,0,480,480);return canvas.captureStream(5);};},badQR);
-    await staff.getByRole('button',{name:'Scan report QR'}).click();
-    await staff.getByText('This QR is not a valid HIPOS report',{exact:true}).waitFor({state:'attached'});
-    await expect(staff.getByRole('button',{name:'Paste transfer text instead'})).toBeVisible();
-    await staffContext.close();
-
     await mobile.setOffline(true);await p.reload();await p.getByText('Offline · saved on device',{exact:true}).waitFor({state:'attached'});
-    await expect(p.getByRole('button',{name:'Show QR'})).toHaveCount(1);
-    for(const name of ['Prevent','Reuse','Classify','Carry out','My reports']){
+    for(const name of ['Prevent','Reuse','Classify','Carry out']){
       await go(name);await p.reload();await expect(p.locator('#page-label')).toHaveText(name);await noOverflow();await touchTargets();
       if(name==='Reuse')await expect(p.locator('.reuse-approval')).toHaveText('Requires school approval');
       if(name==='Carry out'){
@@ -241,8 +147,6 @@ try{
         await p.screenshot({path:`test-results/carry-out-${width}.png`,fullPage:true});
       }
     }
-    await p.getByRole('button',{name:'Show QR'}).click();await p.getByRole('heading',{name:'QR ready to show'}).waitFor({state:'attached'});
-    await p.getByRole('button',{name:'Close',exact:true}).click();
     await p.getByRole('link',{name:'Home page',exact:true}).click();
     await expect(p.locator('.mobile-bottom-nav a').first()).toHaveAttribute('aria-current','page');
     await p.getByLabel('Packed my clean bottle',{exact:true}).check();
@@ -274,8 +178,6 @@ try{
     await expect(p.locator('#page-label')).toHaveText('Classify');
     await expect(p.locator('.waste-guide-art')).toHaveCount(6);
     await go('Reuse');await expect(p.locator('.reuse-item')).toHaveCount(3);
-    await p.getByRole('link',{name:'My Concerns',exact:true}).click();
-    await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
     await expect(p.locator('.recent-guides')).toContainText('Reuse');
     await expect(p.locator('.school-info')).toContainText('Awaiting school approval');
@@ -295,7 +197,7 @@ try{
     await p.reload();await expect(p.locator('#language')).toHaveValue('fil');
     await expect(p.locator('#checker-heading')).toHaveText('Ano ang itatapon mo?');
     await noOverflow();await touchTargets();
-    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.screenshot({path:'test-results/filipino-'+width+'.png',fullPage:true});
     for(const desktopWidth of [1001,1280,1920]){
       await p.setViewportSize({width:desktopWidth,height:900});await noOverflow();
@@ -303,18 +205,10 @@ try{
     await p.setViewportSize({width,height:844});
     await p.getByRole('link',{name:'Pagkapribado at impormasyon ng app',exact:true}).click();
     await expect(p.locator('#view')).toContainText('Mga gawain mo sa device na ito');
-    await p.getByRole('link',{name:'Mga alalahanin ko',exact:true}).click();
-    await p.locator('#description').fill('Clean paper');
-    await p.locator('#category').selectOption('Excessive packaging');
-    await p.getByRole('button',{name:'I-save sa device na ito',exact:true}).click();
-    await expect(p.locator('.report-description').first()).toHaveText('Clean paper');
-    const bilingualReport=await p.evaluate(()=>JSON.parse(localStorage.getItem('hipos.pwa.v1')).reports[0]);
-    assert.equal(bilingualReport.category,'Excessive packaging');
     await openSettings(p,'language');await p.locator('#language').selectOption('en');await p.keyboard.press('Escape');
     await expect(p.locator('html')).toHaveAttribute('lang','en');
-    await expect(p.locator('#page-label')).toHaveText('My reports');
     await p.getByRole('link',{name:'Home page',exact:true}).click();
-    await p.evaluate(()=>window.scrollTo(0,0));
+    await p.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
     await p.screenshot({path:'test-results/engagement-'+width+'.png',fullPage:true});
     await p.evaluate(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage full');};});
     await p.getByRole('button',{name:'Mark complete',exact:true}).click();
@@ -334,5 +228,5 @@ try{
     await noOverflow();await touchTargets();
     assert.deepEqual(mobileErrors,[]);await mobile.close();
   }
-  console.log('Browser checks passed: desktop/mobile layouts, offline quiz resume and scoring, challenges, weekly history, checklist, English/Filipino, storage failures, reporting, QR import, camera denial, PIN and status persistence.');
+  console.log('Browser checks passed: desktop/mobile layouts, offline quiz resume and scoring, challenges, weekly history, checklist, English/Filipino, storage failures and navigation.');
 }finally{await browser?.close();server.kill();}
