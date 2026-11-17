@@ -2,7 +2,7 @@
 // The voice is picked for friendliness, and pitch and pace follow what Buddy is saying.
 
 export const TONES = ['sweet', 'calm', 'bright'];
-export const PACKS = ['bubbly', 'squeaky', 'sleepy', 'device'];
+export const PACKS = ['bubbly', 'squeaky', 'chipmunk', 'sleepy', 'device'];
 const BASE = { sweet: { pitch: 1.2, rate: 1.02 }, calm: { pitch: 1.05, rate: 0.94 }, bright: { pitch: 1.34, rate: 1.1 } };
 
 // Names of installed voices that tend to sound warm and natural, and novelty voices to avoid.

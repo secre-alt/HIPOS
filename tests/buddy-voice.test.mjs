@@ -67,7 +67,7 @@ test('every cute pack turns a line into a short run of blips, in English or Fili
 });
 test('packs sound different, and a question lifts while a calm line settles',()=>{
  const f=pack=>babbleNotes('Hello friend',pack)[0].f;
- assert.ok(f('squeaky')>f('bubbly')&&f('bubbly')>f('sleepy'));
+ assert.ok(f('chipmunk')>f('squeaky')&&f('squeaky')>f('bubbly')&&f('bubbly')>f('sleepy'));
  const up=babbleNotes('Ready?','bubbly'),down=babbleNotes('Ready.','bubbly');
  assert.ok(up.at(-1).to>up.at(-1).f&&down.at(-1).to<down.at(-1).f);
 });

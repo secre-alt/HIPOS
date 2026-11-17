@@ -183,6 +183,7 @@ pairs.push(
  ['Voice pack','Pakete ng boses'],
  ['Bubbly babble','Malikot na huni'],
  ['Squeaky babble','Matinis na huni'],
+ ['Chipmunk babble','Huni ng chipmunk'],
  ['Sleepy babble','Antok na huni'],
  ['Device voice','Boses ng device'],
  ['Pick a cute babble voice that works everywhere, or a device voice with short phrases. Everything stays offline. Separate from Sound effects.','Pumili ng cute na huni na gumagana kahit saan, o boses ng device na may maiikling parirala. Nananatiling offline ang lahat. Hiwalay sa Sound effects.'],

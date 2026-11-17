@@ -73,7 +73,8 @@ export function playSfx(name){
 // offline on every device, without installed voices. Original and generated on the fly.
 export const VOICE_PACKS={
   bubbly:{label:'Bubbly',base:76,scale:[0,2,4,7,9,12],type:'triangle',len:.1,step:.085,glide:3,vol:.17},
-  squeaky:{label:'Squeaky',base:86,scale:[0,3,5,7,10,12],type:'sine',len:.075,step:.065,glide:5,vol:.15},
+  squeaky:{label:'Squeaky',base:82,scale:[0,3,5,7,10,12],type:'sine',len:.075,step:.065,glide:5,vol:.15},
+  chipmunk:{label:'Chipmunk',base:88,scale:[0,2,4,7,9,12],type:'square',len:.05,step:.045,glide:7,vol:.075},
   sleepy:{label:'Sleepy',base:67,scale:[0,2,3,7,8,10],type:'sine',len:.17,step:.13,glide:-3,vol:.2},
 };
 export const VOICE_PACK_NAMES=Object.keys(VOICE_PACKS);
