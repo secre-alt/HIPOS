@@ -79,7 +79,7 @@ export const VOICE_PACKS={
 };
 export const VOICE_PACK_NAMES=Object.keys(VOICE_PACKS);
 const VOWELS='aeiouáéíóú';
-export function babbleNotes(text,pack='bubbly',{maxSyllables=16}={}){
+export function babbleNotes(text,pack='bubbly',{maxSyllables=16,shift=0,speed=1}={}){
   const cfg=VOICE_PACKS[pack];if(!cfg)return [];
   const words=String(text||'').toLowerCase().match(/[a-zñáéíóú]+/g)||[];
   const notes=[];let t=0,prev=0;
@@ -89,11 +89,11 @@ export function babbleNotes(text,pack='bubbly',{maxSyllables=16}={}){
       if(!VOWELS.includes(ch)){consonant=(consonant+ch.charCodeAt(0))%7;continue;}
       if(notes.length>=maxSyllables)break outer;
       const degree=(consonant*2+VOWELS.indexOf(ch)+prev)%cfg.scale.length;prev=degree;
-      const midi=cfg.base+cfg.scale[degree];
-      notes.push({f:hz(midi),to:hz(midi+cfg.glide),t,len:cfg.len*(1+(consonant%3)*.12),type:cfg.type,vol:cfg.vol});
-      t+=cfg.step;consonant=0;
+      const midi=cfg.base+cfg.scale[degree]+shift;
+      notes.push({f:hz(midi),to:hz(midi+cfg.glide),t,len:cfg.len*speed*(1+(consonant%3)*.12),type:cfg.type,vol:cfg.vol});
+      t+=cfg.step*speed;consonant=0;
     }
-    t+=cfg.step*.7; // a tiny breath between words
+    t+=cfg.step*speed*.7; // a tiny breath between words
   }
   // The last blip lifts for a cheer or a question, and settles for a calm line.
   const last=notes[notes.length-1];
@@ -105,9 +105,9 @@ export function babbleNotes(text,pack='bubbly',{maxSyllables=16}={}){
   return notes;
 }
 export function babbleDuration(notes){const last=notes[notes.length-1];return last?last.t+last.len:0;}
-export function playBabble(text,pack='bubbly'){
+export function playBabble(text,pack='bubbly',traits={}){
   if(!ensure())return 0;
-  const notes=babbleNotes(text,pack);
+  const notes=babbleNotes(text,pack,{shift:traits.shift||0,speed:traits.speed||1});
   for(const n of notes)tone(sfxBus,n);
   return babbleDuration(notes);
 }

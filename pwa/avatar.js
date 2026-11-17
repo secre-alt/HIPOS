@@ -153,6 +153,8 @@ export const CHARACTERS = [
     // Batteries never go in the pouch, so Volt is the buddy that says "ask school staff".
     id: 'volt',
     name: 'Volt',
+    unlock: 'perfect',
+    hint: 'Sort every item right in one round.',
     colors: ['#FFD84D', '#FF8A3D', '#B07CFF', '#6BE0A0'],
     faceY: 54,
     top: { x: 60, y: 14 },
@@ -229,6 +231,8 @@ export const CHARACTERS = [
     // A glowing light bulb. Bulbs are hazardous: Flick is the buddy that says "ask school staff".
     id: 'flick',
     name: 'Flick',
+    unlock: 'streak3',
+    hint: 'Be active three days in a row.',
     colors: ['#FFE97A', '#FFC2D9', '#9EE7FF', '#C9B8FF'],
     faceY: 50,
     top: { x: 60, y: 16 },

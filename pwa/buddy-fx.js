@@ -13,7 +13,7 @@ const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='h
 // ---------- Settings (cheers, sound, season) ----------
 const read=(key,fallback)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
 const write=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch{return false;}};
-const voice = createBuddyVoice({ synth: globalThis.speechSynthesis, Utterance: globalThis.SpeechSynthesisUtterance, chirp: () => playSfx('buddy'), babble: (text, pack) => playBabble(text, pack), duck: () => music.duck() });
+const voice = createBuddyVoice({ synth: globalThis.speechSynthesis, Utterance: globalThis.SpeechSynthesisUtterance, chirp: () => playSfx('buddy'), babble: (text, pack, traits) => playBabble(text, pack, traits), duck: () => music.duck() });
 const voiceOn = () => read('hipos.voice','off') === 'on';
 const voicePack = () => { const v = read('hipos.voicepack','bubbly'); return VOICE_PACKS.includes(v) ? v : 'bubbly'; };
 const voiceTone = () => { const v = read('hipos.voicetone','sweet'); return VOICE_TONES.includes(v) ? v : 'sweet'; };
@@ -35,7 +35,7 @@ export function initBuddySettings(){
   document.querySelector('#language')?.addEventListener('change', () => voice.stop());
   document.querySelector('#voice-preview')?.addEventListener('click', () => {
     voiceReady = true;
-    const result = voice.play(translate('Hi! Let us play!'), getLanguage(), { preview: true, tone: voiceTone(), pack: voicePack() });
+    const result = voice.play(translate('Hi! Let us play!'), getLanguage(), { preview: true, tone: voiceTone(), pack: voicePack(), character: currentConfig().character });
     document.querySelector('#voice-preview-status').textContent = translate(result === 'speech' || result === 'babble' ? 'Playing Buddy voice.' : result === 'quiet' ? 'Buddy is already speaking. Try again in a moment.' : 'Cute sounds only: no matching offline voice is installed.');
   });
   const preview=document.querySelector('#music-preview');let previewTimer=null;
@@ -76,6 +76,19 @@ export function initBuddySettings(){
 }
 
 const pickCheer=createCheerPicker();
+// A small pop-up for a newly earned buddy: it never blocks the page and goes away by itself.
+let popTimer;
+export function celebrateUnlock(character){
+  if(typeof document==='undefined'||!character)return;
+  document.querySelector('.unlock-pop')?.remove();clearTimeout(popTimer);
+  const box=document.createElement('div');box.className='unlock-pop';box.setAttribute('role','status');
+  const dots='<i></i>'.repeat(10);
+  box.innerHTML=`<span class="unlock-confetti" aria-hidden="true">${dots}</span><span class="unlock-art" aria-hidden="true">${renderAvatar({character:character.id,color:0,face:0,accessory:'none',bg:0},{size:84,decorative:true,teaser:true})}</span><div class="unlock-copy"><strong>${translate('New buddy unlocked!')}</strong><span>${translate(character.name)}</span></div><a class="button-link" href="#avatar">${translate('Try it')}</a><button type="button" class="secondary unlock-close" aria-label="${translate('Close')}">×</button>`;
+  const close=()=>{clearTimeout(popTimer);box.remove();};
+  box.querySelector('.unlock-close').addEventListener('click',close);
+  box.querySelector('a').addEventListener('click',close);
+  document.body.append(box);popTimer=setTimeout(close,9000);
+}
 export function cheer(kind,options){
   if(!cheersOn())return false;
   const chosen=pickCheer(kind,options);if(!chosen)return false;
@@ -111,6 +124,8 @@ function load(){
 let state=null;
 const get=()=>state||(state=load());
 function save(){try{localStorage.setItem(STORE,JSON.stringify(get()));return true;}catch{return false;}}
+// Progress saved by another tab of HIPOS is picked up instead of being overwritten by an older copy.
+if(typeof addEventListener==='function')addEventListener('storage',e=>{if(e.key===STORE||e.key===null)state=null;});
 export const stats=()=>({...get()});
 
 export function recordTap(){const s=get();s.taps=Math.min(s.taps+1,999999);save();return s.taps;}
@@ -258,7 +273,7 @@ export function buddySay(text,{force=false,ms=4200,delay=0}={}){
   if(!text||(!force&&!cheersOn()))return;
   if(delay){setTimeout(()=>buddySay(text,{force,ms}),delay);return;}
   if(voiceOn() && voiceReady && !document.hidden) {
-    try { voice.play(translate(text),getLanguage(),{tone:voiceTone(),pack:voicePack()}); } catch { /* Optional audio never interrupts guidance. */ }
+    try { voice.play(translate(text),getLanguage(),{tone:voiceTone(),pack:voicePack(),character:currentConfig().character}); } catch { /* Optional audio never interrupts guidance. */ }
   }
   const box=ensureBubble();
   box.querySelector('.buddy-say-text').textContent=translate(text);

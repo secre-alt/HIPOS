@@ -55,7 +55,7 @@ test('badges and challenge days unlock matching extras',()=>{
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:2}),[]);
   const first=syncUnlocks({badges:[badge('first'),badge('habits',false),badge('streak3',false),badge('streak7',false)],challengeDays:3});
   assert.deepEqual(first.map(a=>a.id).sort(),['medal','sprout']);
-  assert.deepEqual(syncUnlocks({badges:[badge('streak3'),badge('streak7')],challengeDays:3}).map(a=>a.id).sort(),['halo','rainbow']);
+  assert.deepEqual(syncUnlocks({badges:[badge('streak3'),badge('streak7')],challengeDays:3}).map(a=>a.id).sort(),['flick','halo','rainbow'],'streak3 also opens the Flick buddy');
   assert.deepEqual(syncUnlocks({badges:[badge('habits')],challengeDays:0}).map(a=>a.id),['headband']);
 });
 test('earned extras are kept after a streak is lost or history is trimmed',()=>{
@@ -111,9 +111,9 @@ test('Volt, the hazardous-waste battery buddy, and the Fierce face work with eve
     const svg=renderAvatar({character:'volt',color,face:fierce,accessory:a.id,bg:0},{teaser:true});
     assert.match(svg,/^<svg[\s\S]*<\/svg>$/);assert.ok(!/undefined|NaN/.test(svg),'no broken numbers');
   }
-  assert.match(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0}),/aria-label="Volt"/);
+  assert.match(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0},{teaser:true}),/aria-label="Volt"/);
   assert.equal(normalizeConfig({character:'hippo',face:fierce}).face,fierce);
-  assert.ok(!/id="/.test(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0})),'no ids, so many avatars never clash');
+  assert.ok(!/id="/.test(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0},{teaser:true})),'no ids, so many avatars never clash');
 });
 
 test('Crinkle, Peely and Flick render cleanly with every color, face and accessory',()=>{
@@ -138,6 +138,16 @@ test('Peely stays locked until a perfect Compost Catch round, then stays unlocke
   assert.equal(normalizeConfig({character:'peely'}).character,'peely');
   assert.deepEqual(syncUnlocks({badges:[],extra:['compostperfect']}),[],'only announced once');
 });
+test('Volt unlocks with a perfect sorting round and Flick with a three-day streak',()=>{
+  const none=new Set();
+  for(const id of ['volt','flick'])assert.equal(normalizeConfig({character:id},none).character,'leaf',id+' starts locked');
+  assert.deepEqual(syncUnlocks({badges:[],extra:['perfect']}).map(x=>x.id).filter(id=>id==='volt'),['volt']);
+  assert.equal(normalizeConfig({character:'volt'}).character,'volt');
+  assert.equal(normalizeConfig({character:'flick'}).character,'leaf','a perfect round does not open Flick');
+  assert.deepEqual(syncUnlocks({badges:[{key:'streak3',earned:true}],extra:[]}).map(x=>x.id).filter(id=>id==='flick'),['flick']);
+  assert.equal(normalizeConfig({character:'flick'}).character,'flick');
+});
+
 test('nickname length limits preserve whole emoji and existing local saves',()=>{
   const emoji=String.fromCodePoint(0x1f331);
   assert.equal(normalizeNickname('a'.repeat(23)+emoji),'a'.repeat(23));

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBuddyVoice} from '../pwa/buddy-voice.js';
+import {createBuddyVoice,TRAITS} from '../pwa/buddy-voice.js';
 function setup(voices) {
  let time=0,chirps=0,cancelled=0;const lines=[];
  const synth={getVoices:()=>voices,speak:line=>lines.push(line),cancel:()=>cancelled++};
@@ -79,4 +79,18 @@ test('a babble pack plays on any device, throttles, and never overlaps itself',(
  time=5000;assert.equal(buddy.play('Again','en',{pack:'sleepy'}),'babble');assert.equal(made.length,2);
  time=5200;assert.equal(buddy.play('Hi','en',{pack:'bubbly',preview:true}),'quiet','does not overlap the running babble');
  assert.equal(chirps,0);
+});
+
+test('each buddy has its own voice, and the default one is unchanged',()=>{
+  const rnd=()=>.5;
+  const plain=prosody('Hello friend','sweet',rnd),again=prosody('Hello friend','sweet',rnd,'leaf');
+  assert.deepEqual(plain,again);
+  assert.ok(prosody('Hello friend','sweet',rnd,'volt').pitch<plain.pitch,'Volt is deeper');
+  assert.ok(prosody('Hello friend','sweet',rnd,'flick').pitch>plain.pitch,'Flick is higher');
+  assert.ok(prosody('Hello friend','sweet',rnd,'peely').rate<plain.rate,'Peely is slower');
+  for(const id of Object.keys(TRAITS)){const p=prosody('Hi!','bright',rnd,id);assert.ok(p.pitch>=.8&&p.pitch<=1.6&&p.rate>=.85&&p.rate<=1.2);}
+  const base=babbleNotes('Hello friend','bubbly'),deep=babbleNotes('Hello friend','bubbly',{shift:-5,speed:1.1});
+  assert.ok(deep[0].f<base[0].f,'babble shifts down');assert.ok(babbleDuration(deep)>babbleDuration(base),'and slows down');
+  const made=[];const v=createBuddyVoice({synth:null,Utterance:null,chirp(){},duck(){},babble:(t,p,tr)=>{made.push(tr);return 1;},now:()=>0});
+  v.play('Hi!','en',{pack:'bubbly',preview:true,character:'volt'});assert.equal(made[0],TRAITS.volt);
 });

@@ -8,7 +8,7 @@ import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
-import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
+import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
 import { gardenPage, initGarden } from "./garden.js";
@@ -57,7 +57,10 @@ function checkBuddyUnlocks(announce = false) {
       message(`New sticker: ${stickers.map((t) => t.name).join(", ")}!`);
       setTimeout(() => cheer(stickers.some((t) => t.key.startsWith("streak")) ? "streak" : "unlock"), 3800);
     }
-    if (fresh.length) message(`New buddy extra unlocked: ${fresh.map((a) => a.name).join(", ")}. Open My buddy to try it.`);
+    const buddies = fresh.filter((a) => a.colors), extras = fresh.filter((a) => !a.colors);
+    buddies.forEach(celebrateUnlock);
+    if (buddies.length) cheer("unlock");
+    if (extras.length) message(`New buddy extra unlocked: ${extras.map((a) => a.name).join(", ")}. Open My buddy to try it.`);
   } catch {
     /* activity history unavailable: nothing to unlock */
   }

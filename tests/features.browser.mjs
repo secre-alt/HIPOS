@@ -267,6 +267,13 @@ try{
     await page.evaluate(()=>{const raw=JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}');raw.compost=1;raw.compostPerfect=1;localStorage.setItem('hipos.buddy.v1',JSON.stringify(raw));});
     await page.reload();await page.locator('.buddy-chip',{hasText:'Peely'}).waitFor();
     assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Peely'}).count(),0,'Peely unlocked by a perfect Compost Catch');
+    assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Volt'}).count(),1,'Volt starts locked');
+    const other=await page.context().newPage();await other.goto(page.url().split('#')[0]);
+    await other.evaluate(()=>{const raw=JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}');raw.sorts=1;raw.perfect=1;localStorage.setItem('hipos.buddy.v1',JSON.stringify(raw));});await other.close();
+    await page.waitForTimeout(300);await page.evaluate(()=>document.dispatchEvent(new Event('hipos-game-done')));
+    await page.locator('.unlock-pop',{hasText:'Volt'}).waitFor();
+    assert.ok(await page.locator('.unlock-pop .unlock-close').evaluate(el=>el.getBoundingClientRect().height>=44),'pop-up close button is touch sized');
+    await page.locator('.unlock-pop .unlock-close').click();assert.equal(await page.locator('.unlock-pop').count(),0,'pop-up closes');
     await openSettings(page,'personal');await page.selectOption('#season','default');await page.keyboard.press('Escape');
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),undefined);
     await close(s);

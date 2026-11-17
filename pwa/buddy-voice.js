@@ -3,6 +3,15 @@
 
 export const TONES = ['sweet', 'calm', 'bright'];
 export const PACKS = ['bubbly', 'squeaky', 'chipmunk', 'sleepy', 'device'];
+// Every buddy has its own voice: pitch and pace for installed voices, shift (semitones) and speed for babble packs.
+export const TRAITS = {
+  leaf: {}, bottle: { pitch: 0.04, rate: 0.02, shift: 1 }, paper: { pitch: 0.02, rate: -0.02 },
+  hippo: { pitch: -0.12, rate: -0.05, shift: -3, speed: 1.12 },
+  volt: { pitch: -0.2, rate: 0.03, shift: -5, speed: 0.92 },
+  crinkle: { pitch: 0.06, rate: 0.05, shift: 2, speed: 0.9 },
+  peely: { pitch: -0.04, rate: -0.07, shift: -1, speed: 1.15 },
+  flick: { pitch: 0.12, rate: 0.07, shift: 4, speed: 0.88 },
+};
 const BASE = { sweet: { pitch: 1.2, rate: 1.02 }, calm: { pitch: 1.05, rate: 0.94 }, bright: { pitch: 1.34, rate: 1.1 } };
 
 // Names of installed voices that tend to sound warm and natural, and novelty voices to avoid.
@@ -36,9 +45,9 @@ export function cleanForSpeech(text) {
 }
 
 // Pitch and pace follow the sentence: gentle for a retry, lively for a cheer, lifted for a question.
-export function prosody(text, tone = 'sweet', random = Math.random) {
-  const base = BASE[tone] || BASE.sweet;
-  let pitch = base.pitch, rate = base.rate;
+export function prosody(text, tone = 'sweet', random = Math.random, character = '') {
+  const base = BASE[tone] || BASE.sweet, trait = TRAITS[character] || {};
+  let pitch = base.pitch + (trait.pitch || 0), rate = base.rate + (trait.rate || 0);
   if (/[!]\s*$/.test(text)) { pitch += 0.05; rate += 0.03; }
   if (/\?\s*$/.test(text)) { pitch += 0.07; rate -= 0.02; }
   if (/\b(almost|try again|breath|let the plastic|ask school staff|oops|not quite)\b/i.test(text)) { pitch -= 0.1; rate -= 0.05; }
@@ -52,13 +61,13 @@ export function createBuddyVoice({ synth, Utterance, chirp, duck, babble, now = 
   const stop = () => { clearTimeout(timer); if (active) { active = null; try { synth?.cancel(); } catch {} } };
   return {
     stop,
-    play(text, language, { preview = false, tone = 'sweet', pack = 'device' } = {}) {
+    play(text, language, { preview = false, tone = 'sweet', pack = 'device', character = '' } = {}) {
       // Cute babble packs work on every device and never queue over each other.
       if (pack !== 'device' && babble) {
         if (!preview && now() - last < 3500) return 'quiet';
         if (now() < busyUntil) return preview ? 'quiet' : 'quiet';
         last = now();
-        const length = babble(cleanForSpeech(text), pack) || 0;
+        const length = babble(cleanForSpeech(text), pack, TRAITS[character] || {}) || 0;
         if (length > 0) { busyUntil = now() + length * 1000; duck(); return 'babble'; }
         chirp(); duck(); return 'chirp';
       }
@@ -72,7 +81,7 @@ export function createBuddyVoice({ synth, Utterance, chirp, duck, babble, now = 
       if (!speak) { chirp(); duck(); return 'chirp'; }
       try {
         const line = new Utterance(spoken);
-        const { pitch, rate } = prosody(spoken, tone, random);
+        const { pitch, rate } = prosody(spoken, tone, random, character);
         line.voice = voice; line.lang = voice.lang; line.pitch = pitch; line.rate = rate; line.volume = .75;
         active = line;
         line.onstart = () => { if (active === line) duck(); };
