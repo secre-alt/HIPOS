@@ -33,8 +33,9 @@ try {
    assert.ok(panel.y>=0&&panel.y+panel.height<=height+1,'modal stays within viewport');
    assert.ok(next.y>=0&&next.y+next.height<=height+1,`Next visible at ${width}x${height}`);
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no overflow');
-   await page.locator('.sort-explanation summary').click();assert.ok((await page.locator('.sort-explanation p').innerText()).length>15);
-   await page.locator('.sort-explanation summary').click();
+   assert.ok(await page.locator('.sort-explanation p').isVisible(),'guidance is visible immediately');
+   assert.ok((await page.locator('.sort-explanation p').innerText()).length>15);
+   assert.equal(await page.locator('.sort-explanation summary').count(),0);
    if(correct){await page.keyboard.press('Escape');assert.ok(await page.locator('#sort-answer-dialog').isHidden());
    await page.waitForFunction(()=>document.activeElement?.matches('[data-sort-review]'));
    assert.equal(await page.locator('[data-sort-review]').evaluate(el=>el===document.activeElement),true);

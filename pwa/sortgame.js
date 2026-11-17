@@ -63,7 +63,7 @@ function answer(choice){
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Not quite.'}</h3><p id="sort-answer-summary">${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</p><details class="sort-explanation"><summary>Why this destination?</summary><p>${e(item.body)}</p></details>`;
+  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Not quite.'}</h3><p id="sort-answer-summary">${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</p><div class="sort-explanation"><p>${e(item.body)}</p></div>`;
   const modal=document.querySelector('#sort-answer-dialog'),review=document.querySelector('[data-sort-review]');
   modal.querySelector('.sort-modal-buddy').innerHTML=renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true});
   modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();});

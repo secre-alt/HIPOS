@@ -71,7 +71,7 @@ change them; update the relevant documentation when it does.
 ## Games and garden
 
 - Sorting keeps answered items readable and labels the chosen and correct
-  destinations. Show a short explanation in a buddy feedback modal with expandable original safety guidance.
+  destinations. Show a short explanation in a buddy feedback modal with the original safety guidance always visible, without a separator line.
   Keep Next item visible in the modal. Escape or Close returns to a Review answer
   button without advancing or scoring again.
   Keep the item above the two destinations on regular screens, using shared buddy
