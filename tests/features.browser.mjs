@@ -263,6 +263,10 @@ try{
     await openSettings(page,'sound');assert.equal(await page.locator('#voicepack').inputValue(),'sleepy','voice pack is remembered');await page.keyboard.press('Escape');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.buddy-chip',{hasText:'Festive hat'}).waitFor();
     assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Festive hat'}).count(),0,'festive hat unlocked by trying the theme');
+    assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Peely'}).count(),1,'Peely starts locked');
+    await page.evaluate(()=>{const raw=JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}');raw.compost=1;raw.compostPerfect=1;localStorage.setItem('hipos.buddy.v1',JSON.stringify(raw));});
+    await page.reload();await page.locator('.buddy-chip',{hasText:'Peely'}).waitFor();
+    assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Peely'}).count(),0,'Peely unlocked by a perfect Compost Catch');
     await openSettings(page,'personal');await page.selectOption('#season','default');await page.keyboard.press('Escape');
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),undefined);
     await close(s);

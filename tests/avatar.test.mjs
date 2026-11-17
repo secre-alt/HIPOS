@@ -116,7 +116,28 @@ test('Volt, the hazardous-waste battery buddy, and the Fierce face work with eve
   assert.ok(!/id="/.test(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0})),'no ids, so many avatars never clash');
 });
 
+test('Crinkle, Peely and Flick render cleanly with every color, face and accessory',()=>{
+  for(const id of ['crinkle','peely','flick']){
+    const c=CHARACTERS.find(x=>x.id===id);assert.ok(c,id);assert.equal(c.colors.length,4);
+    for(const point of [c.top,c.sl,c.sr,c.corner])assert.ok(point.x>0&&point.x<120&&point.y>0&&point.y<120);
+    for(let color=0;color<4;color++)for(let face=0;face<FACES.length;face++)for(const a of ACCESSORIES){
+      const svg=renderAvatar({character:id,color,face,accessory:a.id,bg:0},{teaser:true});
+      assert.ok(!/undefined|NaN/.test(svg),'no broken numbers');assert.ok(!/id="/.test(svg),'no ids');
+    }
+    assert.match(renderAvatar({character:id,color:0,face:0,accessory:'none',bg:0},{teaser:true}),new RegExp(`aria-label="${c.name}"`));
+  }
+});
 
+test('Peely stays locked until a perfect Compost Catch round, then stays unlocked',()=>{
+  const none=new Set();
+  assert.equal(normalizeConfig({character:'peely'},none).character,'leaf','locked buddy falls back');
+  assert.equal(normalizeConfig({character:'peely'},new Set(['peely'])).character,'peely');
+  for(let i=0;i<40;i++)assert.notEqual(randomAvatar(()=>0.99,none).character,'peely');
+  const fresh=syncUnlocks({badges:[],extra:['compostperfect']});
+  assert.deepEqual(fresh.map(x=>x.id),['peely']);
+  assert.equal(normalizeConfig({character:'peely'}).character,'peely');
+  assert.deepEqual(syncUnlocks({badges:[],extra:['compostperfect']}),[],'only announced once');
+});
 test('nickname length limits preserve whole emoji and existing local saves',()=>{
   const emoji=String.fromCodePoint(0x1f331);
   assert.equal(normalizeNickname('a'.repeat(23)+emoji),'a'.repeat(23));

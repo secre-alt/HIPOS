@@ -38,7 +38,7 @@ function message(text) {
 // Buddy extras are cosmetic rewards for activity already recorded on this device. Once unlocked they stay unlocked.
 function summaryNow() {
   const week = weekSummary();
-  return { ...week, extra: [...earnedKeys(week), ...stats().seasons.map((key) => "season-" + key)] };
+  return { ...week, extra: [...earnedKeys(week), ...stats().seasons.map((key) => "season-" + key), ...(stats().compostPerfect >= 1 ? ["compostperfect"] : [])] };
 }
 function gamesProgress() {
   try {
