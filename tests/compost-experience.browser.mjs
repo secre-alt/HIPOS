@@ -18,6 +18,9 @@ try {
   const x=()=>page.locator('#compost-basket').evaluate(el=>parseFloat(el.style.left));
   const visit=async route=>{await page.evaluate(route=>{location.hash=route;},route);await page.locator(route==='games'?'.games-grid':route==='sort'?'#sort-game':'#compost-game').waitFor();};
   await page.locator('[data-compost-start]').click();
+  await page.keyboard.press('Space');await expect(page.locator('.compost-paused')).toBeVisible();
+  await page.keyboard.press('Escape');await expect(page.locator('.compost-paused')).toHaveCount(0);
+  await expect(page.locator('#compost-field')).toBeFocused();
   await page.keyboard.down('ArrowRight');await page.clock.runFor(300);
   assert.ok(await x()>65,'holding an arrow moves continuously');
   await page.keyboard.up('ArrowRight');const released=await x();await page.clock.runFor(200);
@@ -67,6 +70,8 @@ try {
   await page.clock.runFor(39000);
   await expect(page.locator('.compost-done h3')).toHaveText('You caught 18 of 18 compostable scraps.');
   await expect(page.locator('.compost-done')).toContainText('Practice pace');
+  await expect(page.locator('#compost-count')).toHaveText('18/18');
+  await expect(page.locator('.compost-plastic-result')).toHaveCount(0);
   await expect(page.locator('#compost-pace')).toBeEnabled();
   await expect(page.locator('#compost-pace')).toHaveValue('practice');
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')));
@@ -75,11 +80,13 @@ try {
   await expect(page.locator('.compost-done')).toContainText('Bilis para sa pagsasanay');
   await page.evaluate(()=>{const language=document.querySelector('#language');language.value='en';language.dispatchEvent(new Event('change'));});
 
-  for(const width of [390,1280])for(const theme of ['light','dark']) {
-    await page.setViewportSize({width,height:844});
+  for(const [width,height] of [[390,844],[1280,844],[568,320]])for(const theme of ['light','dark']) {
+    await page.setViewportSize({width,height});
     await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},theme);
     await visit('games');await visit('compost');
     await page.locator('[data-compost-start]').click();await page.clock.runFor(1000);
+    const fits=await page.evaluate(()=>{const field=document.querySelector('#compost-field').getBoundingClientRect(),controls=document.querySelector('#compost-controls').getBoundingClientRect(),nav=document.querySelector('.mobile-bottom-nav').getBoundingClientRect();return field.top>=document.querySelector('aside').getBoundingClientRect().bottom&&controls.bottom<=(nav.height?nav.top:innerHeight)+1;});
+    assert.ok(fits,'field and movement controls fit at '+width+'x'+height);
     await page.locator('#compost-hud [data-compost-pause]').click();
     const frozenCount=await page.locator('.compost-item').count();assert.ok(frozenCount>0);
     await page.clock.runFor(300);await expect(page.locator('.compost-item')).toHaveCount(frozenCount);
@@ -87,9 +94,17 @@ try {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:`test-results/compost-pause-${width}-${theme}.png`});
   }
+  await visit('games');await visit('compost');
+  await page.evaluate(()=>{Math.random=()=>0.99;});await page.selectOption('#compost-pace','regular');
+  await page.locator('[data-compost-start]').click();await page.clock.runFor(30000);
+  await expect(page.locator('.compost-plastic-result strong')).toHaveText('18/18');
+  await page.locator('[data-compost-start]').click();
+  const centered=await page.locator('#compost-field').boundingBox();
+  await page.mouse.click(centered.x+centered.width*.99,centered.y+centered.height*.4);await page.clock.runFor(30000);
+  await expect(page.locator('.compost-plastic-result strong')).toHaveText('0/18');
   await visit('sort');await page.locator('[data-sort-bin="yes"]').click();
   await expect(page.locator('.sort-bin.is-answer')).toHaveCount(1);
-  await expect(page.locator('.sort-bin.is-answer')).toHaveAttribute('aria-label',/Correct destination/);
+  await expect(page.locator('.sort-bin.is-answer')).toHaveAccessibleName(/Correct destination/);
   const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   mobile.on('pageerror',e=>errors.push(e.message));
   await mobile.goto('http://localhost:4188/#compost');await mobile.locator('[data-compost-start]').click();

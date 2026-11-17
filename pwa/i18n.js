@@ -8,6 +8,8 @@ const pairs=[
  ['Correct!','Tama!'],['Your choice','Pinili mo'],['Correct destination','Tamang patutunguhan'],['Why this destination?','Bakit dito dapat ilagay?'],
  ['Where does this belong? Drag it, or tap a destination.','Saan ito dapat ilagay? I-drag ito o pumili ng patutunguhan.'],
  ['Game navigation','Paglipat sa mga laro'],['Back to All games','Bumalik sa lahat ng laro'],['Back to Sorting game','Bumalik sa larong pag-uuri'],['Back to Compost Catch','Bumalik sa Compost Catch'],['Proceed to Compost Catch','Magpatuloy sa Compost Catch'],['Proceed to Buddy garden','Magpatuloy sa hardin ng buddy'],['All games','Lahat ng laro'],
+ ['Food scraps in. Plastic out.','Tirang pagkain sa loob. Plastik sa labas.'],['Help your buddy catch!','Tulungan ang buddy mong sumalo!'],['Items completed','Mga aytem na natapos'],['Plastic kept out','Plastik na hindi naisama'],['Take your time. Your round is waiting.','Huwag magmadali. Naghihintay ang round mo.'],['Catch only food scraps. Hold the arrow keys or movement buttons, or drag the basket. Press Space or Escape to pause.','Tirang pagkain lamang ang saluhin. Pindutin nang matagal ang arrow key o pindutan ng paggalaw, o i-drag ang basket. Pindutin ang Space o Escape para mag-pause.'],
+ ['Great work! Food scraps in, plastic out.','Ang galing! Tirang pagkain sa loob, plastik sa labas.'],
  ['Buddy nickname','Palayaw ng buddy'],['Save nickname','I-save ang palayaw'],['Up to 24 characters. Leave blank to use Your buddy.','Hanggang 24 na karakter. Iwanang blangko para gamitin ang Ang buddy mo.'],
  ['Your buddy stays on this device.','Nananatili sa device na ito ang iyong buddy.'],
  ['Your saved activity stays on this device.','Nananatili sa device na ito ang iyong mga naka-save na gawain.'],

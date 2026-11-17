@@ -29,7 +29,8 @@ dragging, pause/resume, practice pace, and reward checks.
   Sorting uses the shared buddy faces for local SVG item and destination
   characters, with a stacked item-above-choices layout and compact landscape mode.
   Compost Catch pauses when hidden and requires an explicit resume; it supports
-  held controls and an optional slower practice pace between rounds.
+  held controls, Space/Escape pause shortcuts, buddy-style artwork, completed-item
+  progress, a plastic-avoidance summary, and slower practice pace between rounds.
   `garden.js` also renders shared garden progress on completed game results.
 - `core.js`: shared HTML escaping and legacy report-format helpers (reporting UI is retired).
 - `content.js`, `i18n.js`: guidance content and translations.

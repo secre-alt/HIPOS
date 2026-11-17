@@ -81,6 +81,9 @@ change them; update the relevant documentation when it does.
   dragging. Clear held input on release, cancellation, pause, window blur, and exit.
   Pause preserves the visible field. Pace is selected between rounds; practice
   slows falling items and spawning while preserving the same care reward rules.
+  Show resolved-item progress and plastic kept out separately from food catches.
+  Space pauses the focused field; Escape toggles pause within the game. Keep
+  button keyboard activation working and use the shared buddy face artwork.
 - Buddy keeps its shared floating position on game routes.
   Individual games share a centered 880px content column.
   Keep the object and destinations, or the compost field and movement controls,
