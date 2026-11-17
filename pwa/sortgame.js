@@ -23,7 +23,7 @@ const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answe
 export function sortGame(summary={}){
   gardenSummary=summary;
   start();
-  return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading">${miniBuddy('sort')}<h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
+  return `<section class="card sort-game tabletop-game" id="sort-game" aria-labelledby="sort-heading"><h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
 }
 function body(){
   if(!game)return '';
@@ -31,14 +31,15 @@ function body(){
   const item=game.items[game.i];
   return `<div class="sort-round"><p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p>
   <div class="round-markers" aria-hidden="true">${game.items.map((_,i)=>`<span class="${i<game.i?'is-complete':i===game.i?'is-current':''}"></span>`).join('')}</div></div>
-  <p class="note sort-instruction">Drag the item to a bin, or tap a bin.</p>
+  <p class="note sort-instruction">Where does this belong? Drag it, or tap a destination.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
   <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-sort-bin="yes" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${pouch}</span><strong>Dry-waste pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-sort-bin="no" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${hand}</span><strong>Ask school staff</strong><small>Keep out of the pouch</small></button></div>
   <div class="sort-answer-panel" hidden><div id="sort-feedback" class="feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
   <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></div>`;
 }
-const pouch='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11h16l2 15H6z"/><path d="M11 11q0-6 5-6t5 6M11 19h10"/></svg>';
-const hand='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15V8a2 2 0 0 1 4 0v6m0-1V6a2 2 0 0 1 4 0v8m0-4a2 2 0 0 1 4 0v8a8 8 0 0 1-8 8h-1a7 7 0 0 1-6-3l-4-6a2 2 0 0 1 3-2l2 2"/></svg>';
+// Local illustrations give both destinations a physical place on the tabletop.
+const pouch='<svg viewBox="0 0 160 112" width="160" height="112" aria-hidden="true" focusable="false"><ellipse cx="80" cy="102" rx="56" ry="7" fill="#163d2c" opacity=".12"/><path d="M48 23Q80 9 112 23L126 87Q128 101 110 101H50Q32 101 34 87Z" fill="#bad98e" stroke="#466747" stroke-width="2.5"/><path d="M49 25Q80 39 111 25" fill="none" stroke="#466747" stroke-width="3"/><path d="M58 26Q50 5 65 5Q76 5 75 31M85 31Q84 5 95 5Q110 5 102 26" fill="none" stroke="#466747" stroke-width="4" stroke-linecap="round"/><path d="M42 57L39 86Q38 94 50 94H110Q122 94 121 86L118 57" fill="none" stroke="#90b267" stroke-width="2" stroke-dasharray="3 4"/><rect x="60" y="50" width="40" height="32" rx="9" fill="#f6f5df"/><path d="M79 73Q63 61 86 55Q95 67 79 73ZM78 76L85 61" fill="#79a760" stroke="#466747" stroke-width="2" stroke-linecap="round"/></svg>';
+const hand='<svg viewBox="0 0 160 112" width="160" height="112" aria-hidden="true" focusable="false"><ellipse cx="80" cy="103" rx="55" ry="6" fill="#163d2c" opacity=".12"/><path d="M33 100V81Q33 59 64 57H94Q124 59 124 81V100Z" fill="#8cbac4" stroke="#3c626b" stroke-width="2.5"/><path d="M66 59L79 75L93 59M79 75V99" fill="#f9f6e8" stroke="#3c626b" stroke-width="2"/><path d="M67 47V60Q79 69 91 60V47" fill="#e7b58e" stroke="#855d44" stroke-width="2"/><ellipse cx="79" cy="32" rx="25" ry="28" fill="#f1c9a2" stroke="#855d44" stroke-width="2"/><path d="M54 31Q46 1 76 1Q110 -2 104 32Q92 20 89 13Q77 28 54 31Z" fill="#594439"/><circle cx="69" cy="34" r="2" fill="#413c35"/><circle cx="89" cy="34" r="2" fill="#413c35"/><path d="M73 44Q79 49 85 44" fill="none" stroke="#855d44" stroke-width="2" stroke-linecap="round"/><rect x="97" y="73" width="16" height="21" rx="3" fill="#f9f6e8"/><path d="M101 79H109M101 84H109" stroke="#3c626b" stroke-width="2"/><path d="M23 73Q14 66 17 55Q19 50 24 55L27 61V44Q29 39 32 44L34 61L38 52Q41 48 43 53L40 76" fill="#f1c9a2" stroke="#855d44" stroke-width="2" stroke-linejoin="round"/></svg>';
 function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
@@ -57,7 +58,6 @@ function answer(choice){
   const destination=document.querySelector(`[data-sort-bin="${item.suitable?'yes':'no'}"]`);
   destination.classList.add('is-answer');
   destination.insertAdjacentHTML('beforeend','<span class="sort-answer-label">Correct destination</span>');
-  destination.querySelector('.sort-bin-icon').innerHTML='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 16 6 6L25 10"/></svg>';
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');

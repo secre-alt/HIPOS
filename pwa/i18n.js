@@ -6,6 +6,7 @@ const pairs=[
  ['Lovely!','Ang saya!'],['A little hiccup','May kaunting aberya'],['A little heads-up','Munting paalala'],['Dismiss notification','Isara ang abiso'],['Nickname saved. Looking cute!','Na-save ang palayaw. Ang cute!'],['Buddy look saved!','Na-save ang hitsura ng buddy!'],
  ['A little name for your little friend. Saved only on this device.','Munting pangalan para sa munting kaibigan mo. Sa device na ito lang naka-save.'],['e.g. Luna','hal. Luna'],['Use default name','Gamitin ang default na pangalan'],['Your name was not saved. Try again.','Hindi na-save ang pangalan. Subukan muli.'],
  ['Correct!','Tama!'],['Your choice','Pinili mo'],['Correct destination','Tamang patutunguhan'],['Why this destination?','Bakit dito dapat ilagay?'],
+ ['Where does this belong? Drag it, or tap a destination.','Saan ito dapat ilagay? I-drag ito o pumili ng patutunguhan.'],
  ['Buddy nickname','Palayaw ng buddy'],['Save nickname','I-save ang palayaw'],['Up to 24 characters. Leave blank to use Your buddy.','Hanggang 24 na karakter. Iwanang blangko para gamitin ang Ang buddy mo.'],
  ['Your buddy stays on this device.','Nananatili sa device na ito ang iyong buddy.'],
  ['Your saved activity stays on this device.','Nananatili sa device na ito ang iyong mga naka-save na gawain.'],

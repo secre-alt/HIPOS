@@ -73,6 +73,8 @@ change them; update the relevant documentation when it does.
 - Sorting keeps answered items readable and labels the chosen and correct
   destinations. Show a short explanation with expandable original safety guidance.
   Keep Next item visible after answering, including on small and landscape screens.
+  Present the item on an open tabletop with illustrated pouch and school-helper
+  destinations. Keep those illustrations visible in the answered state.
 
 - Compost Catch supports held movement buttons, arrow keys, and captured pointer
   dragging. Clear held input on release, cancellation, pause, window blur, and exit.

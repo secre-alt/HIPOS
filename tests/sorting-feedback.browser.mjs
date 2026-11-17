@@ -8,7 +8,7 @@ let browser;
 try {
  await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.once('exit',c=>reject(Error('Server exited '+c)));});
  browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});await mkdir('test-results/sorting',{recursive:true});
- for(const [width,height] of [[390,844],[1280,720],[844,390],[320,568]])for(const theme of ['light','dark'])for(const language of ['en','fil']) {
+ for(const [width,height] of [[390,844],[1280,720],[844,390],[320,568],[568,320]])for(const theme of ['light','dark'])for(const language of ['en','fil']) {
   const context=await browser.newContext({viewport:{width,height},colorScheme:theme,reducedMotion:'reduce'}),page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(lang=>localStorage.setItem('hipos.language',lang),language);
@@ -18,14 +18,18 @@ try {
    let yes;
    if(language==='en')yes=[...waste,...moreWaste].find(item=>item[0]===title)[1];
    else yes=true;
+   const illustrations=await page.locator('.sort-bin-icon').evaluateAll(nodes=>nodes.map(node=>node.innerHTML));
    await page.locator(`[data-sort-bin="${(correct?yes:!yes)?'yes':'no'}"]`).click();
    await page.locator('#sort-feedback').waitFor({state:'visible'});
    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
    if(language==='en')assert.equal(await page.locator('.sort-bin.is-wrong').count(),correct?0:1);
+   assert.deepEqual(await page.locator('.sort-bin-icon').evaluateAll(nodes=>nodes.map(node=>node.innerHTML)),illustrations,'destination illustrations remain visible after answering');
    assert.equal(await page.locator('.sort-choice-label').count(),1);assert.equal(await page.locator('.sort-answer-label').count(),1);
    assert.equal(await page.locator('#sort-item').evaluate(el=>getComputedStyle(el).opacity),'1');
    assert.ok(await page.locator('.sort-instruction').isHidden());
    const next=await page.locator('#sort-next').boundingBox(),bottom=await page.locator('.mobile-bottom-nav').boundingBox();
+   const panel=await page.locator('.sort-answer-panel').boundingBox(),destinations=await page.locator('.sort-bins').boundingBox();
+   assert.ok(panel.y>=destinations.y+destinations.height-1,'feedback follows the illustrated destinations');
    assert.ok(next.y>=0&&next.y+next.height<=(bottom?.height?bottom.y:height)+1,`Next visible at ${width}x${height}`);
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no overflow');
    await page.locator('.sort-explanation summary').click();assert.ok((await page.locator('.sort-explanation p').innerText()).length>15);
@@ -34,5 +38,21 @@ try {
   }
   if(language==='en'&&width>=390)await page.screenshot({path:`test-results/sorting/${width}-${theme}.png`});
   assert.deepEqual(errors,[]);await context.close();console.log(`PASS sorting feedback ${width}x${height} ${theme} ${language}`);
+ }
+ // Exercise every item title: long Filipino labels must fit the shortest layout too.
+ for(const theme of ['light','dark'])for(const language of ['en','fil']) {
+  const context=await browser.newContext({viewport:{width:568,height:320},colorScheme:theme,reducedMotion:'reduce'}),page=await context.newPage();
+  await page.addInitScript(lang=>localStorage.setItem('hipos.language',lang),language);
+  await page.goto('http://localhost:4189/#sort');await page.locator('#sort-item').waitFor();
+  for(const [title] of [...waste,...moreWaste]) {
+   await page.evaluate(title=>{document.querySelector('#sort-item strong').textContent=title;dispatchEvent(new Event('resize'));},title);
+   await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(r)))));
+   const fits=await page.evaluate(()=>{
+    const stage=document.querySelector('.sort-stage').getBoundingClientRect(),bins=document.querySelector('.sort-bins').getBoundingClientRect(),top=document.querySelector('aside').getBoundingClientRect().bottom,bottom=document.querySelector('.mobile-bottom-nav').getBoundingClientRect();
+    return stage.top>=top-1&&bins.bottom<=(bottom.height?bottom.top:innerHeight)+1;
+   });
+   assert.ok(fits,'short landscape fits '+title+' '+theme+' '+language);
+  }
+  await context.close();console.log('PASS every item title in short landscape '+theme+' '+language);
  }
 } finally {await browser?.close();server.kill();}
