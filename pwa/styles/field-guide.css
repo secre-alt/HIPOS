@@ -154,7 +154,9 @@
     font: inherit; font-size: .72rem; font-weight: 700; line-height: 1.2;
     color: var(--muted); text-align: center; text-decoration: none; white-space: normal;
   }
+  .mobile-bottom-nav :is(a, button) { -webkit-tap-highlight-color: transparent; }
   .mobile-bottom-nav :is(a, button):is(:hover, :active, [aria-current=page], .is-current) { background: transparent; }
+  .mobile-bottom-nav :is(a, button):focus:not(:focus-visible) { outline: none; }
   .mobile-bottom-nav > a:is(:hover, [aria-current=page]),
   .mobile-bottom-nav .mobile-more > button:is(:hover, .is-current) { color: var(--muted); }
   .mobile-bottom-nav > a:not(.mobile-classify) > svg,
