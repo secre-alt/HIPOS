@@ -6,7 +6,7 @@ using installed Edge instead of Playwright Chromium.
 Run `node tests/toast.browser.mjs` for notification timing, dialog visibility,
 translations, and mobile/desktop checks in both themes.
 Run `node tests/sorting-feedback.browser.mjs` for answer labels, readable items,
-expandable safety guidance, and visible Next controls across themes and languages.
+feedback modals, Escape/review behavior, safety guidance, and visible Next controls.
 Run `node tests/game-layout.browser.mjs` for game alignment checks across phone,
 tablet, desktop, and landscape viewports in both themes and languages.
 Run `node tests/compost-experience.browser.mjs` for held movement, captured

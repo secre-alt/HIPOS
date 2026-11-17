@@ -228,7 +228,7 @@ document.addEventListener("click", async (event) => {
       tapBuddy(b);
       checkBuddyUnlocks(true);
     }
-    if (b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again")) {
+    if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again")) {
       const result = sortClick(b);
       if (result === "finished") checkBuddyUnlocks(true);
     }

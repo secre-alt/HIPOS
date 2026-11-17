@@ -771,10 +771,21 @@
 .sort-review li + li { margin-top:16px; }
 .sort-review p { margin:4px 0; }
 #sort-feedback { margin: 0; padding: 12px; background: transparent; border: 0; }
-.sort-answer-panel { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; padding: 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--leaf-soft); }
-.sort-answer-panel[hidden] { display: none; }
-.sort-answer-panel #sort-feedback { flex: 1; min-width: 0; }
-.sort-answer-panel .actions { margin: 4px; flex-shrink: 0; }
+.sort-answer-panel { position:fixed; inset:0; margin:auto; width:min(440px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); padding:24px; border:2px solid var(--line); border-radius:28px 28px 28px 12px; background:var(--surface); color:var(--ink); overflow-y:auto; text-align:center; box-shadow:0 16px 48px #0003; }
+.sort-answer-panel::backdrop { background:#09271fd0; }
+.sort-answer-panel[open] { display:block; animation:sort-modal-arrive .2s ease-out; }
+.sort-modal-close { position:absolute; top:8px; right:8px; width:44px; height:44px; min-height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--ink); font-size:1.5rem; box-shadow:none; }
+.sort-modal-buddy { display:flex; justify-content:center; margin:0 auto 8px; }
+.sort-modal-buddy .hipos-avatar { width:96px; height:96px; }
+.sort-answer-panel #sort-feedback { padding:0; }
+#sort-answer-title { margin:8px 0; font-size:1.75rem; }
+.sort-answer-panel .sort-explanation { text-align:left; margin-top:12px; border-top:1px solid var(--line); }
+.sort-answer-panel .actions { margin:12px 0 0; }
+.sort-answer-panel .actions button { width:100%; min-height:48px; }
+.sort-review-answer { margin-top:12px; }
+@keyframes sort-modal-arrive { from { opacity:0; transform:translateY(8px) scale(.97); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { .sort-answer-panel[open] { animation:none; } }
+@media (max-height:400px) { .sort-answer-panel { padding:16px 24px; } .sort-modal-buddy .hipos-avatar { width:56px; height:56px; } #sort-answer-title { font-size:1.25rem; margin:4px 0; } }
 #sort-feedback p { margin: 0; font-family: var(--font-body); font-size: .9375rem; line-height: 1.5; }
 .sort-explanation summary { min-height: 44px; display: list-item; padding: 10px 0; font-size: .875rem; cursor: pointer; }
 .sort-explanation p { padding-bottom: 8px; }
@@ -782,11 +793,6 @@
 .sort-choice-label { color: var(--muted); }
 .sort-answer-label { font-weight: 800; color: var(--ink); }
 .sort-game.is-answered .sort-item { cursor: default; }
-@media (max-width: 480px) {
-  .sort-answer-panel { flex-direction: column; gap: 0; }
-  .sort-answer-panel .actions { align-self: stretch; }
-  .sort-answer-panel .actions button { width: 100%; }
-}
 /* sticker book */
 .stickers {
   list-style: none;
@@ -1108,7 +1114,7 @@ input[type=checkbox]:checked {
   #sort-body > :not(.sort-stage):not(.sort-bins) { grid-column:1/-1; }
   #sort-body .sort-stage { grid-column:1; grid-row:3; margin:0; align-self:center; }
   #sort-body .sort-bins { grid-column:2; grid-row:3; align-self:center; }
-  #sort-body .sort-answer-panel { grid-row:4; }
+  #sort-body .sort-review-answer { grid-row:4; }
 }
 /* Buddy dock: a quiet speech card beside the school-day companion.
    Restyle informed by unslop by Damir Sokolovsky, CC BY 4.0 (https://heydamir.design/unslop). */

@@ -27,14 +27,24 @@ try {
    assert.equal(await page.locator('.sort-choice-label').count(),1);assert.equal(await page.locator('.sort-answer-label').count(),1);
    assert.equal(await page.locator('#sort-item').evaluate(el=>getComputedStyle(el).opacity),'1');
    assert.ok(await page.locator('.sort-instruction').isHidden());
-   const next=await page.locator('#sort-next').boundingBox(),bottom=await page.locator('.mobile-bottom-nav').boundingBox();
-   const panel=await page.locator('.sort-answer-panel').boundingBox(),destinations=await page.locator('.sort-bins').boundingBox();
-   assert.ok(panel.y>=destinations.y+destinations.height-1,'feedback follows the illustrated destinations');
-   assert.ok(next.y>=0&&next.y+next.height<=(bottom?.height?bottom.y:height)+1,`Next visible at ${width}x${height}`);
+   await page.locator('#sort-answer-dialog[open]').waitFor();
+   const next=await page.locator('#sort-next').boundingBox();
+   const panel=await page.locator('.sort-answer-panel').boundingBox();
+   assert.ok(panel.y>=0&&panel.y+panel.height<=height+1,'modal stays within viewport');
+   assert.ok(next.y>=0&&next.y+next.height<=height+1,`Next visible at ${width}x${height}`);
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no overflow');
    await page.locator('.sort-explanation summary').click();assert.ok((await page.locator('.sort-explanation p').innerText()).length>15);
    await page.locator('.sort-explanation summary').click();
-   if(correct){await page.locator('#sort-next').click();assert.ok(await page.locator('.sort-instruction').isVisible());assert.equal(await page.locator('.sort-choice-label').count(),0);}
+   if(correct){await page.keyboard.press('Escape');assert.ok(await page.locator('#sort-answer-dialog').isHidden());
+   await page.waitForFunction(()=>document.activeElement?.matches('[data-sort-review]'));
+   assert.equal(await page.locator('[data-sort-review]').evaluate(el=>el===document.activeElement),true);
+   await page.keyboard.press('Enter');await page.locator('#sort-answer-dialog[open]').waitFor();
+   await page.keyboard.press('Tab');
+   assert.equal(await page.locator('[data-sort-close]').evaluate(el=>el===document.activeElement),true,'Tab stays inside the modal');
+   await page.locator('[data-sort-close]').click();
+   await page.locator('[data-sort-review]').click();await page.locator('#sort-answer-dialog[open]').waitFor();
+   assert.equal(await page.locator('.sort-choice-label').count(),1,'reviewing does not score the answer twice');
+   await page.locator('#sort-next').click();assert.ok(await page.locator('.sort-instruction').isVisible());assert.equal(await page.locator('.sort-choice-label').count(),0);}
   }
   if(language==='en'&&width>=390)await page.screenshot({path:`test-results/sorting/${width}-${theme}.png`});
   assert.deepEqual(errors,[]);await context.close();console.log(`PASS sorting feedback ${width}x${height} ${theme} ${language}`);

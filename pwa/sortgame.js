@@ -1,7 +1,7 @@
 // "Sort it out!": a friendly one-item-at-a-time sorting game built from the Waste Guide items.
 // Drag the item onto a bin, or just tap a bin (keyboard users can Tab to a bin and press Enter).
 // Nothing is scored against the student; the only thing kept is sticker progress on this device.
-import { FACES } from './avatar.js';
+import { FACES, renderAvatar, currentConfig } from './avatar.js';
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
@@ -37,8 +37,8 @@ function body(){
   <p class="note sort-instruction">Where does this belong? Drag it, or tap a destination.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
   <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-sort-bin="yes" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${pouch}</span><strong>Dry-waste pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-sort-bin="no" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${hand}</span><strong>Ask school staff</strong><small>Keep out of the pouch</small></button></div>
-  <div class="sort-answer-panel" hidden><div id="sort-feedback" class="feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
-  <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></div>`;
+  <button type="button" class="secondary sort-review-answer" data-sort-review hidden>Review answer</button><dialog class="sort-answer-panel" id="sort-answer-dialog" aria-labelledby="sort-answer-title" aria-describedby="sort-answer-summary"><button type="button" class="secondary sort-modal-close" data-sort-close aria-label="Close answer">&times;</button><div class="sort-modal-buddy" aria-hidden="true"></div><div id="sort-feedback" class="feedback" hidden></div>
+  <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></dialog>`;
 }
 // Destination mascots share the actual buddy face artwork.
 const pouch='<svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><ellipse cx="60" cy="110" rx="35" ry="5" fill="#173d2c" opacity=".12"/><path d="M31 35Q60 25 89 35L98 94Q100 107 86 107H34Q20 107 22 94Z" fill="#B8E26A"/><path d="M41 36V26Q41 8 60 8Q79 8 79 26V36" fill="none" stroke="#63924c" stroke-width="5" stroke-linecap="round"/><path d="M32 36Q60 48 88 36" fill="none" stroke="#63924c" stroke-width="3"/>'+buddyFace(60,72,.85)+'</svg>';
@@ -54,7 +54,6 @@ function answer(choice){
   const item=game.items[game.i],right=(choice==='yes')===item.suitable;
   document.querySelector('#sort-game').classList.add('is-answered');
   document.querySelector('.sort-instruction').hidden=true;
-  document.querySelector('.sort-answer-panel').hidden=false;
   game.answered=true;if(right)game.score++;
   else game.review.push(item);
   document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice){b.classList.add(right?'is-right':'is-wrong');b.insertAdjacentHTML('beforeend','<span class="sort-choice-label">Your choice</span>');}});
@@ -64,13 +63,26 @@ function answer(choice){
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<p><strong>${right?'Correct!':'Not quite.'}</strong> <span>${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</span></p><details class="sort-explanation"><summary>Why this destination?</summary><p>${e(item.body)}</p></details>`;
-  const next=document.querySelector('#sort-next');next.hidden=false;next.focus({preventScroll:true});fitGame();
+  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Not quite.'}</h3><p id="sort-answer-summary">${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</p><details class="sort-explanation"><summary>Why this destination?</summary><p>${e(item.body)}</p></details>`;
+  const modal=document.querySelector('#sort-answer-dialog'),review=document.querySelector('[data-sort-review]');
+  modal.querySelector('.sort-modal-buddy').innerHTML=renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true});
+  modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();});
+  modal.addEventListener('keydown',event=>{
+    if(event.key!=='Tab')return;
+    const controls=[...modal.querySelectorAll('button:not([disabled]),summary,a[href],[tabindex="0"]')].filter(el=>el.getClientRects().length);
+    const first=controls[0],last=controls.at(-1);
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  });
+  modal.addEventListener('close',()=>{if(review.isConnected&&game?.answered){review.hidden=false;review.focus({preventScroll:true});review.scrollIntoView({block:'center',behavior:'instant'});}});
+  const next=document.querySelector('#sort-next');next.hidden=false;
+  modal.showModal();next.focus({preventScroll:true});
   if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
   else{cheer('retry');}
 }
 function advance(){
   if(!game||!game.answered||game.i>=game.items.length)return;game.i++;game.answered=false;
+  document.querySelector('#sort-answer-dialog')?.close();
   const box=document.querySelector('#sort-body');
   document.querySelector('#sort-game').classList.remove('is-answered');
   if(game.i>=game.items.length){
@@ -89,6 +101,7 @@ function advance(){
 }
 // ---- input: click on bins/next/again, and pointer dragging of the item ----
 export function sortClick(button){
+  if(button.hasAttribute('data-sort-review')){const modal=document.querySelector('#sort-answer-dialog');modal.showModal();document.querySelector('#sort-next').focus({preventScroll:true});return 'review';}
   if(button.hasAttribute('data-sort-bin'))return answer(button.dataset.sortBin)??'answered';
   if(button.hasAttribute('data-sort-next'))return advance()?'finished':'next';
   if(button.hasAttribute('data-sort-again')){document.querySelector('#sort-game').classList.remove('is-answered');start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
@@ -104,7 +117,8 @@ export function fitGame(){
 function fitVisibleGame(){
   const card=document.querySelector('#sort-game'),bins=card?.querySelector('.sort-bins');if(!bins)return;
   const bottomNav=document.querySelector('.mobile-bottom-nav')?.getBoundingClientRect();
-  const end=game?.answered?card.querySelector('#sort-next'):bins;
+  if(game?.answered)return;
+  const end=bins;
   const room=(bottomNav?.height?bottomNav.top:innerHeight)-8,over=end.getBoundingClientRect().bottom-room;
   if(over>0)scrollBy({top:over+8,behavior:'instant'});
   const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
