@@ -1,4 +1,5 @@
 // Small, local illustrations shared by the arcade. No external assets or text.
+import {FACES} from './avatar.js';
 const drawings = {
   peel: '<path fill="#f3cb58" d="M25 15c3 27 17 42 42 30-8 25-36 28-48 8-5-9-3-24 6-38Z"/><path d="M25 15c0 28 14 39 32 37"/>',
   apple: '<path fill="#d97b65" d="M45 25c-28-15-36 14-21 36 8 14 14 8 21 8s14 6 22-8c15-22 7-51-22-36Z"/><path d="m45 25 4-14"/><path fill="#88b27c" d="M49 20q2-15 19-10-4 14-19 10Z"/>',
@@ -33,3 +34,51 @@ export function gardenArt(stage,index=0){
   const content=stage===0?soil:stage===1?soil+seed:stage===2?soil+stem:soil+stem+(blooms[index]||blooms[0]);
   return `<svg viewBox="0 0 96 96" fill="none" stroke="#254d3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${content}</svg>`;
 }
+
+// ---------- Game logos ----------
+// Hub logos use the same flat, friendly style as the buddies: filled shapes, a soft highlight and a
+// happy face. Motion comes from CSS classes (gl-*) and stops for people who prefer less motion.
+const INK = '#2F3A33';
+const face = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k})">${FACES[0].draw()}</g>`;
+const sparkle = (x, y, color, n) => `<path class="gl-twinkle gl-t${n}" d="M${x} ${y - 7} Q${x} ${y} ${x + 7} ${y} Q${x} ${y} ${x} ${y + 7} Q${x} ${y} ${x - 7} ${y} Q${x} ${y} ${x} ${y - 7} Z" fill="${color}"/>`;
+const shadow = '<ellipse class="gl-shadow" cx="60" cy="112" rx="30" ry="4" fill="#000" opacity=".09"/>';
+
+const logos = {
+  // Sorting game: a smiling pouch that hops
+  sort: () => `${shadow}<g class="gl-hop">
+<path d="M42 44 C40 12 80 12 78 44" fill="none" stroke="#B87A3E" stroke-width="5.5" stroke-linecap="round"/>
+<path d="M32 36 H88 Q94 36 95 42 L102 98 Q103 108 93 108 H27 Q17 108 18 98 L25 42 Q26 36 32 36 Z" fill="#F2B96B"/>
+<path d="M25 42 Q26 36 32 36 H88 Q94 36 95 42 L96 50 H24 Z" fill="#E09A48"/>
+<path d="M30 49 H90" stroke="#fff" stroke-width="2.4" stroke-dasharray="4 5" stroke-linecap="round" opacity=".7"/>
+<path d="M18 98 Q17 108 27 108 H93 Q103 108 102 98 L101 92 H19 Z" fill="#D98F42" opacity=".5"/>
+<ellipse cx="31" cy="68" rx="4.5" ry="12" transform="rotate(6 31 68)" fill="#fff" opacity=".4"/>
+${face(60, 74, 0.95)}</g>${sparkle(98, 22, '#FFD84D', 1)}${sparkle(20, 30, '#9EE7FF', 2)}${sparkle(104, 62, '#FFB3C7', 3)}`,
+
+  // Compost Catch: a basket catching falling scraps
+  compost: () => `${shadow}
+<g class="gl-scrap gl-s1"><circle cx="38" cy="14" r="7.5" fill="#FF7A7A"/><path d="M38 7 Q40 2 44 2" stroke="#6BB36F" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="35.5" cy="12" rx="2" ry="3" fill="#fff" opacity=".5"/></g>
+<g class="gl-scrap gl-s2"><path d="M60 6 Q72 10 70 24 Q58 22 60 6 Z" fill="#7ED68F"/><path d="M62 10 Q66 16 68 22" stroke="#4E9F5E" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>
+<g class="gl-scrap gl-s3"><path d="M80 8 C90 8 92 20 86 24 C80 26 72 14 80 8 Z" fill="#FFE27A"/><circle cx="82" cy="14" r="1.5" fill="#E0A83A"/></g>
+<g class="gl-wiggle">
+<path d="M28 52 C28 18 92 18 92 52" fill="none" stroke="#B87A3E" stroke-width="6" stroke-linecap="round"/>
+<path d="M16 54 H104 L95 100 Q93 108 85 108 H35 Q27 108 25 100 Z" fill="#EBB26B"/>
+<path d="M21 78 Q60 86 99 78 M24 92 Q60 100 96 92" stroke="#C98B45" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>
+<path d="M40 56 L36 106 M60 56 V108 M80 56 L84 106" stroke="#C98B45" stroke-width="2.2" opacity=".35"/>
+<rect x="12" y="46" width="96" height="14" rx="7" fill="#D9984F"/>
+<rect x="18" y="49" width="40" height="3.6" rx="1.8" fill="#fff" opacity=".4"/>
+${face(60, 82, 0.9)}</g>${sparkle(100, 36, '#FFD84D', 1)}`,
+
+  // Buddy garden: a smiling flower in a pot that sways
+  garden: () => `${shadow}
+<path d="M34 86 H86 L80 106 Q79 112 73 112 H47 Q41 112 40 106 Z" fill="#EE9A74"/>
+<rect x="30" y="78" width="60" height="12" rx="6" fill="#DB7F57"/>
+<path d="M40 100 L43 108" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".35"/>
+<g class="gl-sway">
+<path d="M60 80 V58" stroke="#5FA16B" stroke-width="5" stroke-linecap="round"/>
+<ellipse cx="46" cy="70" rx="12" ry="6" transform="rotate(-28 46 70)" fill="#7ED68F"/>
+<ellipse cx="74" cy="66" rx="12" ry="6" transform="rotate(28 74 66)" fill="#6BC47E"/>
+<g class="gl-bloom">${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<ellipse cx="60" cy="22" rx="9.5" ry="15" transform="rotate(${a} 60 40)" fill="${a % 90 ? '#FFC3D3' : '#FFA9C0'}"/>`).join('')}
+<circle cx="60" cy="40" r="19" fill="#FFE27A"/><ellipse cx="52" cy="30" rx="3.5" ry="6" transform="rotate(30 52 30)" fill="#fff" opacity=".55"/>
+${face(60, 41, 0.74)}</g></g>${sparkle(100, 30, '#FFD84D', 1)}${sparkle(18, 52, '#9EE7FF', 2)}`,
+};
+export const gameLogo = (id) => `<svg class="game-logo game-logo-${id}" viewBox="0 0 120 120" fill="none" role="presentation" aria-hidden="true" focusable="false">${(logos[id] || logos.garden)()}</svg>`;

@@ -1447,3 +1447,30 @@ input[type=checkbox]:checked {
 .unlock-confetti i:nth-child(8) { --i: 7; }
 .unlock-confetti i:nth-child(9) { --i: 8; }
 .unlock-confetti i:nth-child(10) { --i: 9; }
+
+/* Game logos: buddy-style art with gentle motion */
+.arcade-preview svg.game-logo { width:144px; height:144px; transform:none; overflow:visible; }
+.game-logo .av-eyes { transform-box:fill-box; transform-origin:50% 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  .game-logo .av-eyes { animation:av-blink 4.6s infinite; }
+  .game-logo .gl-hop { animation:gl-hop 2.4s ease-in-out infinite; transform-origin:60px 108px; }
+  .game-logo .gl-wiggle { animation:gl-wiggle 2.8s ease-in-out infinite; transform-origin:60px 108px; }
+  .game-logo .gl-sway { animation:gl-sway 3.4s ease-in-out infinite; transform-origin:60px 84px; }
+  .game-logo .gl-bloom { animation:gl-bloom 2.6s ease-in-out infinite; transform-origin:60px 40px; }
+  .game-logo .gl-shadow { animation:gl-shadow 2.4s ease-in-out infinite; transform-origin:60px 112px; }
+  .game-logo .gl-twinkle { animation:gl-twinkle 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+  .game-logo .gl-t2 { animation-delay:.7s; }
+  .game-logo .gl-t3 { animation-delay:1.4s; }
+  .game-logo .gl-scrap { animation:gl-fall 2.7s ease-in infinite; opacity:0; }
+  .game-logo .gl-s2 { animation-delay:.9s; }
+  .game-logo .gl-s3 { animation-delay:1.8s; }
+  .arcade-card:hover .game-logo .gl-hop, .arcade-card:focus-visible .game-logo .gl-hop { animation-duration:1.1s; }
+}
+@keyframes gl-hop { 0%, 100% { transform:translateY(0) scale(1.03, .96); } 45% { transform:translateY(-9px) scale(.97, 1.03); } 60% { transform:translateY(-9px) scale(.97, 1.03); } }
+@keyframes gl-shadow { 0%, 100% { transform:scale(1); opacity:.09; } 50% { transform:scale(.8); opacity:.05; } }
+@keyframes gl-wiggle { 0%, 100% { transform:rotate(-2.5deg); } 50% { transform:rotate(2.5deg); } }
+@keyframes gl-sway { 0%, 100% { transform:rotate(-3.5deg); } 50% { transform:rotate(3.5deg); } }
+@keyframes gl-bloom { 0%, 100% { transform:scale(1); } 50% { transform:scale(1.06); } }
+@keyframes gl-twinkle { 0%, 100% { transform:scale(.4); opacity:.2; } 50% { transform:scale(1); opacity:1; } }
+@keyframes gl-fall { 0% { transform:translateY(0); opacity:0; } 12% { opacity:1; } 70% { transform:translateY(40px); opacity:1; } 82% { transform:translateY(44px); opacity:0; } 100% { transform:translateY(44px); opacity:0; } }
+@media (max-width:600px) { .arcade-preview svg.game-logo { width:112px; height:112px; } }
