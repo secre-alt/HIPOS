@@ -3,6 +3,8 @@
 Run `npm run dev` to build and preview, `npm test` for unit checks, and
 `npm run test:browser` for the browser flows. Set `PW_CHANNEL=msedge` if
 using installed Edge instead of Playwright Chromium.
+Run `node tests/toast.browser.mjs` for notification timing, dialog visibility,
+translations, and mobile/desktop checks in both themes.
 Run `node tests/game-layout.browser.mjs` for game alignment checks across phone,
 tablet, desktop, and landscape viewports in both themes and languages.
 Run `node tests/compost-experience.browser.mjs` for held movement, captured
@@ -10,6 +12,9 @@ dragging, pause/resume, practice pace, and reward checks.
 
 - `index.html`: shared page shell, navigation, dialogs, and settings markup.
 - `app.js`: routing, page rendering, delegated UI events, and app information.
+- `toast.js`: queued local notifications with duplicate suppression, pauseable timers,
+  dismissible errors, and a host that follows open dialogs. `#notice` remains the
+  shared message input for existing settings modules; `styles/toasts.css` styles the host.
 - `pwa-runtime.js`: installation, connection status, service worker registration,
   and user-controlled updates. Initialized once by `app.js`.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
@@ -35,7 +40,7 @@ under `dist/fonts/`.
 
 The stylesheet order preserves the existing cascade: base and navigation,
 field guide and theme, tools, buddy and games, settings, waste picker,
-layout refinements, Prevent and activities, then Reuse, Classify, and Carry out. Later rules can
+layout refinements, Prevent and activities, then Reuse, Classify, Carry out, and shared toast overlays. Later rules can
 override earlier rules. Keep this order when editing; grouping every rule
 for the same selector together can change the appearance.
 

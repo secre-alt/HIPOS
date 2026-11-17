@@ -22,7 +22,7 @@ export function submitNickname(form) {
     heading.toggleAttribute('data-no-translate', Boolean(nickname));
     heading.textContent = nickname || 'Your buddy';
   }
-  document.querySelector('#avatar-status').textContent = saved ? 'Saved on this device' : 'Could not save your buddy. Browser storage may be unavailable.';
+  document.querySelector('#notice').textContent = saved ? 'Nickname saved. Looking cute!' : 'Could not save your buddy. Browser storage may be unavailable.';
 }
 
 const INK = '#2F3A33';
@@ -509,8 +509,7 @@ export function avatarClick(button) {
     editor.outerHTML = avatarEditor();
     const selector = action ? `[data-avatar-action="${action}"]` : `[data-avatar-key="${key}"][data-avatar-value="${button.dataset.avatarValue}"]`;
     document.querySelector(selector)?.focus({ preventScroll: true });
-    const status = document.querySelector('#avatar-status');
-    if (status) status.textContent = saved ? 'Saved on this device' : 'Could not save your buddy. Browser storage may be unavailable.';
+    document.querySelector('#notice').textContent = saved ? 'Buddy look saved!' : 'Could not save your buddy. Browser storage may be unavailable.';
   }
   refreshAvatars();
 }

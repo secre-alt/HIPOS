@@ -1,3 +1,4 @@
+import { initToasts, noticeType } from "./toast.js";
 import { carryPage, interactWithCarry } from "./carry.js";
 import { initPwa } from "./pwa-runtime.js";
 import { dailyBuddy } from "./daily-buddy.js";
@@ -20,6 +21,7 @@ import { waste } from "./content.js";
 import { reusePage, interactWithReuse } from "./reuse.js";
 import { preventPage, interactWithKit } from "./prevent.js";
 import { gamePages, gamesPage, gamesBack } from "./games.js";
+const toasts = initToasts();
 const view = document.querySelector("#view"), dialog = document.querySelector("#dialog");
 view.addEventListener("click", interactWithKit);
 view.addEventListener("click", interactWithReuse);
@@ -30,6 +32,7 @@ const links = [["home", "Home"], ["prevent", "Prevent"], ["reuse", "Reuse"], ["c
 const navId = (page) => (gamePages.includes(page) ? "games" : page);
 const pageTitles = { avatar: "My buddy", sort: "Sorting game", compost: "Compost Catch", garden: "Buddy garden" };
 function message(text) {
+  if (text) toasts.push(text, noticeType(text));
   document.querySelector("#notice").textContent = text;
 }
 // Buddy extras are cosmetic rewards for activity already recorded on this device. Once unlocked they stay unlocked.

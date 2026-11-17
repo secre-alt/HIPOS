@@ -1,0 +1,49 @@
+import {chromium} from '@playwright/test';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {mkdir} from 'node:fs/promises';
+const port=4188, base=`http://localhost:${port}/`;
+const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{env:{...process.env,PORT:String(port)},stdio:['ignore','pipe','inherit']});
+let browser;
+try {
+  await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.once('exit',c=>reject(Error('Server exited '+c)));});
+  browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});
+  await mkdir('test-results/toasts',{recursive:true});
+  for(const width of [390,1280])for(const theme of ['light','dark']) {
+    const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:'reduce'});
+    const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    await page.goto(base+'#avatar');
+    await page.locator('#buddy-nickname').fill('Luna');
+    await page.getByRole('button',{name:'Save nickname',exact:true}).click();
+    const toast=page.locator('.toast-host'),text=toast.locator('.toast-text');
+    await text.getByText('Nickname saved. Looking cute!',{exact:true}).waitFor();
+    assert.equal(await toast.locator('.toast-card').getAttribute('data-type'),'success');
+    assert.equal(await page.locator('#buddy-nickname').inputValue(),'Luna');
+    await page.screenshot({path:`test-results/toasts/${width}-${theme}.png`});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no overflow');
+    const bounds=await toast.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width);
+    await toast.hover();await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'hover pauses timer');
+    await toast.getByRole('button',{name:'Dismiss notification'}).click();await toast.waitFor({state:'hidden'});
+    await page.evaluate(()=>document.querySelector('#notice').textContent='<img src=x onerror=alert(1)>');
+    await text.getByText('<img src=x onerror=alert(1)>',{exact:true}).waitFor();assert.equal(await toast.locator('img').count(),0);
+    await toast.getByRole('button').click();
+    await page.locator('.settings-toggle:visible').click();
+    await page.evaluate(()=>document.querySelector('#notice').textContent='Could not save this setting. Try again.');
+    await text.getByText('Could not save this setting. Try again.',{exact:true}).waitFor();
+    assert.equal(await toast.evaluate(el=>el.parentElement.id),'settings-dialog');
+    await page.mouse.move(0,0);await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'error persists');
+    await toast.getByRole('button').click();
+    await page.evaluate(()=>document.querySelector('#settings-dialog').close());
+    await page.evaluate(()=>{localStorage.setItem('hipos.language','fil');});await page.reload();
+    await page.getByRole('button',{name:'I-save ang palayaw',exact:true}).click();
+    await text.getByText('Na-save ang palayaw. Ang cute!',{exact:true}).waitFor();
+    await toast.getByRole('button',{name:'Isara ang abiso'}).click();
+    assert.deepEqual(errors,[]);await context.close();console.log(`PASS toast: ${width}px ${theme}`);
+  }
+  const context=await browser.newContext({reducedMotion:'reduce'}),page=await context.newPage();
+  await page.goto(base+'#avatar');await page.locator('[data-avatar-action=random]').click();
+  await page.mouse.move(0,0);await page.locator('.toast-host').waitFor({state:'hidden',timeout:8000});
+  await page.locator('[data-avatar-action=random]').click();await page.locator('.toast-host').waitFor({state:'visible'});
+  assert.equal(await page.locator('.toast-card').evaluate(el=>getComputedStyle(el).animationName),'none');
+  await context.close();console.log('PASS expiry, repeat announcement, reduced motion');
+} finally {await browser?.close();server.kill();}

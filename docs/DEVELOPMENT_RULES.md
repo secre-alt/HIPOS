@@ -38,6 +38,12 @@ change them; update the relevant documentation when it does.
 
 ## Buddy and sound
 
+- Local feedback uses queued, dismissible toasts. Routine messages expire after
+  five seconds; errors stay until dismissed. Pause expiration during hover,
+  keyboard focus, or a hidden document. Keep toasts clear of mobile navigation
+  and Back to top, and usable inside open dialogs. Use translated plain text,
+  polite screen-reader announcements, and reduced-motion support.
+
 - Buddy voice is independently optional and off by default. Use only installed local
   voices matching the UI language; fall back to synthesized chirps. Alternate speech
   and chirps with a seven-second cooldown, no queued chatter, and a user gesture.

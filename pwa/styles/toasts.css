@@ -1,0 +1,64 @@
+/* A tiny leaf companion carries local feedback above navigation and dialogs. */
+.toast-host {
+  position: fixed;
+  inset: auto auto max(24px, env(safe-area-inset-bottom)) 24px;
+  margin: 0;
+  padding: 0;
+  width: min(390px, calc(100vw - 32px));
+  max-width: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: visible;
+  z-index: 1000;
+}
+.toast-host::backdrop { background: transparent; pointer-events: none; }
+.toast-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px 14px 14px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 24px 24px 24px 8px;
+  box-shadow: 0 8px 0 #173d2c0b, 0 14px 35px #173d2c18;
+  animation: toast-arrive .22s ease-out;
+}
+.toast-buddy {
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: var(--leaf-soft);
+  color: #8acb85;
+  transform: rotate(-7deg);
+}
+.toast-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.toast-label { display: block; margin-bottom: 2px; font-size: .95rem; color: var(--ink); }
+.toast-text { font-size: .875rem; line-height: 1.45; color: var(--ink); }
+.toast-card[data-type=error] { border-color: #c98c73; }
+.toast-card[data-type=error] .toast-buddy { background: #fae6da; color: #e7b27a; }
+.toast-card[data-type=success] { border-color: #89b68a; }
+.toast-close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+}
+.toast-close:hover { background: var(--leaf-soft); }
+.toast-close:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@keyframes toast-arrive { from { opacity: 0; transform: translateY(8px) rotate(-1deg); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px) {
+  .toast-host { left: 16px; bottom: calc(100px + env(safe-area-inset-bottom)); }
+  body:has(.back-to-top-row:not([hidden])) .toast-host { bottom: calc(148px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) { .toast-card { animation: none; } }
