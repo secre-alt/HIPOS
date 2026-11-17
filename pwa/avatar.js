@@ -5,7 +5,17 @@
 import { escapeHTML as esc } from './core.js';
 
 const NICKNAME_KEY = 'hipos.buddy.nickname.v1';
-export const normalizeNickname = (value) => typeof value === 'string' ? value.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim().slice(0, 24) : '';
+export function normalizeNickname(value) {
+  if (typeof value !== 'string') return '';
+  const clean = value.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim();
+  let name = '';
+  // Match the input's UTF-16 limit without cutting a two-unit character in half.
+  for (const character of clean) {
+    if (name.length + character.length > 24) break;
+    name += character;
+  }
+  return name;
+}
 export function loadNickname() {
   try { return normalizeNickname(localStorage.getItem(NICKNAME_KEY)); } catch { return ''; }
 }

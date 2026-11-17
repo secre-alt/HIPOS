@@ -75,3 +75,21 @@ test('countdown follows elapsed time, freezes while paused, and resets for each 
   s.queue.dismiss(); assert.equal(s.ticks.at(-1),null);
   s.queue.push('Error','error'); assert.equal(s.ticks.at(-1),null);
 });
+
+
+test('the default countdown clock ignores device date changes',()=>{
+  const callbacks=[],ticks=[];
+  const original=Date.now;
+  const queue=createToastQueue(()=>{}, {
+    schedule: fn=>{callbacks.push(fn);return callbacks.length;},
+    cancel:()=>{},
+    onTick: ms=>ticks.push(ms),
+  });
+  try {
+    queue.push('Saved');
+    Date.now=()=>original()+3600000;
+    callbacks.shift()();
+    assert.ok(ticks.at(-1)>4000&&ticks.at(-1)<=5000,'changing the device date must not expire the toast');
+    queue.dismiss();
+  } finally {Date.now=original;}
+});

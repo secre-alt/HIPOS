@@ -1,7 +1,7 @@
 import { translate } from './i18n.js';
 
 // A small queue keeps simultaneous rewards from replacing one another.
-export function createToastQueue(render, { schedule = setTimeout, cancel = clearTimeout, now = Date.now, onTick = () => {} } = {}) {
+export function createToastQueue(render, { schedule = setTimeout, cancel = clearTimeout, now = () => performance.now(), onTick = () => {} } = {}) {
   let active = null, timer, remaining = 0, started = 0;
   const pending = [], paused = new Set();
   const stop = () => { cancel(timer); timer = undefined; };
@@ -56,10 +56,22 @@ export function initToasts() {
   const host = document.createElement('div');
   host.className = 'toast-host';
   host.setAttribute('popover', 'manual');
-  host.innerHTML = `<div class="toast-card"><span class="toast-buddy" aria-hidden="true"><svg viewBox="0 0 48 48" width="44" height="44"><path d="M24 43C5 39 4 12 37 5c12 27 3 38-13 38Z" fill="currentColor"/><path d="m22 43 8-27" fill="none" stroke="var(--surface)" stroke-width="2" opacity=".55"/><g fill="#173D2C"><circle cx="19" cy="24" r="2"/><circle cx="31" cy="24" r="2"/></g><path d="M22 30q3 4 6 0" fill="none" stroke="#173D2C" stroke-width="2" stroke-linecap="round"/><g fill="#ED9F91"><ellipse cx="15" cy="29" rx="3" ry="2"/><ellipse cx="34" cy="29" rx="3" ry="2"/></g></svg></span><div class="toast-copy"><div class="toast-heading"><strong class="toast-label"></strong><span class="toast-countdown" aria-hidden="true" data-no-translate></span></div><div class="toast-text" role="status" aria-live="polite" aria-atomic="true"></div></div><button type="button" class="toast-close" aria-label="Dismiss notification"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>`;
+  host.innerHTML = `<div class="toast-card"><svg class="toast-timer" aria-hidden="true" focusable="false"><path pathLength="100"/></svg><span class="toast-buddy" aria-hidden="true"><svg viewBox="0 0 48 48" width="44" height="44"><path d="M24 43C5 39 4 12 37 5c12 27 3 38-13 38Z" fill="currentColor"/><path d="m22 43 8-27" fill="none" stroke="var(--surface)" stroke-width="2" opacity=".55"/><g fill="#173D2C"><circle cx="19" cy="24" r="2"/><circle cx="31" cy="24" r="2"/></g><path d="M22 30q3 4 6 0" fill="none" stroke="#173D2C" stroke-width="2" stroke-linecap="round"/><g fill="#ED9F91"><ellipse cx="15" cy="29" rx="3" ry="2"/><ellipse cx="34" cy="29" rx="3" ry="2"/></g></svg></span><div class="toast-copy"><div class="toast-heading"><strong class="toast-label"></strong><span class="toast-countdown" aria-hidden="true" data-no-translate></span></div><div class="toast-text" role="status" aria-live="polite" aria-atomic="true"></div></div><button type="button" class="toast-close" aria-label="Dismiss notification"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>`;
   const card = host.querySelector('.toast-card'), text = host.querySelector('.toast-text');
   const label = host.querySelector('.toast-label'), close = host.querySelector('button');
   const countdown = host.querySelector('.toast-countdown');
+  const border = host.querySelector('.toast-timer'), borderPath = border.querySelector('path');
+  new ResizeObserver(() => {
+    const width = card.offsetWidth, height = card.offsetHeight;
+    if (!width || !height) return;
+    const edge = 1.5, right = width - edge, bottom = height - edge, r = 22, small = 6;
+    border.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    borderPath.setAttribute('d',
+      'M' + width / 2 + ' ' + edge + 'H' + (right-r) + 'Q' + right + ' ' + edge + ' ' + right + ' ' + (edge+r) +
+      'V' + (bottom-r) + 'Q' + right + ' ' + bottom + ' ' + (right-r) + ' ' + bottom +
+      'H' + (edge+small) + 'Q' + edge + ' ' + bottom + ' ' + edge + ' ' + (bottom-small) +
+      'V' + (edge+r) + 'Q' + edge + ' ' + edge + ' ' + (edge+r) + ' ' + edge + 'Z');
+  }).observe(card);
   let visible = false, previousFocus;
   function place() {
     const parent = [...document.querySelectorAll('dialog[open]')].at(-1) || document.body;
@@ -87,6 +99,8 @@ export function initToasts() {
     place();
   }, { onTick: remaining => {
     countdown.hidden = remaining === null;
+    border.toggleAttribute('hidden', remaining === null);
+    borderPath.style.strokeDasharray = (remaining === null ? 0 : remaining / 5000 * 100) + ' 100';
     const value = remaining === null ? '' : Math.ceil(remaining / 1000) + 's';
     if (countdown.textContent !== value) countdown.textContent = value;
   } });

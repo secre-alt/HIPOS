@@ -10,7 +10,7 @@ try {
   browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});
   await mkdir('test-results/toasts',{recursive:true});
   for(const width of [390,1280])for(const theme of ['light','dark']) {
-    const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:'reduce'});
+    const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:'no-preference'});
     const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base+'#avatar');
     await page.locator('#buddy-nickname').fill('Luna');
@@ -25,10 +25,10 @@ try {
     assert.ok(bounds.y>=64&&bounds.y<120, "toast sits below the header");
     assert.ok(width-(bounds.x+bounds.width)<=25, "toast aligns right");
     await page.mouse.move(0,0);
-    await page.waitForFunction(()=>document.querySelector('.toast-countdown').textContent==='4s');
-    await toast.hover();const frozen=await toast.locator('.toast-countdown').innerText();
+    await page.waitForFunction(()=>parseFloat(document.querySelector('.toast-timer path').style.strokeDasharray)<80);
+    await toast.hover();const frozen=await toast.locator('.toast-timer path').evaluate(el=>el.style.strokeDasharray);
     await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'hover pauses timer');
-    assert.equal(await toast.locator('.toast-countdown').innerText(),frozen,'countdown pauses with the timer');
+    assert.equal(await toast.locator('.toast-timer path').evaluate(el=>el.style.strokeDasharray),frozen,'countdown pauses with the timer');
     await toast.getByRole('button',{name:'Dismiss notification'}).click();await toast.waitFor({state:'hidden'});
     await page.evaluate(()=>document.querySelector('#notice').textContent='<img src=x onerror=alert(1)>');
     await text.getByText('<img src=x onerror=alert(1)>',{exact:true}).waitFor();assert.equal(await toast.locator('img').count(),0);
@@ -37,7 +37,7 @@ try {
     await page.evaluate(()=>document.querySelector('#notice').textContent='Could not save this setting. Try again.');
     await text.getByText('Could not save this setting. Try again.',{exact:true}).waitFor();
     assert.equal(await toast.evaluate(el=>el.parentElement.id),'settings-dialog');
-    assert.ok(await toast.locator('.toast-countdown').isHidden(),'persistent errors have no countdown');
+    assert.ok(await toast.locator('.toast-timer').isHidden(),'persistent errors have no countdown');
     await page.mouse.move(0,0);await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'error persists');
     await toast.getByRole('button').click();
     await page.evaluate(()=>document.querySelector('#settings-dialog').close());
@@ -51,6 +51,8 @@ try {
   await page.goto(base+'#avatar');await page.locator('[data-avatar-action=random]').click();
   await page.mouse.move(0,0);await page.locator('.toast-host').waitFor({state:'hidden',timeout:8000});
   await page.locator('[data-avatar-action=random]').click();await page.locator('.toast-host').waitFor({state:'visible'});
+  assert.ok(await page.locator('.toast-timer').isHidden(),'reduced motion uses seconds instead of a moving border');
+  assert.ok(await page.locator('.toast-countdown').isVisible());
   assert.equal(await page.locator('.toast-card').evaluate(el=>getComputedStyle(el).animationName),'none');
   await context.close();console.log('PASS expiry, repeat announcement, reduced motion');
 } finally {await browser?.close();server.kill();}

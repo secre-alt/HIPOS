@@ -115,3 +115,17 @@ test('Volt, the hazardous-waste battery buddy, and the Fierce face work with eve
   assert.equal(normalizeConfig({character:'hippo',face:fierce}).face,fierce);
   assert.ok(!/id="/.test(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0})),'no ids, so many avatars never clash');
 });
+
+
+test('nickname length limits preserve whole emoji and existing local saves',()=>{
+  const emoji=String.fromCodePoint(0x1f331);
+  assert.equal(normalizeNickname('a'.repeat(23)+emoji),'a'.repeat(23));
+  assert.equal(normalizeNickname('a'.repeat(22)+emoji+'x'),'a'.repeat(22)+emoji);
+  assert.equal(normalizeNickname('  Luna  '),'Luna');
+  assert.equal(normalizeNickname(null),'');
+  globalThis.localStorage=memoryStorage();
+  assert.equal(saveNickname('Luna '+emoji),true);
+  assert.equal(loadNickname(),'Luna '+emoji);
+  saveAvatar(DEFAULT_AVATAR);
+  assert.equal(loadNickname(),'Luna '+emoji);
+});
