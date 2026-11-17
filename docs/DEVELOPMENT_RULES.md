@@ -39,7 +39,8 @@ change them; update the relevant documentation when it does.
 ## Buddy and sound
 
 - Local feedback uses queued, dismissible toasts. Routine messages expire after
-  five seconds; errors stay until dismissed. Pause expiration during hover,
+  five seconds and show the remaining seconds; errors stay until dismissed
+  without a countdown. Pause the countdown and expiration during hover,
   keyboard focus, or a hidden document. Place toasts at the upper right below
   the header, respecting safe areas, and keep them usable inside open dialogs. Use translated plain text,
   polite screen-reader announcements, and reduced-motion support.

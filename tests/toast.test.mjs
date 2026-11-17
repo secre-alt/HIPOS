@@ -4,8 +4,9 @@ import { createToastQueue, noticeType } from '../pwa/toast.js';
 
 function setup() {
   let time = 0, id = 0;
-  const timers = new Map(), rendered = [];
+  const timers = new Map(), rendered = [], ticks = [];
   const queue = createToastQueue(item => rendered.push(item), {
+    onTick: remaining => ticks.push(remaining),
     now: () => time,
     schedule: (fn, delay) => { timers.set(++id, { fn, at: time + delay }); return id; },
     cancel: key => timers.delete(key),
@@ -19,7 +20,7 @@ function setup() {
     }
     time = end;
   }
-  return { queue, rendered, advance, current: () => rendered.at(-1) };
+  return { queue, rendered, ticks, advance, current: () => rendered.at(-1) };
 }
 
 test('simultaneous rewards queue without duplicates and expire in order', () => {
@@ -61,4 +62,16 @@ test('English and Filipino storage failures are persistent errors', () => {
   for (const text of ['Could not save language.', 'Appearance changed, but could not be saved on this device.', 'Hindi na-save ang wika. Subukan muli.']) assert.equal(noticeType(text), 'error');
   assert.equal(noticeType('Buddy look saved!'), 'success');
   assert.equal(noticeType('Checking for updates…'), 'info');
+});
+
+
+test('countdown follows elapsed time, freezes while paused, and resets for each toast', () => {
+  const s = setup(); s.queue.push('One');
+  assert.equal(s.ticks.at(-1),5000);
+  s.advance(1200); assert.equal(s.ticks.at(-1),3800);
+  s.queue.pause('focus'); s.advance(10000); assert.equal(s.ticks.at(-1),3800);
+  s.queue.resume('focus'); s.advance(800); assert.equal(s.ticks.at(-1),3000);
+  s.queue.push('Two'); s.advance(3000); assert.equal(s.ticks.at(-1),5000);
+  s.queue.dismiss(); assert.equal(s.ticks.at(-1),null);
+  s.queue.push('Error','error'); assert.equal(s.ticks.at(-1),null);
 });

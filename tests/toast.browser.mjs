@@ -24,7 +24,11 @@ try {
     const bounds=await toast.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width);
     assert.ok(bounds.y>=64&&bounds.y<120, "toast sits below the header");
     assert.ok(width-(bounds.x+bounds.width)<=25, "toast aligns right");
-    await toast.hover();await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'hover pauses timer');
+    await page.mouse.move(0,0);
+    await page.waitForFunction(()=>document.querySelector('.toast-countdown').textContent==='4s');
+    await toast.hover();const frozen=await toast.locator('.toast-countdown').innerText();
+    await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'hover pauses timer');
+    assert.equal(await toast.locator('.toast-countdown').innerText(),frozen,'countdown pauses with the timer');
     await toast.getByRole('button',{name:'Dismiss notification'}).click();await toast.waitFor({state:'hidden'});
     await page.evaluate(()=>document.querySelector('#notice').textContent='<img src=x onerror=alert(1)>');
     await text.getByText('<img src=x onerror=alert(1)>',{exact:true}).waitFor();assert.equal(await toast.locator('img').count(),0);
@@ -33,6 +37,7 @@ try {
     await page.evaluate(()=>document.querySelector('#notice').textContent='Could not save this setting. Try again.');
     await text.getByText('Could not save this setting. Try again.',{exact:true}).waitFor();
     assert.equal(await toast.evaluate(el=>el.parentElement.id),'settings-dialog');
+    assert.ok(await toast.locator('.toast-countdown').isHidden(),'persistent errors have no countdown');
     await page.mouse.move(0,0);await page.waitForTimeout(5200);assert.ok(await toast.isVisible(),'error persists');
     await toast.getByRole('button').click();
     await page.evaluate(()=>document.querySelector('#settings-dialog').close());

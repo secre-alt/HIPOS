@@ -35,6 +35,9 @@
   transform: rotate(-7deg);
 }
 .toast-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.toast-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
+.toast-countdown { flex-shrink: 0; min-width: 28px; padding: 2px 6px; border-radius: 10px; background: var(--leaf-soft); color: var(--ink); font-size: .75rem; line-height: 1.4; text-align: center; font-variant-numeric: tabular-nums; }
+.toast-countdown[hidden] { display: none; }
 .toast-label { display: block; margin-bottom: 2px; font-size: .95rem; color: var(--ink); }
 .toast-text { font-size: .875rem; line-height: 1.45; color: var(--ink); }
 .toast-card[data-type=error] { border-color: #c98c73; }
