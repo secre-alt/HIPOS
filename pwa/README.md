@@ -21,7 +21,8 @@ dragging, pause/resume, practice pace, and reward checks.
   and user-controlled updates. Initialized once by `app.js`.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
 - `games.js`: the Games hub page, the Home games strip, and the list of game routes
-  that keep the single Games menu item highlighted.
+  that keep the single Games menu item highlighted. It also renders shared Back
+  and Proceed links in hub order, ending at All games.
 - `game-art.js`: shared, decorative SVG illustrations for game previews,
   Compost Catch, and the garden's four growth stages and nine plants.
 - `sortgame.js`, `compost.js`, `garden.js`: game rendering and interactions.

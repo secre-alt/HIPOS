@@ -643,6 +643,10 @@
 }
 /* Sorting game: buddy-style characters and the original stacked board.
    Direction informed by unslop by Damir Sokolovsky, CC BY 4.0 (https://heydamir.design/unslop). */
+.game-pagination { display:flex; align-items:stretch; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:20px; }
+.game-pagination .button-link { display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; max-width:100%; white-space:normal; }
+.game-pagination .game-proceed { margin-left:auto; }
+@media (max-width:480px) { .game-pagination .button-link { flex:1 1 100%; } }
 .sort-promo {
   margin: 0 0 16px;
 }
