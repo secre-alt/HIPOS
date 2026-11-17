@@ -233,7 +233,7 @@ try{
         await page.mouse.move(bin.x+bin.width/2,bin.y+bin.height/2,{steps:8});await page.mouse.up();
       }else await page.locator(i%2?'.sort-yes':'.sort-no').click();
       await page.locator('#sort-feedback').waitFor({state:'visible'});
-      assert.ok(await page.locator('#sort-feedback').innerText().then(t=>/Yes!|Not quite\./.test(t)),'feedback explains the answer');
+      assert.ok(await page.locator('#sort-feedback').innerText().then(t=>/Correct!|Not quite\./.test(t)),'feedback explains the answer');
       assert.ok(await page.locator('[data-sort-bin]').first().isDisabled(),'bins lock until Next');
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
       await page.locator('#sort-next').click();

@@ -70,6 +70,10 @@ change them; update the relevant documentation when it does.
 
 ## Games and garden
 
+- Sorting keeps answered items readable and labels the chosen and correct
+  destinations. Show a short explanation with expandable original safety guidance.
+  Keep Next item visible after answering, including on small and landscape screens.
+
 - Compost Catch supports held movement buttons, arrow keys, and captured pointer
   dragging. Clear held input on release, cancellation, pause, window blur, and exit.
   Pause preserves the visible field. Pace is selected between rounds; practice

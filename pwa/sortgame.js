@@ -29,13 +29,13 @@ function body(){
   if(!game)return '';
   if(game.i>=game.items.length)return done();
   const item=game.items[game.i];
-  return `<p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p>
-  <div class="round-markers" aria-hidden="true">${game.items.map((_,i)=>`<span class="${i<game.i?'is-complete':i===game.i?'is-current':''}"></span>`).join('')}</div>
-  <p class="note">Drag the item to a bin, or tap a bin.</p>
+  return `<div class="sort-round"><p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p>
+  <div class="round-markers" aria-hidden="true">${game.items.map((_,i)=>`<span class="${i<game.i?'is-complete':i===game.i?'is-current':''}"></span>`).join('')}</div></div>
+  <p class="note sort-instruction">Drag the item to a bin, or tap a bin.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
   <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-sort-bin="yes" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${pouch}</span><strong>Dry-waste pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-sort-bin="no" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${hand}</span><strong>Ask school staff</strong><small>Keep out of the pouch</small></button></div>
-  <div id="sort-feedback" class="feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
-  <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div>`;
+  <div class="sort-answer-panel" hidden><div id="sort-feedback" class="feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
+  <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></div>`;
 }
 const pouch='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11h16l2 15H6z"/><path d="M11 11q0-6 5-6t5 6M11 19h10"/></svg>';
 const hand='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15V8a2 2 0 0 1 4 0v6m0-1V6a2 2 0 0 1 4 0v8m0-4a2 2 0 0 1 4 0v8a8 8 0 0 1-8 8h-1a7 7 0 0 1-6-3l-4-6a2 2 0 0 1 3-2l2 2"/></svg>';
@@ -48,24 +48,28 @@ function done(){
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
   const item=game.items[game.i],right=(choice==='yes')===item.suitable;
+  document.querySelector('#sort-game').classList.add('is-answered');
+  document.querySelector('.sort-instruction').hidden=true;
+  document.querySelector('.sort-answer-panel').hidden=false;
   game.answered=true;if(right)game.score++;
   else game.review.push(item);
-  document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice)b.classList.add(right?'is-right':'is-wrong');});
+  document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice){b.classList.add(right?'is-right':'is-wrong');b.insertAdjacentHTML('beforeend','<span class="sort-choice-label">Your choice</span>');}});
   const destination=document.querySelector(`[data-sort-bin="${item.suitable?'yes':'no'}"]`);
   destination.classList.add('is-answer');
-  destination.setAttribute('aria-label',destination.querySelector('strong').textContent+' · Correct destination');
+  destination.insertAdjacentHTML('beforeend','<span class="sort-answer-label">Correct destination</span>');
   destination.querySelector('.sort-bin-icon').innerHTML='<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 16 6 6L25 10"/></svg>';
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<p><strong>${right?'Yes!':'Not quite.'}</strong> <span>${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</span> <span>${e(item.body)}</span></p>`;
-  const next=document.querySelector('#sort-next');next.hidden=false;next.focus({preventScroll:true});
+  fb.innerHTML=`<p><strong>${right?'Correct!':'Not quite.'}</strong> <span>${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</span></p><details class="sort-explanation"><summary>Why this destination?</summary><p>${e(item.body)}</p></details>`;
+  const next=document.querySelector('#sort-next');next.hidden=false;next.focus({preventScroll:true});fitGame();
   if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
   else{cheer('retry');}
 }
 function advance(){
   if(!game||!game.answered||game.i>=game.items.length)return;game.i++;game.answered=false;
   const box=document.querySelector('#sort-body');
+  document.querySelector('#sort-game').classList.remove('is-answered');
   if(game.i>=game.items.length){
     const before=gardenState(carePoints(gardenSummary));
     recordSort(game.score,game.items.length);giveGameTreat('sort');
@@ -77,13 +81,14 @@ function advance(){
     return true; // round finished: the caller refreshes stickers
   }
   box.innerHTML=body();
+  document.querySelector('[data-sort-bin]')?.focus({preventScroll:true});
   fitGame();
 }
 // ---- input: click on bins/next/again, and pointer dragging of the item ----
 export function sortClick(button){
   if(button.hasAttribute('data-sort-bin'))return answer(button.dataset.sortBin)??'answered';
   if(button.hasAttribute('data-sort-next'))return advance()?'finished':'next';
-  if(button.hasAttribute('data-sort-again')){start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
+  if(button.hasAttribute('data-sort-again')){document.querySelector('#sort-game').classList.remove('is-answered');start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
 }
 // Keep the item and both bins on screen (above the bottom bar) so dragging always has a target.
 let fitFrame=0;
@@ -96,11 +101,12 @@ export function fitGame(){
 function fitVisibleGame(){
   const card=document.querySelector('#sort-game'),bins=card?.querySelector('.sort-bins');if(!bins)return;
   const bottomNav=document.querySelector('.mobile-bottom-nav')?.getBoundingClientRect();
-  const room=(bottomNav?.height?bottomNav.top:innerHeight)-8,over=bins.getBoundingClientRect().bottom-room;
+  const end=game?.answered?card.querySelector('#sort-next'):bins;
+  const room=(bottomNav?.height?bottomNav.top:innerHeight)-8,over=end.getBoundingClientRect().bottom-room;
   if(over>0)scrollBy({top:over+8,behavior:'instant'});
   const top=card.querySelector('.sort-stage')?.getBoundingClientRect().top;
   const safeTop=(document.querySelector('aside')?.getBoundingClientRect().height||0)+8;
-  if(top!==undefined&&top<safeTop)scrollBy({top:top-safeTop,behavior:'instant'});
+  if(!game?.answered&&top!==undefined&&top<safeTop)scrollBy({top:top-safeTop,behavior:'instant'});
 }
 let drag=null;
 export function sortPointerDown(event){
