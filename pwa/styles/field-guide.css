@@ -155,16 +155,16 @@
     color: var(--muted); text-align: center; text-decoration: none; white-space: normal;
   }
   .mobile-bottom-nav > a[aria-current=page],
-  .mobile-bottom-nav .mobile-more > button.is-current { color: var(--ink); font-weight: 900; }
+  .mobile-bottom-nav .mobile-more > button.is-current { color: var(--ink); font-weight: 800; }
   .mobile-bottom-nav > a:not(.mobile-classify) > svg,
-  #mobile-more-toggle > svg { box-sizing: content-box; padding: 4px 12px; border-radius: 18px; }
+  #mobile-more-toggle > svg { box-sizing: content-box; padding: 5px 13px; border-radius: 16px; }
   .mobile-bottom-nav > a[aria-current=page] > svg,
-  #mobile-more-toggle.is-current > svg { background: var(--leaf); color: var(--green-deep); stroke-width: 2.3; }
+  #mobile-more-toggle.is-current > svg { background: #e2f6c8; color: #23553a; stroke-width: 2.2; box-shadow: inset 0 0 0 1px #b9df9338; }
   #mobile-more-toggle[aria-expanded=true]:not(.is-current) > svg { background: var(--leaf-soft); color: var(--ink); }
-  .mobile-bottom-nav > a[aria-current=page] > span:last-child,
-  #mobile-more-toggle.is-current > span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-  .mobile-classify[aria-current=page] .classify-disc { outline: 2px solid var(--green); outline-offset: -5px; }
-  :root[data-theme=dark] .mobile-classify[aria-current=page] .classify-disc { outline-color: #173d2c; }
+  .mobile-bottom-nav :is(a, button, span) { text-decoration: none; }
+  :root[data-theme=dark] .mobile-bottom-nav > a[aria-current=page] > svg,
+  :root[data-theme=dark] #mobile-more-toggle.is-current > svg { background: #304b2e; color: #c4f48d; box-shadow: inset 0 0 0 1px #b9f26b20; }
+  .mobile-classify[aria-current=page] .classify-disc { box-shadow: 0 3px 10px #0c312624, inset 0 0 0 4px #ffffff66; }
   .mobile-bottom-nav a::after { display: none; }
   .mobile-bottom-nav svg { flex-shrink: 0; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .mobile-bottom-nav > a.mobile-classify { justify-content: flex-end; position: relative; padding-top: 48px; }
