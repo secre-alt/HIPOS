@@ -204,6 +204,8 @@ export const CHARACTERS = [
     // A peeled banana with its peel hanging open: food scraps belong in the compost.
     id: 'peely',
     name: 'Peely',
+    unlock: 'compostperfect',
+    hint: 'Catch every scrap in a Compost Catch round.',
     colors: ['#FFD93D', '#B8E26A', '#FFB347', '#F7A8C4'],
     faceY: 60,
     top: { x: 60, y: 18 },
@@ -447,7 +449,8 @@ export const DEFAULT_AVATAR = Object.freeze({ character: 'leaf', color: 0, face:
 // Extras with an `unlock` rule start locked. Once earned they stay unlocked: a broken streak or
 // trimmed activity history never takes one away. The list is saved on this device only.
 const UNLOCKS_KEY = 'hipos.avatar.unlocks.v1';
-const ALL_UNLOCKED = new Set(ACCESSORIES.filter((a) => a.unlock).map((a) => a.id));
+// Accessories and a few characters (such as Peely) can be earned; both share this saved list.
+const ALL_UNLOCKED = new Set([...CHARACTERS, ...ACCESSORIES].filter((a) => a.unlock).map((a) => a.id));
 let unlockedCache = null;
 const has = (set, id) => (set instanceof Set ? set.has(id) : Array.isArray(set) && set.includes(id));
 
@@ -472,7 +475,7 @@ export function syncUnlocks(summary) {
   if ((summary?.challengeDays || 0) >= 3) earned.add('challenge3');
   (summary?.extra || []).forEach((key) => earned.add(key));
   const have = getUnlocked();
-  const fresh = ACCESSORIES.filter((a) => a.unlock && earned.has(a.unlock) && !have.has(a.id));
+  const fresh = [...CHARACTERS, ...ACCESSORIES].filter((a) => a.unlock && earned.has(a.unlock) && !have.has(a.id));
   if (fresh.length) {
     fresh.forEach((a) => have.add(a.id));
     try {
@@ -488,7 +491,8 @@ export function syncUnlocks(summary) {
 // Always run unknown or stored data through this before rendering. A locked extra falls back to none.
 export function normalizeConfig(raw, unlocked = getUnlocked()) {
   const r = raw && typeof raw === 'object' ? raw : {};
-  const ch = CHARACTERS.find((c) => c.id === r.character) || CHARACTERS[0];
+  const found = CHARACTERS.find((c) => c.id === r.character);
+  const ch = found && !isLocked(found, unlocked) ? found : CHARACTERS[0];
   const idx = (v, len) => (Number.isInteger(v) && v >= 0 && v < len ? v : 0);
   const acc = ACCESSORIES.find((a) => a.id === r.accessory);
   return {
@@ -502,7 +506,8 @@ export function normalizeConfig(raw, unlocked = getUnlocked()) {
 
 export function randomAvatar(rand = Math.random, unlocked = getUnlocked()) {
   const pick = (n) => Math.floor(rand() * n);
-  const ch = CHARACTERS[pick(CHARACTERS.length)];
+  const open = CHARACTERS.filter((c) => !isLocked(c, unlocked));
+  const ch = open[pick(open.length)];
   const pool = ACCESSORIES.filter((a) => !isLocked(a, unlocked));
   return normalizeConfig(
     { character: ch.id, color: pick(ch.colors.length), face: pick(FACES.length), accessory: pool[pick(pool.length)].id, bg: pick(BACKGROUNDS.length) },
@@ -585,6 +590,12 @@ const accessoryChip = (a, cfg) => {
   return `<button type="button" class="buddy-chip secondary is-locked" data-avatar-key="accessory" data-avatar-value="${a.id}" aria-disabled="true">${art}<span>${a.name}</span><span class="buddy-hint">${lockIcon}<span>${a.hint}</span></span></button>`;
 };
 
+const characterChip = (c, cfg) => {
+  if (!isLocked(c)) return chip('character', c.id, c.name, { ...cfg, character: c.id, color: 0 }, cfg);
+  const art = renderAvatar({ ...cfg, character: c.id, color: 0 }, { size: 56, decorative: true, teaser: true });
+  return `<button type="button" class="buddy-chip secondary is-locked" data-avatar-key="character" data-avatar-value="${c.id}" aria-disabled="true">${art}<span>${c.name}</span><span class="buddy-hint">${lockIcon}<span>${c.hint}</span></span></button>`;
+};
+
 const swatch = (key, value, hex, label, cfg) =>
   `<button type="button" class="buddy-swatch secondary" data-avatar-key="${key}" data-avatar-value="${value}" aria-pressed="${cfg[key] === value}" aria-label="${label}"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><circle ${key === 'bg' ? `class="av-bg" data-bg="${value}" ` : ''}cx="12" cy="12" r="11" fill="${hex}" stroke="rgba(47,58,51,.35)" stroke-width="1"/></svg></button>`;
 
@@ -595,7 +606,7 @@ export function avatarEditor() {
   <form class="card buddy-nickname" id="buddy-nickname-form"><div class="nickname-intro"><span class="nickname-portrait" aria-hidden="true">${renderAvatar(cfg, { size: 64, decorative: true })}</span><div><label for="buddy-nickname">Buddy nickname</label><p class="note" id="buddy-nickname-help">A little name for your little friend. Saved only on this device.</p></div></div><div class="nickname-controls"><div class="nickname-field"><input id="buddy-nickname" name="nickname" type="text" maxlength="24" autocomplete="off" placeholder="e.g. Luna" aria-describedby="buddy-nickname-help buddy-nickname-error" value="${esc(loadNickname())}"><span id="buddy-nickname-count" data-no-translate aria-hidden="true">${loadNickname().length}/24</span></div><button type="submit">Save nickname</button><button type="button" class="secondary nickname-reset" id="buddy-nickname-reset">Use default name</button></div><p id="buddy-nickname-error" class="nickname-error" role="status" aria-live="polite"></p></form>
   <section class="card buddy-stage" aria-label="Your buddy"><h2 id="buddy-name" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><button type="button" class="buddy-stage-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(cfg, { size: 200, decorative: true })}</button><div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
   <section class="card buddy-options">
-    <div class="buddy-group"><h2>Buddy</h2><div class="buddy-row">${CHARACTERS.map((c) => chip('character', c.id, c.name, { ...cfg, character: c.id, color: 0 }, cfg)).join('')}</div></div>
+    <div class="buddy-group"><h2>Buddy</h2><div class="buddy-row">${CHARACTERS.map((c) => characterChip(c, cfg)).join('')}</div></div>
     <div class="buddy-group"><h2>Color</h2><div class="buddy-row">${ch.colors.map((hex, i) => swatch('color', i, hex, `Color ${i + 1}`, cfg)).join('')}</div></div>
     <div class="buddy-group"><h2>Face</h2><div class="buddy-row">${FACES.map((f, i) => chip('face', i, f.name, { ...cfg, face: i }, cfg)).join('')}</div></div>
     <div class="buddy-group"><h2>Extras</h2><p class="note">Earn more extras with small daily actions. Extras you earn are yours to keep.</p><div class="buddy-row">${ACCESSORIES.map((a) => accessoryChip(a, cfg)).join('')}</div></div>
