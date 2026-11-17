@@ -1352,8 +1352,6 @@ input[type=checkbox]:checked {
   height: 64px;
 }
 .garden-icon svg { display:block; width:100%; height:100%; }
-:where(:root[data-theme=dark]) .garden-icon svg,
-:where(:root[data-theme=dark]) .garden-growth-art svg { stroke:#9bb7a1; }
 .garden-next { display:grid; gap:8px; margin:16px 0; padding:16px; border:1px dashed var(--line); border-radius:12px; }
 .garden-next p { margin:0; }
 .garden-next progress { width:100%; height:12px; accent-color:var(--green); }
@@ -1474,3 +1472,12 @@ input[type=checkbox]:checked {
 @keyframes gl-twinkle { 0%, 100% { transform:scale(.4); opacity:.2; } 50% { transform:scale(1); opacity:1; } }
 @keyframes gl-fall { 0% { transform:translateY(0); opacity:0; } 12% { opacity:1; } 70% { transform:translateY(40px); opacity:1; } 82% { transform:translateY(44px); opacity:0; } 100% { transform:translateY(44px); opacity:0; } }
 @media (max-width:600px) { .arcade-preview svg.game-logo { width:112px; height:112px; } }
+
+/* Game items and garden plants share the buddy style: flat shapes, no outlines */
+.game-item { stroke:none; overflow:visible; }
+.game-item .av-eyes { transform-box:fill-box; transform-origin:50% 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  .game-plant .gl-sway { animation:gl-sway 3.6s ease-in-out infinite; transform-origin:60px 102px; }
+  .garden-plot:nth-child(even) .game-plant .gl-sway { animation-delay:-1.2s; }
+  .game-item .av-eyes { animation:av-blink 4.6s infinite; }
+}

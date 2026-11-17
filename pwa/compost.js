@@ -2,12 +2,11 @@
 // compostable scraps; anything else (plastic, wrappers, juice boxes) stays out of the basket.
 // Runs entirely on this device. Nothing is scored against a student or sent anywhere.
 import {escapeHTML as e} from './core.js';
-import {FACES} from './avatar.js';
 import {gameArt} from './game-art.js';
 import {cheer,buddySay,sparkle,animate,buzz,sound,recordCompost,giveGameTreat,carePoints,gardenState} from './buddy-fx.js';
 import {gardenGrowth} from './garden.js';
 
-const compostArt=kind=>gameArt(kind).replace('</svg>','<g transform="translate(48 '+(kind==='basket'?57:52)+') scale(.55)">'+FACES[0].draw()+'</g></svg>');
+const compostArt=kind=>gameArt(kind);
 const ITEMS=[
   {name:'Banana peel',art:'peel',good:true},
   {name:'Apple core',art:'apple',good:true},
