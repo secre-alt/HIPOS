@@ -1,4 +1,4 @@
-// HIPOS buddy avatars (Leaf, Bottle, Paper, Hippo): layered inline SVG, no images or network.
+// HIPOS buddy avatars (Leaf, Bottle, Paper, Hippo, Volt): layered inline SVG, no images or network.
 // The choice is a tiny config saved on this device only. It is never part of report QR codes.
 // Visible labels are English here; i18n.js translates them like the rest of the interface.
 
@@ -123,6 +123,32 @@ export const CHARACTERS = [
 <ellipse cx="38" cy="38" rx="6" ry="11" transform="rotate(30 38 38)" fill="#fff" opacity=".34"/>`;
     },
   },
+  {
+    // Hazardous waste, but friendly: a tough little battery with hazard tape, a bolt and sparks.
+    // Batteries never go in the pouch, so Volt is the buddy that says "ask school staff".
+    id: 'volt',
+    name: 'Volt',
+    colors: ['#FFD84D', '#FF8A3D', '#B07CFF', '#6BE0A0'],
+    faceY: 54,
+    top: { x: 60, y: 14 },
+    sl: { x: 44, y: 29 },
+    sr: { x: 76, y: 29 },
+    corner: { x: 98, y: 26 },
+    body(hex) {
+      const dark = shade(hex, -0.3);
+      const tape = '#FFD84D';
+      return `
+<path d="M20 52 l7 -5 -3 8 8 -6" fill="none" stroke="#FFD84D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M100 66 l-7 -5 3 8 -8 -6" fill="none" stroke="#FFD84D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="49" y="12" width="22" height="13" rx="4.5" fill="${dark}"/>
+<rect x="29" y="22" width="62" height="86" rx="20" fill="${hex}"/>
+<rect x="29" y="78" width="62" height="13" fill="${tape}"/>
+<path d="M36 78 h9 l-9 13 h-7 v-6 z M54 78 h9 l-9 13 h-9 z M72 78 h9 l-9 13 h-9 z M90 78 v6 l-7 7 h-5 l9 -13 z" fill="${INK}" opacity=".88"/>
+<path d="M29 78 h62 M29 91 h62" stroke="${INK}" stroke-width="1.6" opacity=".6"/>
+<path d="M79 26 l-6.5 8.5 h4.5 l-2.5 7 8 -10 h-4.5 z" fill="#fff" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round" opacity=".95"/>
+<ellipse cx="38" cy="46" rx="4.5" ry="10" transform="rotate(8 38 46)" fill="#fff" opacity=".4"/>`;
+    },
+  },
 ];
 
 // ---------- Faces (drawn around 0,0 = face centre) ----------
@@ -153,6 +179,13 @@ export const FACES = [
     name: 'Winky',
     draw: () =>
       `<g class="av-eyes"><path d="M-19 -1 Q-14 -7 -9 -1" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>${dotEye(14, 4.6)}<circle cx="15.4" cy="-3.6" r="1.5" fill="#fff"/></g>${blush}<path d="M-8 6 Q-4 12 0 6 Q4 12 8 6" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
+  {
+    // Angled brows and a tiny fang: tough, but the rosy cheeks keep it cute.
+    id: 'fierce',
+    name: 'Fierce',
+    draw: () =>
+      `<g class="av-eyes"><path d="M-21 -11 L-7 -5 M21 -11 L7 -5" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/>${dotEye(-13, 4.4)}${dotEye(13, 4.4)}<circle cx="-11.8" cy="-3.4" r="1.4" fill="#fff"/><circle cx="14.2" cy="-3.4" r="1.4" fill="#fff"/></g>${blush}<path d="M-9 7 Q0 15 9 7" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M-5.2 10.2 L-3.2 15.4 L-0.8 11.6 Z" fill="#fff" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`,
   },
 ];
 

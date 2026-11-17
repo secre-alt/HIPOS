@@ -287,6 +287,10 @@ html[data-font=pixelify] :is(h1, h2, h3, .brand) {
     grid-template-columns: 260px minmax(0, 1fr);
     align-items: start;
   }
+  /* The nickname form is a full-width row above the preview and the options. */
+  .buddy-editor > .buddy-nickname {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 760px) {
   .buddy-editor {

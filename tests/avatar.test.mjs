@@ -103,3 +103,15 @@ test('the Hippo buddy is a selectable character with four colors and anchors ins
   assert.match(renderAvatar({character:'hippo',color:1,face:2,accessory:'none',bg:0}),/role="img" aria-label="Hippo"/);
   assert.equal(normalizeConfig({character:'hippo',color:9}).color,0,'unknown colors fall back');
 });
+test('Volt, the hazardous-waste battery buddy, and the Fierce face work with every color and accessory',()=>{
+  const volt=CHARACTERS.find(c=>c.id==='volt');assert.ok(volt);assert.equal(volt.colors.length,4);
+  for(const point of [volt.top,volt.sl,volt.sr,volt.corner])assert.ok(point.x>0&&point.x<120&&point.y>0&&point.y<120);
+  const fierce=FACES.findIndex(f=>f.id==='fierce');assert.ok(fierce>=0,'Fierce face exists');
+  for(let color=0;color<volt.colors.length;color++)for(const a of ACCESSORIES){
+    const svg=renderAvatar({character:'volt',color,face:fierce,accessory:a.id,bg:0},{teaser:true});
+    assert.match(svg,/^<svg[\s\S]*<\/svg>$/);assert.ok(!/undefined|NaN/.test(svg),'no broken numbers');
+  }
+  assert.match(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0}),/aria-label="Volt"/);
+  assert.equal(normalizeConfig({character:'hippo',face:fierce}).face,fierce);
+  assert.ok(!/id="/.test(renderAvatar({character:'volt',color:0,face:fierce,accessory:'none',bg:0})),'no ids, so many avatars never clash');
+});
