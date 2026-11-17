@@ -3,6 +3,7 @@ const pairs=[
  ['Short phrases and cute chirps. Uses installed offline voices; otherwise, chirps only. Separate from Sound effects.','Maiikling salita at nakakatuwang huni. Gumagamit ng naka-install na offline na boses; kung wala, huni lamang. Hiwalay sa Sound effects.'],
  ['Playing Buddy voice.','Pinatutugtog ang boses ni Buddy.'],['Buddy is already speaking. Try again in a moment.','Nagsasalita pa si Buddy. Subukan muli mamaya.'],
  ['Cute sounds only: no matching offline voice is installed.','Huni lamang: walang naka-install na katugmang offline na boses.'],
+ ['Buddy nickname','Palayaw ng buddy'],['Save nickname','I-save ang palayaw'],['Up to 24 characters. Leave blank to use Your buddy.','Hanggang 24 na karakter. Iwanang blangko para gamitin ang Ang buddy mo.'],
  ['Your buddy stays on this device.','Nananatili sa device na ito ang iyong buddy.'],
  ['Your saved activity stays on this device.','Nananatili sa device na ito ang iyong mga naka-save na gawain.'],
  ['Your activity stays on this device.','Nananatili sa device na ito ang iyong mga gawain.'],

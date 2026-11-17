@@ -2,6 +2,29 @@
 // The choice is a tiny config saved on this device only. It is never part of report QR codes.
 // Visible labels are English here; i18n.js translates them like the rest of the interface.
 
+import { escapeHTML as esc } from './core.js';
+
+const NICKNAME_KEY = 'hipos.buddy.nickname.v1';
+export const normalizeNickname = (value) => typeof value === 'string' ? value.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim().slice(0, 24) : '';
+export function loadNickname() {
+  try { return normalizeNickname(localStorage.getItem(NICKNAME_KEY)); } catch { return ''; }
+}
+export function saveNickname(value) {
+  try { localStorage.setItem(NICKNAME_KEY, normalizeNickname(value)); return true; } catch { return false; }
+}
+export function submitNickname(form) {
+  const input = form.querySelector('#buddy-nickname');
+  input.value = normalizeNickname(input.value);
+  const saved = saveNickname(input.value);
+  const heading = document.querySelector('#buddy-name');
+  if (heading) {
+    const nickname = loadNickname();
+    heading.toggleAttribute('data-no-translate', Boolean(nickname));
+    heading.textContent = nickname || 'Your buddy';
+  }
+  document.querySelector('#avatar-status').textContent = saved ? 'Saved on this device' : 'Could not save your buddy. Browser storage may be unavailable.';
+}
+
 const INK = '#2F3A33';
 const BLUSH = '#FF8FA3';
 const STORAGE_KEY = 'hipos.avatar.v1';
@@ -409,7 +432,8 @@ export function avatarEditor() {
   const cfg = getConfig();
   const ch = CHARACTERS.find((c) => c.id === cfg.character);
   return `<div id="avatar-editor" class="buddy-editor">
-  <section class="card buddy-stage" aria-label="Your buddy"><button type="button" class="buddy-stage-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(cfg, { size: 200, decorative: true })}</button><div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
+  <form class="card buddy-nickname" id="buddy-nickname-form"><label for="buddy-nickname">Buddy nickname</label><p class="note" id="buddy-nickname-help">Up to 24 characters. Leave blank to use Your buddy.</p><div class="buddy-row"><input id="buddy-nickname" name="nickname" type="text" maxlength="24" autocomplete="off" aria-describedby="buddy-nickname-help" value="${esc(loadNickname())}"><button type="submit">Save nickname</button></div></form>
+  <section class="card buddy-stage" aria-label="Your buddy"><h2 id="buddy-name" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><button type="button" class="buddy-stage-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(cfg, { size: 200, decorative: true })}</button><div class="actions"><button type="button" data-avatar-action="random">Surprise me</button><button type="button" class="secondary" data-avatar-action="reset">Reset</button></div><p id="avatar-status" class="note" role="status" aria-live="polite"></p></section>
   <section class="card buddy-options">
     <div class="buddy-group"><h2>Buddy</h2><div class="buddy-row">${CHARACTERS.map((c) => chip('character', c.id, c.name, { ...cfg, character: c.id, color: 0 }, cfg)).join('')}</div></div>
     <div class="buddy-group"><h2>Color</h2><div class="buddy-row">${ch.colors.map((hex, i) => swatch('color', i, hex, `Color ${i + 1}`, cfg)).join('')}</div></div>
@@ -421,7 +445,7 @@ export function avatarEditor() {
 }
 
 export function buddyStrip(treats = 0) {
-  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><button type="button" class="buddy-strip-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(getConfig(), { size: 72, decorative: true })}</button><div><h2 id="buddy-heading">Your buddy</h2><p class="buddy-mood">Hi! Tap me for a tip.</p><p class="buddy-treats">Treats shared: ${treats}</p></div><div class="buddy-strip-actions"><a class="button-link secondary" href="#avatar">Customize buddy</a><a class="button-link secondary" href="#sort">Play sorting game</a></div></section>`;
+  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><button type="button" class="buddy-strip-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(getConfig(), { size: 72, decorative: true })}</button><div><h2 id="buddy-heading" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><p class="buddy-mood">Hi! Tap me for a tip.</p><p class="buddy-treats">Treats shared: ${treats}</p></div><div class="buddy-strip-actions"><a class="button-link secondary" href="#avatar">Customize buddy</a><a class="button-link secondary" href="#sort">Play sorting game</a></div></section>`;
 }
 
 // Redraws the header avatar and the Home strip. Safe to call when neither is on the page.

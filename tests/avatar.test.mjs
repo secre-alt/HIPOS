@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {CHARACTERS,FACES,ACCESSORIES,BACKGROUNDS,DEFAULT_AVATAR,normalizeConfig,randomAvatar,renderAvatar,loadAvatar,saveAvatar,syncUnlocks,loadUnlocks,isLocked,greeting,GREETING_LINES} from '../pwa/avatar.js';
+import {normalizeNickname,loadNickname,saveNickname,avatarEditor,buddyStrip,CHARACTERS,FACES,ACCESSORIES,BACKGROUNDS,DEFAULT_AVATAR,normalizeConfig,randomAvatar,renderAvatar,loadAvatar,saveAvatar,syncUnlocks,loadUnlocks,isLocked,greeting,GREETING_LINES} from '../pwa/avatar.js';
 
 const memoryStorage=()=>{const data=new Map();return {getItem:k=>data.has(k)?data.get(k):null,setItem:(k,v)=>data.set(k,String(v)),removeItem:k=>data.delete(k)};};
 
@@ -95,4 +95,28 @@ test('sorting, treat, tap and season extras unlock from extra keys',()=>{
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1','tap10','season-wika']}).map(a=>a.id).sort(),['partyhat','salakot','scarf']);
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1','sort5','treat10','season-christmas','season-earth']}).map(a=>a.id).sort(),['backpack','charm','globe','santa']);
   assert.deepEqual(syncUnlocks({badges:noBadges,challengeDays:0,extra:['sort1']}),[]);
+});
+
+
+test('nicknames persist independently of appearance and safely render as text',()=>{
+  globalThis.localStorage=memoryStorage();
+  assert.equal(loadNickname(),'');
+  assert.equal(saveNickname('  Luna  '),true);
+  assert.equal(loadNickname(),'Luna');
+  saveAvatar(DEFAULT_AVATAR);
+  assert.equal(loadNickname(),'Luna');
+  saveNickname('<img src=x onerror="x">');
+  assert.match(avatarEditor(),/value="&lt;img/);
+  assert.match(buddyStrip(),/data-no-translate>&lt;img/);
+  saveNickname('  ');
+  assert.equal(loadNickname(),'');
+  assert.ok(buddyStrip().includes('>Your buddy</h2>'));
+});
+test('nicknames limit length and tolerate damaged or unavailable storage',()=>{
+  assert.equal(normalizeNickname({}), '');
+  assert.equal(normalizeNickname('a'.repeat(40)).length,24);
+  assert.equal(normalizeNickname('A\u0000B'), 'AB');
+  globalThis.localStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};
+  assert.equal(loadNickname(),'');
+  assert.equal(saveNickname('Luna'),false);
 });

@@ -6,7 +6,7 @@ import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSumm
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initFontStyle } from "./fontstyle.js";
-import { avatarEditor, avatarClick, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
+import { avatarEditor, avatarClick, submitNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { cheersOn, cheer, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
@@ -248,6 +248,12 @@ document.addEventListener("click", async (event) => {
     }
   } catch (err) {
     message(err.message);
+  }
+});
+document.addEventListener("submit", (event) => {
+  if (event.target.id === "buddy-nickname-form") {
+    event.preventDefault();
+    submitNickname(event.target);
   }
 });
 document.addEventListener("input", (event) => {

@@ -106,6 +106,14 @@
   padding: 8px 0 0;
   min-height: 1.5em;
 }
+.buddy-nickname input {
+  min-width: 0;
+  width: 100%;
+  flex: 1 1 180px;
+  min-height: 44px;
+}
+.buddy-stage h2 { overflow-wrap: anywhere; max-width: 100%; }
+.buddy-strip h2 { overflow-wrap: anywhere; }
 .buddy-options {
   display: grid;
   gap: 24px;
