@@ -1481,3 +1481,25 @@ input[type=checkbox]:checked {
   .garden-plot:nth-child(even) .game-plant .gl-sway { animation-delay:-1.2s; }
   .game-item .av-eyes { animation:av-blink 4.6s infinite; }
 }
+
+/* Sorting game: the item and both destinations are alive too */
+.sort-game .av-eyes { transform-box:fill-box; transform-origin:50% 50%; }
+.sort-bin-icon svg, .sort-item .item-art > svg { transform-origin:50% 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  .sort-game .av-eyes { animation:av-blink 4.6s infinite; }
+  .sort-item .item-art > svg { animation:sg-float 3s ease-in-out infinite; }
+  .sort-game:not(.is-answered) .sort-item:not(.dragging) { animation:sg-nudge 4.2s ease-in-out infinite; }
+  .sort-item.sorted, .sort-item.bounced { animation-iteration-count:1; }
+  [data-sort-bin=yes] .sort-bin-icon svg { animation:sg-bob 2.6s ease-in-out infinite; }
+  [data-sort-bin=no] .sort-bin-icon svg { animation:sg-tilt 3.2s ease-in-out infinite; animation-delay:-1s; }
+  .sort-bin:not(:disabled):hover .sort-bin-icon svg, .sort-bin:focus-visible .sort-bin-icon svg, .sort-bin.hover .sort-bin-icon svg { animation:sg-hop .7s ease-in-out infinite; }
+  .sort-bin.is-right .sort-bin-icon svg { animation:sg-jump .6s ease-out 2; }
+  .sort-bin.is-wrong .sort-bin-icon svg { animation:sg-shake .5s 1; }
+}
+@keyframes sg-float { 0%, 100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-3px) rotate(2deg); } }
+@keyframes sg-nudge { 0%, 88%, 100% { transform:translateY(0); } 92% { transform:translateY(-5px); } 96% { transform:translateY(0); } }
+@keyframes sg-bob { 0%, 100% { transform:translateY(0) scale(1.02, .98); } 50% { transform:translateY(-4px) scale(.98, 1.02); } }
+@keyframes sg-tilt { 0%, 100% { transform:rotate(-3deg); } 50% { transform:rotate(3deg) translateY(-2px); } }
+@keyframes sg-hop { 0%, 100% { transform:translateY(0) scale(1.04, .96); } 50% { transform:translateY(-9px) scale(.96, 1.04); } }
+@keyframes sg-jump { 0%, 100% { transform:translateY(0); } 50% { transform:translateY(-14px) rotate(4deg); } }
+@keyframes sg-shake { 25% { transform:translateX(-5px); } 75% { transform:translateX(5px); } }
