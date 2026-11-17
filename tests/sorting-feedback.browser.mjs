@@ -21,6 +21,9 @@ try {
    const illustrations=await page.locator('.sort-bin-icon').evaluateAll(nodes=>nodes.map(node=>node.innerHTML));
    await page.locator(`[data-sort-bin="${(correct?yes:!yes)?'yes':'no'}"]`).click();
    await page.locator('#sort-feedback').waitFor({state:'visible'});
+   assert.equal(await page.locator('.sort-answer-item').textContent(),title,'feedback names the item being reviewed');
+   assert.ok((await page.locator('.sort-answer-destination').innerText()).length>0);
+   assert.equal(await page.locator('.sort-explanation p').count(),1,'one guidance paragraph');
    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
    if(language==='en')assert.equal(await page.locator('.sort-bin.is-wrong').count(),correct?0:1);
    assert.deepEqual(await page.locator('.sort-bin-icon').evaluateAll(nodes=>nodes.map(node=>node.innerHTML)),illustrations,'destination illustrations remain visible after answering');

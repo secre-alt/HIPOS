@@ -75,7 +75,7 @@ try {
     const title=await page.locator('.sort-item strong').innerText();
     // Always choose the pouch: a balanced round guarantees three missed items.
     await page.locator('[data-sort-bin="yes"]').click();
-    if((await page.locator('#sort-feedback').innerText()).includes('Not quite.'))missed.push(title);
+    if(await page.locator('.sort-bin.is-wrong').count())missed.push(title);
     await page.locator('[data-sort-next]').click();
   }
   await page.locator('.sort-review summary').click();

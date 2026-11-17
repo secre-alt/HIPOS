@@ -37,7 +37,7 @@ function body(){
   <p class="note sort-instruction">Where does this belong? Drag it, or tap a destination.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
   <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-sort-bin="yes" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${pouch}</span><strong>Dry-waste pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-sort-bin="no" ${game.answered?'disabled':''}><span class="sort-bin-icon" aria-hidden="true">${hand}</span><strong>Ask school staff</strong><small>Keep out of the pouch</small></button></div>
-  <button type="button" class="secondary sort-review-answer" data-sort-review hidden>Review answer</button><dialog class="sort-answer-panel" id="sort-answer-dialog" aria-labelledby="sort-answer-title" aria-describedby="sort-answer-summary"><button type="button" class="secondary sort-modal-close" data-sort-close aria-label="Close answer">&times;</button><div class="sort-modal-buddy" aria-hidden="true"></div><div id="sort-feedback" class="feedback" hidden></div>
+  <button type="button" class="secondary sort-review-answer" data-sort-review hidden>Review answer</button><dialog class="sort-answer-panel" id="sort-answer-dialog" aria-labelledby="sort-answer-title" aria-describedby="sort-answer-item sort-answer-summary"><button type="button" class="secondary sort-modal-close" data-sort-close aria-label="Close answer">&times;</button><div class="sort-modal-buddy" aria-hidden="true"></div><div id="sort-feedback" class="feedback" hidden></div>
   <div class="actions"><button type="button" id="sort-next" data-sort-next hidden>${game.i+1===game.items.length?'See my result':'Next item'}</button></div></dialog>`;
 }
 // Destination mascots share the actual buddy face artwork.
@@ -63,7 +63,7 @@ function answer(choice){
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Not quite.'}</h3><p id="sort-answer-summary">${e(item.suitable?'This can go in a clean dry-waste pouch.':'This stays out of the pouch.')}</p><div class="sort-explanation"><p>${e(item.body)}</p></div>`;
+  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Let us try this together'}</h3><p id="sort-answer-item" class="sort-answer-item">${e(item.title)}</p><p id="sort-answer-summary" class="sort-answer-destination">${item.suitable?'Dry-waste pouch':'Ask school staff'}</p><div class="sort-explanation"><p>${e(item.body)}</p></div>`;
   const modal=document.querySelector('#sort-answer-dialog'),review=document.querySelector('[data-sort-review]');
   modal.querySelector('.sort-modal-buddy').innerHTML=renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true});
   modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();});
@@ -75,7 +75,7 @@ function answer(choice){
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   });
   modal.addEventListener('close',()=>{if(review.isConnected&&game?.answered){review.hidden=false;review.focus({preventScroll:true});review.scrollIntoView({block:'center',behavior:'instant'});}});
-  const next=document.querySelector('#sort-next');next.hidden=false;
+  const next=document.querySelector('#sort-next');next.hidden=false;next.innerHTML='<span>'+(game.i+1===game.items.length?'See my result':'Next item')+'</span><span aria-hidden="true">&rarr;</span>';
   modal.showModal();next.focus({preventScroll:true});
   if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
   else{cheer('retry');}
