@@ -5,6 +5,10 @@ change them; update the relevant documentation when it does.
 
 ## Navigation and back to top
 
+- Mobile bottom navigation has Home, Prevent, raised Classify, Reuse, and More.
+  More opens Carry out and Games; it closes on outside click, Escape, or navigation.
+  Game routes highlight More. The header menu remains available above phone widths.
+
 - Keep desktop navigation and mobile bottom navigation usable without covering
   page controls.
 - Back to top floats at the lower right, aligned with the desktop content edge

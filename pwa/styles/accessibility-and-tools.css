@@ -239,17 +239,6 @@
 :where(:root[data-theme=dark]) dialog::backdrop {
   background: #000000b3;
 }
-:where(:root[data-theme=dark]) nav.mobile-bottom-nav {
-  background: #0f1f19ee;
-  box-shadow: 0 -8px 28px #0008;
-}
-:where(:root[data-theme=dark]) .mobile-bottom-nav a {
-  color: var(--muted);
-}
-:where(:root[data-theme=dark]) .mobile-bottom-nav a[aria-current=page] {
-  background: var(--leaf);
-  color: var(--green-deep);
-}
 @media (max-width: 1000px) {
   :where(:root[data-theme=dark]) nav {
     border-color: var(--line);

@@ -744,26 +744,6 @@ dialog::backdrop {
   background: #0c3126b3;
   backdrop-filter: blur(4px);
 }
-/* ---- Mobile bottom nav ------------------------------------------------- */
-@media (max-width: 760px) {
-  nav.mobile-bottom-nav {
-    background: #ffffffee;
-    backdrop-filter: blur(12px);
-    border-top: 0;
-    box-shadow: 0 -8px 28px #0c312620;
-    border-radius: 22px 22px 0 0;
-  }
-  .mobile-bottom-nav a[aria-current=page] {
-    background: var(--leaf);
-    color: var(--green-deep);
-  }
-  .mobile-bottom-nav a {
-    transition: background-color .2s, transform .18s var(--ease);
-  }
-  .mobile-bottom-nav a:active {
-    transform: scale(.94);
-  }
-}
 /* ---- Entrance motion (page-level only, never re-fires on small updates) - */
 /* Page and scroll entrances are handled by motion.js (see the scroll motion block below). */
 /* ---- Responsive ------------------------------------------------------- */

@@ -155,6 +155,7 @@ function modal(html) {
 }
 function render() {
   message("");
+  closeMobileMore();
   document.querySelector("#menu-toggle").setAttribute("aria-expanded", "false");
   if (dialog.open) dialog.close();
   const page = current();
@@ -167,6 +168,7 @@ function render() {
     if (a.hash === "#" + navId(page)) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
   });
+  document.querySelector("#mobile-more-toggle").classList.toggle("is-current", ["carry", "games"].includes(navId(page)));
   document.querySelector("#nav").innerHTML = links.map(([id, label]) => `<a href="#${id}" ${id === navId(page) ? 'class="active" aria-current="page"' : ""}>${label}</a>`).join("");
   document.querySelector("#page-label").textContent = page === "home" ? "Your daily guide" : pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "About HIPOS";
   if (page === "home") view.innerHTML = home();
@@ -284,6 +286,29 @@ document.querySelectorAll(".settings-toggle").forEach((button) => button.addEven
   closeMenu();
   settingsDialog.showModal();
 }));
+const moreToggle = document.querySelector("#mobile-more-toggle");
+const morePanel = document.querySelector("#mobile-more-panel");
+function closeMobileMore(returnFocus = false) {
+  if (!morePanel || morePanel.hidden) return;
+  const focusInside = morePanel.contains(document.activeElement);
+  morePanel.hidden = true;
+  moreToggle.setAttribute("aria-expanded", "false");
+  if (returnFocus || focusInside) moreToggle.focus({ preventScroll: true });
+}
+moreToggle.addEventListener("click", () => {
+  const opening = morePanel.hidden;
+  closeMenu();
+  morePanel.hidden = !opening;
+  moreToggle.setAttribute("aria-expanded", String(opening));
+});
+document.addEventListener("click", event => {
+  if (!event.target.closest(".mobile-more") || event.target.closest("#mobile-more-panel a")) closeMobileMore();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !morePanel.hidden) { event.preventDefault(); closeMobileMore(true); }
+});
+document.addEventListener("focusin", event => { if (!event.target.closest(".mobile-more")) closeMobileMore(); });
+window.addEventListener("resize", () => { if (innerWidth > 760) closeMobileMore(); });
 const menuToggle = document.querySelector("#menu-toggle");
 function closeMenu(returnFocus = false) {
   if (menuToggle.getAttribute("aria-expanded") !== "true") return;
