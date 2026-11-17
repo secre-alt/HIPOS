@@ -3,8 +3,8 @@
 // No text here is ever part of a report, and nothing is sent anywhere.
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate,getLanguage} from './i18n.js';
-import {createBuddyVoice} from './buddy-voice.js';
-import {playSfx,music,MUSIC_STYLES,MUSIC_MOODS} from './audio.js';
+import {createBuddyVoice,TONES as VOICE_TONES,PACKS as VOICE_PACKS} from './buddy-voice.js';
+import {playSfx,playBabble,music,MUSIC_STYLES,MUSIC_MOODS} from './audio.js';
 import {createCheerPicker} from './cheers.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -13,8 +13,10 @@ const STORE='hipos.buddy.v1',CHEERS='hipos.cheers',SOUND='hipos.sound',SEASON='h
 // ---------- Settings (cheers, sound, season) ----------
 const read=(key,fallback)=>{try{return localStorage.getItem(key)??fallback;}catch{return fallback;}};
 const write=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch{return false;}};
-const voice = createBuddyVoice({ synth: globalThis.speechSynthesis, Utterance: globalThis.SpeechSynthesisUtterance, chirp: () => playSfx('buddy'), duck: () => music.duck() });
+const voice = createBuddyVoice({ synth: globalThis.speechSynthesis, Utterance: globalThis.SpeechSynthesisUtterance, chirp: () => playSfx('buddy'), babble: (text, pack) => playBabble(text, pack), duck: () => music.duck() });
 const voiceOn = () => read('hipos.voice','off') === 'on';
+const voicePack = () => { const v = read('hipos.voicepack','bubbly'); return VOICE_PACKS.includes(v) ? v : 'bubbly'; };
+const voiceTone = () => { const v = read('hipos.voicetone','sweet'); return VOICE_TONES.includes(v) ? v : 'sweet'; };
 let voiceReady = false;
 export const cheersOn=()=>read(CHEERS,'on')!=='off';
 export const soundOn=()=>read(SOUND,'off')==='on';
@@ -33,8 +35,8 @@ export function initBuddySettings(){
   document.querySelector('#language')?.addEventListener('change', () => voice.stop());
   document.querySelector('#voice-preview')?.addEventListener('click', () => {
     voiceReady = true;
-    const result = voice.play(translate('Hi! Let us play!'), getLanguage(), { preview: true });
-    document.querySelector('#voice-preview-status').textContent = translate(result === 'speech' ? 'Playing Buddy voice.' : result === 'quiet' ? 'Buddy is already speaking. Try again in a moment.' : 'Cute sounds only: no matching offline voice is installed.');
+    const result = voice.play(translate('Hi! Let us play!'), getLanguage(), { preview: true, tone: voiceTone(), pack: voicePack() });
+    document.querySelector('#voice-preview-status').textContent = translate(result === 'speech' || result === 'babble' ? 'Playing Buddy voice.' : result === 'quiet' ? 'Buddy is already speaking. Try again in a moment.' : 'Cute sounds only: no matching offline voice is installed.');
   });
   const preview=document.querySelector('#music-preview');let previewTimer=null;
   const endPreview=()=>{clearTimeout(previewTimer);previewTimer=null;if(preview){preview.textContent='Preview music';preview.setAttribute('aria-pressed','false');}if(!musicOn())music.stop();};
@@ -61,6 +63,7 @@ export function initBuddySettings(){
   const cheerPreview=document.querySelector('#cheer-preview');if(cheerPreview)cheerPreview.disabled=!cheersOn();
   bind('#cheers',()=>cheersOn()?'on':'off',CHEERS,['on','off'],v=>{if(cheerPreview)cheerPreview.disabled=v==='off';if(v==='off'){hideBubble();voice.stop();}else buddySay('Hi! I will cheer you on.');});
   bind('#voice',()=>voiceOn()?'on':'off','hipos.voice',['off','on'],v=>{if(v==='off')voice.stop();});
+  bind('#voicepack',voicePack,'hipos.voicepack',VOICE_PACKS,()=>voice.stop());
   bind('#sound',()=>soundOn()?'on':'off',SOUND,['off','on'],v=>{if(v==='on')sound('chime');});
   bind('#music',()=>musicOn()?'on':'off',MUSIC,['off','on'],v=>{endPreview();if(v==='on')music.start();else music.stop();});
   const describeMusic=style=>{const description=document.querySelector('#music-mood');if(description)description.textContent=translate(MUSIC_MOODS[style]);};
@@ -255,7 +258,7 @@ export function buddySay(text,{force=false,ms=4200,delay=0}={}){
   if(!text||(!force&&!cheersOn()))return;
   if(delay){setTimeout(()=>buddySay(text,{force,ms}),delay);return;}
   if(voiceOn() && voiceReady && !document.hidden) {
-    try { voice.play(translate(text),getLanguage()); } catch { /* Optional audio never interrupts guidance. */ }
+    try { voice.play(translate(text),getLanguage(),{tone:voiceTone(),pack:voicePack()}); } catch { /* Optional audio never interrupts guidance. */ }
   }
   const box=ensureBubble();
   box.querySelector('.buddy-say-text').textContent=translate(text);

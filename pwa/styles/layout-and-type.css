@@ -615,3 +615,5 @@ html[data-font=pixelify] {
   .compost-game.is-playing .compost-score { padding-left: 52px; }
 }
 .arcade-meta { display: block; margin: 0; align-self: end; font-size: .875rem; font-weight: 700; color: var(--muted); }
+/* The buddy bubble is a status message, so it never blocks dragging or tapping what is beneath it. */
+.buddy-say, .buddy-dock .buddy-say { pointer-events: none; }

@@ -42,6 +42,10 @@ change them; update the relevant documentation when it does.
   voices matching the UI language; fall back to synthesized chirps. Alternate speech
   and chirps with a seven-second cooldown, no queued chatter, and a user gesture.
   Stop speech on hiding, voice/cheers disabling, language changes, or Settings closing.
+  The default Voice pack is a cute synthesized babble (Bubbly, Squeaky or Sleepy, generated
+  in `audio.js`, so it works offline on every device in English and Filipino). "Device voice"
+  keeps the installed-voice behavior, choosing the friendliest local voice and shaping pitch
+  and pace to the sentence. Babble uses a short cooldown and never overlaps itself.
 
 - Background music and sound effects have separate controls; music is off by
   default. Respect saved volume and browser requirements for a user gesture.

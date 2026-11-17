@@ -180,6 +180,12 @@ pairs.push(
  ['Perfect round! Amazing!','Perpektong round! Kahanga-hanga!'],
  ['Tap a buddy for a little tip.','Pindutin ang isang buddy para sa munting payo.'],
 // Buddy garden
+ ['Voice pack','Pakete ng boses'],
+ ['Bubbly babble','Malikot na huni'],
+ ['Squeaky babble','Matinis na huni'],
+ ['Sleepy babble','Antok na huni'],
+ ['Device voice','Boses ng device'],
+ ['Pick a cute babble voice that works everywhere, or a device voice with short phrases. Everything stays offline. Separate from Sound effects.','Pumili ng cute na huni na gumagana kahit saan, o boses ng device na may maiikling parirala. Nananatiling offline ang lahat. Hiwalay sa Sound effects.'],
  ['Not played yet','Hindi pa nalalaro'],
  ['Use it. Wash it.','Gamitin. Hugasan.'],
  ['Use it again.','Gamitin muli.'],

@@ -258,6 +258,9 @@ try{
     await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.season),'christmas','theme is remembered');
     assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.sound')),'on');
+    await openSettings(page,'sound');await page.selectOption('#voicepack','sleepy');await page.keyboard.press('Escape');
+    await page.reload();await page.locator('#connection',{hasText:/offline|Handa/i}).first().waitFor({state:'attached'});
+    await openSettings(page,'sound');assert.equal(await page.locator('#voicepack').inputValue(),'sleepy','voice pack is remembered');await page.keyboard.press('Escape');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.buddy-chip',{hasText:'Festive hat'}).waitFor();
     assert.equal(await page.locator('.buddy-chip.is-locked',{hasText:'Festive hat'}).count(),0,'festive hat unlocked by trying the theme');
     await openSettings(page,'personal');await page.selectOption('#season','default');await page.keyboard.press('Escape');

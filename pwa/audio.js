@@ -68,6 +68,49 @@ export function playSfx(name){
   for(const n of (SFX[name]||SFX.pop)())tone(sfxBus,n);
 }
 
+// ---------- Cute voicepacks: synthesized babble, like a tiny animal talking ----------
+// Every vowel group becomes a short pitched blip, so any line (English or Filipino) can be "spoken"
+// offline on every device, without installed voices. Original and generated on the fly.
+export const VOICE_PACKS={
+  bubbly:{label:'Bubbly',base:76,scale:[0,2,4,7,9,12],type:'triangle',len:.1,step:.085,glide:3,vol:.17},
+  squeaky:{label:'Squeaky',base:86,scale:[0,3,5,7,10,12],type:'sine',len:.075,step:.065,glide:5,vol:.15},
+  sleepy:{label:'Sleepy',base:67,scale:[0,2,3,7,8,10],type:'sine',len:.17,step:.13,glide:-3,vol:.2},
+};
+export const VOICE_PACK_NAMES=Object.keys(VOICE_PACKS);
+const VOWELS='aeiouáéíóú';
+export function babbleNotes(text,pack='bubbly',{maxSyllables=16}={}){
+  const cfg=VOICE_PACKS[pack];if(!cfg)return [];
+  const words=String(text||'').toLowerCase().match(/[a-zñáéíóú]+/g)||[];
+  const notes=[];let t=0,prev=0;
+  outer:for(const word of words){
+    let consonant=0;
+    for(const ch of word){
+      if(!VOWELS.includes(ch)){consonant=(consonant+ch.charCodeAt(0))%7;continue;}
+      if(notes.length>=maxSyllables)break outer;
+      const degree=(consonant*2+VOWELS.indexOf(ch)+prev)%cfg.scale.length;prev=degree;
+      const midi=cfg.base+cfg.scale[degree];
+      notes.push({f:hz(midi),to:hz(midi+cfg.glide),t,len:cfg.len*(1+(consonant%3)*.12),type:cfg.type,vol:cfg.vol});
+      t+=cfg.step;consonant=0;
+    }
+    t+=cfg.step*.7; // a tiny breath between words
+  }
+  // The last blip lifts for a cheer or a question, and settles for a calm line.
+  const last=notes[notes.length-1];
+  if(last){
+    if(/[!?]\s*$/.test(String(text||'')))last.to=last.f*Math.pow(2,5/12);
+    else last.to=last.f*Math.pow(2,-2/12);
+    last.len*=1.5;
+  }
+  return notes;
+}
+export function babbleDuration(notes){const last=notes[notes.length-1];return last?last.t+last.len:0;}
+export function playBabble(text,pack='bubbly'){
+  if(!ensure())return 0;
+  const notes=babbleNotes(text,pack);
+  for(const n of notes)tone(sfxBus,n);
+  return babbleDuration(notes);
+}
+
 // ---------- Music: several generative styles ----------
 // Styles: lofi (anime), sakura, arcade, rain, city, musicbox. Chords are [bass note, voicing].
 // The season theme still recolors the progressions of the "lofi" and "musicbox" styles.
