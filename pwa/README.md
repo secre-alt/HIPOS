@@ -5,6 +5,8 @@ Run `npm run dev` to build and preview, `npm test` for unit checks, and
 using installed Edge instead of Playwright Chromium.
 Run `node tests/toast.browser.mjs` for notification timing, dialog visibility,
 translations, and mobile/desktop checks in both themes.
+Run `node tests/guidance-ux.browser.mjs` for Home activity grouping, bilingual
+guide search recovery, keyboard focus, and mobile/desktop overflow in both themes.
 Run `node tests/sorting-feedback.browser.mjs` for answer labels, readable items,
 feedback modals, Escape/review behavior, safety guidance, and visible Next controls.
 Run `node tests/game-layout.browser.mjs` for game alignment checks across phone,

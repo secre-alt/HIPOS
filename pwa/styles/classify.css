@@ -25,8 +25,23 @@ main .classify-kit button.kit-friend.kit-friend {
   border-radius: 24px;
   background: var(--surface);
 }
-.classify-page .guide-tools input {
-  margin-bottom: 16px;
+.guide-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.classify-page .guide-search-row input {
+  flex: 1 1 220px;
+  min-width: 0;
+  width: auto;
+  margin: 0;
+}
+.guide-search-row button {
+  min-height: 44px;
+}
+.classify-page #guide-search-help {
+  margin: 12px 0 16px;
 }
 .classify-page .chip {
   box-shadow: none;

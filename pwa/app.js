@@ -16,7 +16,7 @@ import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
 import { home, selectWaste, wasteArt } from "./home.js";
 import { revealOnScroll, initScrollEffects } from "./motion.js";
-import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter } from "./guide.js";
+import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter, resetGuideSearch } from "./guide.js";
 import { escapeHTML as e } from "./core.js";
 import { waste } from "./content.js";
 import { reusePage, interactWithReuse } from "./reuse.js";
@@ -252,6 +252,8 @@ document.addEventListener("click", async (event) => {
       }
     }
     if (b.hasAttribute("data-guide-filter")) setGuideFilter(b);
+    if (b.hasAttribute("data-guide-clear")) resetGuideSearch();
+    if (b.hasAttribute("data-guide-reset")) resetGuideSearch(true);
     switch (b.dataset.action) {
       case "check-update":
         await manualUpdateCheck();

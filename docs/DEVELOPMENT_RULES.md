@@ -97,6 +97,12 @@ change them; update the relevant documentation when it does.
 
 ## Data and guidance
 
+- Home keeps the waste checker before the optional Today activities; guides
+  precede the games strip. Guidance results label the item-specific action while
+  preserving the original safety text.
+- Classify search accepts English and Filipino keywords. Clear search preserves
+  the chosen filter; the empty-state reset clears both search and filters. Both
+  actions return keyboard focus to the search field and retain safe unknown-item advice.
 - HIPOS focuses on waste guidance, habits, games, and buddy progress. My Concerns
   and Staff review are retired; do not reintroduce reporting navigation or workflows.
 - Leave legacy report storage (`hipos.pwa.v1`) untouched. Existing records are not

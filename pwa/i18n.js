@@ -1,4 +1,10 @@
 const pairs=[
+ ['Today','Ngayon'],
+ ['Choose a small challenge, a quick quiz, or your daily reminders. These activities are optional.','Pumili ng munting hamon, maikling pagsusulit, o mga pang-araw-araw na paalala. Opsyonal ang mga gawaing ito.'],
+ ['What to do','Ano ang gagawin'],
+ ['Clear search','Burahin ang paghahanap'],
+ ['Reset search and filters','I-reset ang paghahanap at mga filter'],
+ ['Search in English or Filipino: bottle, bote, wrapper, balot.','Maghanap sa Ingles o Filipino: bottle, bote, wrapper, balot.'],
  ['Get ready','Humanda'],
  ['Drag the basket, or hold the movement buttons.','I-drag ang basket, o pindutin nang matagal ang mga pindutan ng paggalaw.'],
  ['Hold the arrow keys or drag the basket. Press Space to pause.','Pindutin nang matagal ang mga arrow key o i-drag ang basket. Pindutin ang Space para mag-pause.'],

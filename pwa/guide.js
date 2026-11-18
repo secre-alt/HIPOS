@@ -21,14 +21,22 @@ export function interactWithClassify(event) {
 }
 export function guideTools() {
   const total = waste.length + moreWaste.length;
-  return `<section class="guide-tools" aria-label="Search and filter the waste guide"><div class="guide-search-heading"><label for="guide-search">Search the guide</label>${miniBuddy("guide")}</div><input id="guide-search" type="search" placeholder="Try “juice box” or “battery”" autocomplete="off" enterkeyhint="search"><div class="chips" role="group" aria-label="Filter by guidance"><button class="secondary chip" data-guide-filter="all" aria-pressed="true">All</button><button class="secondary chip" data-guide-filter="ok" aria-pressed="false">Suitable if clean and dry</button><button class="secondary chip" data-guide-filter="no" aria-pressed="false">Keep out of your pouch</button></div><p id="guide-count" class="note" role="status" aria-live="polite">${total} items</p></section>`;
+  return `<section class="guide-tools" aria-label="Search and filter the waste guide"><div class="guide-search-heading"><label for="guide-search">Search the guide</label>${miniBuddy("guide")}</div><div class="guide-search-row"><input id="guide-search" type="search" placeholder="Try “juice box” or “battery”" autocomplete="off" enterkeyhint="search" aria-describedby="guide-search-help"><button type="button" class="secondary" data-guide-clear>Clear search</button></div><p id="guide-search-help" class="note">Search in English or Filipino: bottle, bote, wrapper, balot.</p><div class="chips" role="group" aria-label="Filter by guidance"><button class="secondary chip" data-guide-filter="all" aria-pressed="true">All</button><button class="secondary chip" data-guide-filter="ok" aria-pressed="false">Suitable if clean and dry</button><button class="secondary chip" data-guide-filter="no" aria-pressed="false">Keep out of your pouch</button></div><p id="guide-count" class="note" role="status" aria-live="polite">${total} items</p></section>`;
 }
 export function guideCards() {
-  return items().map(({ title, suitable, body, art, words, extra }) => `<article class="card visual-waste-card${extra ? " extra" : ""}" data-kind="${suitable ? "ok" : "no"}" data-search="${e(norm(`${title} ${body} ${words}`))}"><div class="classify-art" aria-hidden="true">${art}</div><div class="classify-item-copy"><span class="pill ${suitable ? "" : "unsafe"}">${suitable ? "Suitable if clean and dry" : "Keep out of your pouch"}</span><h3>${e(title)}</h3><p>${e(body)}</p></div></article>`).join("") + '<p id="guide-empty" class="feedback" hidden>No match. If you’re unsure, keep it out of your pouch and ask school staff.</p>';
+  return items().map(({ title, suitable, body, art, words, extra }) => `<article class="card visual-waste-card${extra ? " extra" : ""}" data-kind="${suitable ? "ok" : "no"}" data-search="${e(norm(`${title} ${body} ${words}`))}"><div class="classify-art" aria-hidden="true">${art}</div><div class="classify-item-copy"><span class="pill ${suitable ? "" : "unsafe"}">${suitable ? "Suitable if clean and dry" : "Keep out of your pouch"}</span><h3>${e(title)}</h3><p><strong>What to do</strong></p><p>${e(body)}</p></div></article>`).join("") + '<div id="guide-empty" class="feedback" hidden><p>No match. If you’re unsure, keep it out of your pouch and ask school staff.</p><button type="button" class="secondary" data-guide-reset>Reset search and filters</button></div>';
 }
 export function setGuideFilter(button) {
   document.querySelectorAll("[data-guide-filter]").forEach((el) => el.setAttribute("aria-pressed", String(el === button)));
   applyGuideFilter();
+}
+export function resetGuideSearch(resetFilters = false) {
+  const input = document.querySelector('#guide-search');
+  if (!input) return;
+  input.value = '';
+  if (resetFilters) document.querySelectorAll('[data-guide-filter]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.guideFilter === 'all')));
+  applyGuideFilter();
+  input.focus();
 }
 export function applyGuideFilter() {
   const input = document.querySelector("#guide-search");

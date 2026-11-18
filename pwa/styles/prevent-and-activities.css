@@ -201,6 +201,17 @@
   }
 }
 /* Home activity stations share the Prevent page's small illustrated objects. */
+.home-today {
+  margin: 32px 0;
+}
+.home-today > h2 {
+  margin-bottom: 8px;
+}
+.home-today > p {
+  color: var(--muted);
+  max-width: 65ch;
+  margin: 0 0 20px;
+}
 .home-activities {
   gap: 20px;
   align-items: start;
