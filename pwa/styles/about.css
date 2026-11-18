@@ -1,0 +1,27 @@
+/* About uses the shared palette and bundled display font in both themes. */
+#about-dialog { width: min(720px, calc(100% - 24px)); max-width: 720px; padding: 0; border-radius: 28px; color: inherit; overscroll-behavior: contain; }
+.about-heading { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.about-heading h2 { margin: 0; font-family: var(--font-display); font-size: 1.6rem; }
+#about-dialog .about-heading form { margin: 0; }
+.about-heading button { min-height: 44px; }
+.about-content { padding: 0 28px 28px; }
+.about-content section { margin-block: 26px; }
+.about-content h3 { margin: 0 0 8px; font-family: var(--font-display); font-size: 1.25rem; }
+.about-content p { margin: 0; }
+.about-hero { text-align: center; padding: 24px 12px; border-bottom: 1px dashed var(--line); }
+.about-sprout { display: block; width: 120px; height: 110px; margin: 0 auto 12px; color: var(--green); }
+.about-hero p, .about-signoff { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.5; }
+.about-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.about-pair section { padding: 18px; border: 1px solid var(--line); border-radius: 22px; margin: 0; }
+.about-offers { margin: 0; }
+.about-offers div { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.about-offers dt { font-weight: 800; }
+.about-offers dd { margin: 4px 0 0; }
+.about-principles { padding-left: 24px; }
+.about-principles li { margin-block: 10px; padding-left: 6px; }
+.about-principles li::marker { color: var(--green); font-weight: 800; }
+.about-disclaimer { padding: 18px; border: 1px solid var(--line); border-radius: 18px; font-weight: 700; }
+.about-signoff { text-align: center; padding-top: 20px; border-top: 1px dashed var(--line); }
+body:has(#about-dialog[open]) { overflow: hidden; }
+@media (max-width: 540px) { .about-content { padding: 0 20px 24px; } .about-heading { padding: 12px 20px; } .about-pair { grid-template-columns: 1fr; } }
+:root[data-theme=dark] .about-sprout, :root[data-theme=dark] .about-principles li::marker { color: var(--ink); }

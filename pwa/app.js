@@ -1,3 +1,4 @@
+import { aboutContent } from "./about.js";
 import { initToasts, noticeType } from "./toast.js";
 import { carryPage, interactWithCarry } from "./carry.js";
 import { initPwa } from "./pwa-runtime.js";
@@ -207,6 +208,12 @@ document.addEventListener("click", async (event) => {
   const b = event.target.closest("button");
   if (!b) return;
   try {
+    if (b.dataset.action === "about") {
+      const about = document.querySelector("#about-dialog");
+      about.innerHTML = aboutContent;
+      about.showModal();
+      about.scrollTop = 0;
+    }
     if (b.hasAttribute("data-challenge")) {
       updateChallenge(b);
       onChallenge(b.dataset.challenge);

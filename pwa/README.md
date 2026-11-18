@@ -51,3 +51,4 @@ override earlier rules. Keep this order when editing; grouping every rule
 for the same selector together can change the appearance.
 
 Edit source files under `pwa/`, not generated files under `dist/`.
+`about.js` supplies the translated About HIPOS modal, opened from the footer or App & offline settings; `styles/about.css` styles its responsive reading layout.
