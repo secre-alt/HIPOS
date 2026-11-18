@@ -6,7 +6,7 @@ const server = spawn(process.execPath, ['scripts/serve-pwa.mjs'], { windowsHide:
 let browser;
 try {
   await new Promise((resolve, reject) => { server.stdout.on('data', d => { if (d.toString().includes('http://localhost')) resolve(); }); server.once('exit', reject); setTimeout(() => reject(Error('Server timed out')), 20000).unref(); });
-  browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'msedge', headless: true });
+  browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined, headless: true });
   const page = await browser.newPage();
   page.setDefaultTimeout(10000);
   const errors = []; page.on('pageerror', e => errors.push(e.message));

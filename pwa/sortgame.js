@@ -14,6 +14,19 @@ const buddyFace=(x,y,scale)=>'<g transform="translate('+x+' '+y+') scale('+scale
 const buddyItemArt=art=>art.replace('</svg>',buddyFace(48,56,.65)+'</svg>');
 const pool=()=>[...waste.map(([title,suitable,body],i)=>({title,suitable,body,art:buddyItemArt(wasteArt(i))})),...moreWaste.map(([title,suitable,body],i)=>({title,suitable,body,art:buddyItemArt(moreWasteArt(i))}))];
 let game=null,lastTitles=[],gardenSummary={};
+// Items answered wrong are kept on this device so they can be looked at again; answering one right clears it.
+const REVIEW_KEY='hipos.review.v1';
+export function reviewList(storage=globalThis.localStorage){
+  try{const v=JSON.parse(storage.getItem(REVIEW_KEY)||'[]');return Array.isArray(v)?v.filter(x=>x&&typeof x.title==='string'&&typeof x.body==='string').slice(0,12):[];}catch{return [];}
+}
+export function updateReview(item,right,storage=globalThis.localStorage){
+  try{
+    const rest=reviewList(storage).filter(x=>x.title!==item.title);
+    const next=right?rest:[{title:item.title,body:item.body},...rest].slice(0,12);
+    storage.setItem(REVIEW_KEY,JSON.stringify(next));
+  }catch{/* storage blocked: the game still works */}
+}
+const reviewLater=()=>{const list=reviewList();return list.length?`<details class="sort-review review-later"><summary><span>Review later</span> <span data-no-translate>(${list.length})</span></summary><ul>${list.map(x=>`<li><strong>${e(x.title)}</strong><p>${e(x.body)}</p></li>`).join('')}</ul><p class="note">Answer one right in a round and it leaves this list.</p></details>`:'';};
 
 export function makeRound(random=Math.random,previous=[]){
   const shuffle=a=>{const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
@@ -26,7 +39,7 @@ const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answe
 export function sortGame(summary={}){
   gardenSummary=summary;
   start();
-  return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading"><h2 id="sort-heading">Sort it out!</h2><div id="sort-body">${body()}</div></section>`;
+  return `<section class="card sort-game" id="sort-game" aria-labelledby="sort-heading"><h2 id="sort-heading">Sort it out!</h2>${reviewLater()}<div id="sort-body">${body()}</div></section>`;
 }
 function body(){
   if(!game)return '';
@@ -54,7 +67,8 @@ function answer(choice){
   const item=game.items[game.i],right=(choice==='yes')===item.suitable;
   document.querySelector('#sort-game').classList.add('is-answered');
   document.querySelector('.sort-instruction').hidden=true;
-  game.answered=true;if(right)game.score++;
+  game.answered=true;updateReview(item,right);
+  if(right)game.score++;
   else game.review.push(item);
   document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice){b.classList.add(right?'is-right':'is-wrong');b.insertAdjacentHTML('beforeend','<span class="sort-choice-label">Your choice</span>');}});
   const destination=document.querySelector(`[data-sort-bin="${item.suitable?'yes':'no'}"]`);

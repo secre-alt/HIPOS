@@ -7,7 +7,7 @@ const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{env:{...process.e
 let browser;
 try {
   await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.once('exit',c=>reject(Error('Server exited '+c)));});
-  browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});
+  browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});
   await mkdir('test-results/toasts',{recursive:true});
   for(const width of [390,1280])for(const theme of ['light','dark']) {
     const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:'no-preference'});

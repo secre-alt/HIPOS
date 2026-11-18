@@ -5,7 +5,7 @@ const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{windowsHide:true,
 let browser;
 try {
  await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.once('exit',c=>reject(Error(`Server exited ${c}`)));server.stderr.on('data',d=>process.stderr.write(d));setTimeout(()=>reject(Error('Server timeout')),30000).unref();});
- browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});
+ browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});
  for(const width of [390,1280]) for(const theme of ['light','dark']) {
   const page=await browser.newPage({viewport:{width,height:844}});
   await page.goto('http://127.0.0.1:4186');

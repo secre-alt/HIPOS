@@ -7,7 +7,7 @@ const server=spawn(process.execPath,['scripts/serve-pwa.mjs'],{windowsHide:true,
 let browser;
 try {
  await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.once('exit',c=>reject(Error('Server exited '+c)));});
- browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});await mkdir('test-results/sorting',{recursive:true});
+ browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});await mkdir('test-results/sorting',{recursive:true});
  for(const [width,height] of [[390,844],[1280,720],[844,390],[320,568],[568,320]])for(const theme of ['light','dark'])for(const language of ['en','fil']) {
   const context=await browser.newContext({viewport:{width,height},colorScheme:theme,reducedMotion:'reduce'}),page=await context.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));

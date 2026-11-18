@@ -99,3 +99,15 @@ test('hazard rounds count and a perfect one earns the detective sticker', () => 
   fx.recordHazard(8, 8);
   assert.ok(fx.earnedKeys(week).has('hazardperfect'));
 });
+test('review list keeps wrong answers, clears them when answered right, survives bad data', async () => {
+  const { reviewList, updateReview } = await import('../pwa/sortgame.js');
+  const st = memoryStorage();
+  updateReview({ title: 'Banana', body: 'Compost it.' }, false, st);
+  updateReview({ title: 'Glass', body: 'Ask staff.' }, false, st);
+  assert.deepEqual(reviewList(st).map((x) => x.title), ['Glass', 'Banana']);
+  updateReview({ title: 'Glass', body: 'Ask staff.' }, true, st);
+  assert.deepEqual(reviewList(st).map((x) => x.title), ['Banana']);
+  st.setItem('hipos.review.v1', '{nope');
+  assert.deepEqual(reviewList(st), []);
+  assert.deepEqual(reviewList({ getItem() { throw new Error('blocked'); } }), []);
+});

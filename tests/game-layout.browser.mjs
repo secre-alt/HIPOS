@@ -10,7 +10,7 @@ let browser;
 const failures=[],measurements=[];
 try {
   await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(d.toString().includes('http://localhost'))resolve();});server.stderr.on('data',d=>process.stderr.write(d));server.once('exit',code=>reject(Error('Server exited '+code)));});
-  browser=await chromium.launch({channel:process.env.PW_CHANNEL||'msedge',headless:true});
+  browser=await chromium.launch({channel:process.env.PW_CHANNEL||undefined,headless:true});
   const page=await browser.newPage({reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await mkdir('test-results',{recursive:true});

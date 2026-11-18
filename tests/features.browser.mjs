@@ -271,6 +271,44 @@ try{
     await page.goto(base+'#games');assert.ok(await page.locator('.arcade-hazard').isVisible(),'hub card');
     await close(s);
   });
+  await check('review later: wrong sorting answers are kept, shown, and cleared when answered right',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.evaluate(()=>localStorage.setItem('hipos.review.v1',JSON.stringify([{title:'Glass jar',body:'Ask staff.'}])));
+    await page.goto(base+'#sort');await page.locator('#sort-game').waitFor();
+    assert.match(await page.locator('.review-later summary').innerText(),/Review later \(1\)/);
+    await page.evaluate(()=>{localStorage.setItem('hipos.language','fil');});
+    await page.evaluate(()=>localStorage.setItem('hipos.review.v1','{broken'));
+    await page.reload();await page.locator('#sort-game').waitFor();
+    assert.equal(await page.locator('.review-later').count(),0,'damaged data is ignored');
+    await close(s);
+  });
+  await check('reduced motion: game pages and result dialogs have no running animations; dialogs are named',async()=>{
+    const s=await open({viewport:{width:390,height:800},reducedMotion:'reduce'}),{page}=s;
+    for(const hash of ['games','sort','compost','hazard','garden']){
+      await page.goto(base+'#'+hash);await page.waitForTimeout(300);
+      const running=await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity).length);
+      assert.equal(running,0,hash+' has no endless animations');
+    }
+    await page.goto(base+'#hazard');await page.locator('#hazard-game').waitFor();
+    for(let i=0;i<8;i++){await page.locator('[data-hazard="safe"]').click();await page.locator('[data-hazard-next]').click();}
+    const d=page.locator('dialog.hazard-result[open]');await d.waitFor();
+    const labelled=await d.evaluate(el=>document.getElementById(el.getAttribute('aria-labelledby'))?.textContent.length>0);
+    assert.ok(labelled,'result dialog has an accessible name');
+    await page.keyboard.press('Escape');await page.locator('dialog.hazard-result').waitFor({state:'detached',timeout:3000});
+    assert.ok(await page.evaluate(()=>document.activeElement?.closest('#hazard-game')!==null),'focus returns to the game');
+    await close(s);
+  });
+  await check('blocked storage: the app still opens, says progress will not be saved, and no welcome loops',async()=>{
+    const ctx=await browser.newContext({viewport:{width:390,height:800}}),page=await ctx.newPage();
+    const errs=[];page.on('pageerror',e=>errs.push(String(e)));
+    await ctx.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('blocked','QuotaExceededError');};});
+    await page.goto(base);
+    await page.locator('#connection').waitFor({state:'attached'});
+    await page.waitForFunction(()=>document.body.innerText.includes('blocking storage'),null,{timeout:8000});
+    assert.equal(await page.locator('dialog.welcome').count(),0);
+    assert.deepEqual(errs,[],'no uncaught errors');
+    await ctx.close();
+  });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     assert.equal(await page.locator('dialog.welcome').count(),0,'automated browsers are not interrupted');

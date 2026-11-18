@@ -392,7 +392,17 @@ const { manualUpdateCheck } = initPwa({ message, modal });
 render();
 refreshAvatars();
 initLanguage();
-const firstRun = needsWelcome(localStorage, navigator.webdriver === true);
+const storageBlocked = (() => {
+  try {
+    localStorage.setItem("hipos.probe", "1");
+    localStorage.removeItem("hipos.probe");
+    return false;
+  } catch {
+    return true;
+  }
+})();
+const firstRun = !storageBlocked && needsWelcome(localStorage, navigator.webdriver === true);
+if (storageBlocked) setTimeout(() => message("This browser is blocking storage, so your progress will not be saved on this device."), 1200);
 {
   const text = dailyBuddy(localStorage, localDay()).visit();
   if (text) cheer("welcome", { text });

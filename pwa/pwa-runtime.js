@@ -51,8 +51,17 @@ function initPwa({ message, modal }) {
   // The first service worker installation never prompts for an update.
   const updateBanner = document.querySelector("#update-banner"), applyUpdate = document.querySelector("#apply-update");
   let swRegistration = null, updating = false;
+  // Never pop the banner over a game round or an open dialog; try again shortly.
+  function busy() {
+    return Boolean(document.querySelector("dialog[open], #compost-hud:not([hidden])"));
+  }
   function showUpdate() {
-    if (!updating) updateBanner.hidden = false;
+    if (updating) return;
+    if (busy()) {
+      setTimeout(showUpdate, 4000);
+      return;
+    }
+    updateBanner.hidden = false;
   }
   function trackWorker(worker) {
     worker.addEventListener("statechange", () => {
