@@ -320,6 +320,7 @@ try{
     await page.locator('[data-compost-left]').click();
     assert.equal(await page.locator('#compost-basket').getAttribute('style'),basket,'movement freezes too');
     await page.locator('.compost-paused button').click();
+    await page.locator('.compost-paused').waitFor({state:'detached'});
     await page.waitForTimeout(100);
     assert.notEqual(await page.locator('.compost-item').first().getAttribute('style'),before,'fall resumes');
     await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});

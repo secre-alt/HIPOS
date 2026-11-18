@@ -1,4 +1,10 @@
 const pairs=[
+ ['Get ready','Humanda'],
+ ['Drag the basket, or hold the movement buttons.','I-drag ang basket, o pindutin nang matagal ang mga pindutan ng paggalaw.'],
+ ['Hold the arrow keys or drag the basket. Press Space to pause.','Pindutin nang matagal ang mga arrow key o i-drag ang basket. Pindutin ang Space para mag-pause.'],
+ ['Watch for wrappers and spoons. Let them fall past the basket.','Bantayan ang mga balot at kutsara. Hayaang lumampas ang mga ito sa basket.'],
+ ['Try practice pace for more time to reach each food scrap.','Subukan ang bilis para sa pagsasanay upang mas mahabol ang bawat tirang pagkain.'],
+ ['You kept food scraps and plastic apart. Keep it up!','Nahiwalay mo ang tirang pagkain at plastik. Ipagpatuloy mo!'],
  ['Buddy voice','Boses ni Buddy'],['Try Buddy voice','Subukan ang boses ni Buddy'],['Hi! Let us play!','Hi! Maglaro tayo!'],
  ['Short phrases and cute chirps. Uses installed offline voices; otherwise, chirps only. Separate from Sound effects.','Maiikling salita at nakakatuwang huni. Gumagamit ng naka-install na offline na boses; kung wala, huni lamang. Hiwalay sa Sound effects.'],
  ['Playing Buddy voice.','Pinatutugtog ang boses ni Buddy.'],['Buddy is already speaking. Try again in a moment.','Nagsasalita pa si Buddy. Subukan muli mamaya.'],

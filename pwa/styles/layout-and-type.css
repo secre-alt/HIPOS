@@ -574,7 +574,8 @@ html[data-font=pixelify] {
 .arcade-ready { text-align:center; padding:16px; position:relative; z-index:1; }
 .arcade-ready svg,.compost-done > svg { width:80px; height:80px; }
 .arcade-ready h3 { margin:0; font-family:var(--font-display); font-size:1.5rem; }
-.arcade-ready p { margin:4px 0 16px; }
+.arcade-ready p { margin:4px 0 16px; font-family:var(--font-body); font-size:.875rem; color:var(--muted); }
+.compost-result-tip { font-family:var(--font-body); text-align:left; }
 .compost-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:16px 0; }
 .compost-legend > div { display:grid; justify-items:center; gap:4px; }
 .compost-legend svg { width:64px; height:64px; }

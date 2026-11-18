@@ -17,9 +17,9 @@ try {
   await page.clock.install();
   const x=()=>page.locator('#compost-basket').evaluate(el=>parseFloat(el.style.left));
   const visit=async route=>{await page.evaluate(route=>{location.hash=route;},route);await page.locator(route==='games'?'.games-grid':route==='sort'?'#sort-game':'#compost-game').waitFor();};
-  await page.locator('[data-compost-start]').click();
+  await page.locator('[data-compost-start]').last().click();
   await page.keyboard.press('Space');await expect(page.locator('.compost-paused')).toBeVisible();
-  await page.keyboard.press('Escape');await expect(page.locator('.compost-paused')).toHaveCount(0);
+  await page.keyboard.press('Escape');await expect(page.locator('.compost-paused')).toContainText('Get ready');await page.clock.runFor(3100);await expect(page.locator('.compost-paused')).toHaveCount(0);
   await expect(page.locator('#compost-field')).toBeFocused();
   await page.keyboard.down('ArrowRight');await page.clock.runFor(300);
   assert.ok(await x()>65,'holding an arrow moves continuously');
@@ -32,7 +32,13 @@ try {
   assert.equal(await x(),paused);assert.equal(await page.locator('.compost-item').first().getAttribute('style'),falling);
   await expect(page.locator('.compost-paused')).toContainText('Paused');
   await expect(page.locator('#compost-basket')).toBeVisible();
-  await page.locator('.compost-paused button').click();await page.clock.runFor(200);
+  await page.locator('.compost-paused button').click();
+  const countdownStyle=await page.locator('.compost-item').first().getAttribute('style');
+  await page.clock.runFor(1000);
+  assert.equal(await page.locator('.compost-item').first().getAttribute('style'),countdownStyle,'countdown freezes items');
+  await page.keyboard.press('Escape');await expect(page.locator('.compost-paused')).toContainText('Paused');
+  await page.clock.runFor(3200);await expect(page.locator('.compost-paused')).toContainText('Paused');
+  await page.locator('.compost-paused button').click();await expect(page.locator('.compost-paused')).toContainText('Get ready');await page.clock.runFor(4000);await expect(page.locator('.compost-paused')).toHaveCount(0);
   assert.equal(await x(),paused,'resume does not reuse a held key or move the basket');
 
   const recenter=await page.locator('#compost-field').boundingBox();
@@ -59,11 +65,11 @@ try {
   await page.keyboard.up('ArrowLeft');
 
   await page.keyboard.down('ArrowRight');await visit('games');await page.keyboard.up('ArrowRight');await visit('compost');
-  await page.locator('[data-compost-start]').click();await page.clock.runFor(1000);
+  await page.locator('[data-compost-start]').last().click();await page.clock.runFor(1000);
   assert.equal(await x(),50,'navigation clears movement');
   const regularY=await page.locator('.compost-item').first().evaluate(el=>parseFloat(el.style.top));
   await visit('games');await visit('compost');
-  await page.selectOption('#compost-pace','practice');await page.locator('[data-compost-start]').click();
+  await page.selectOption('#compost-pace','practice');await page.locator('[data-compost-start]').last().click();
   await expect(page.locator('#compost-pace')).toBeDisabled();
   await page.clock.runFor(1000);
   assert.ok(await page.locator('.compost-item').first().evaluate(el=>parseFloat(el.style.top))<regularY-3,'practice scraps fall more slowly');
@@ -84,7 +90,7 @@ try {
     await page.setViewportSize({width,height});
     await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},theme);
     await visit('games');await visit('compost');
-    await page.locator('[data-compost-start]').click();await page.clock.runFor(1000);
+    await page.locator('[data-compost-start]').last().click();await page.clock.runFor(1000);
     const fits=await page.evaluate(()=>{const field=document.querySelector('#compost-field').getBoundingClientRect(),controls=document.querySelector('#compost-controls').getBoundingClientRect(),nav=document.querySelector('.mobile-bottom-nav').getBoundingClientRect();return field.top>=document.querySelector('aside').getBoundingClientRect().bottom&&controls.bottom<=(nav.height?nav.top:innerHeight)+1;});
     assert.ok(fits,'field and movement controls fit at '+width+'x'+height);
     await page.locator('#compost-hud [data-compost-pause]').click();
@@ -96,9 +102,9 @@ try {
   }
   await visit('games');await visit('compost');
   await page.evaluate(()=>{Math.random=()=>0.99;});await page.selectOption('#compost-pace','regular');
-  await page.locator('[data-compost-start]').click();await page.clock.runFor(30000);
+  await page.locator('[data-compost-start]').last().click();await page.clock.runFor(30000);
   await expect(page.locator('.compost-plastic-result strong')).toHaveText('18/18');
-  await page.locator('[data-compost-start]').click();
+  await page.locator('[data-compost-start]').last().click();
   const centered=await page.locator('#compost-field').boundingBox();
   await page.mouse.click(centered.x+centered.width*.99,centered.y+centered.height*.4);await page.clock.runFor(30000);
   await expect(page.locator('.compost-plastic-result strong')).toHaveText('0/18');

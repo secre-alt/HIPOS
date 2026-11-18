@@ -33,7 +33,8 @@ export function makeSequence(random=Math.random){
   return seq;
 }
 
-const startPanel=()=>`<div class="compost-start" id="compost-start"><div class="arcade-ready"><div class="compost-ready-buddy" aria-hidden="true">${compostArt('basket')}</div><h3>Help your buddy catch!</h3><div class="compost-legend"><div>${compostArt('carrot')}<strong>Catch food scraps</strong></div><div>${compostArt('wrapper')}<strong>Let plastic pass</strong></div></div><button type="button" data-compost-start>Start</button></div></div>`;
+const controlHint=()=>matchMedia('(pointer:coarse)').matches?'Drag the basket, or hold the movement buttons.':'Hold the arrow keys or drag the basket. Press Space to pause.';
+const startPanel=()=>`<div class="compost-start" id="compost-start"><div class="arcade-ready"><div class="compost-ready-buddy" aria-hidden="true">${compostArt('basket')}</div><h3>Help your buddy catch!</h3><div class="compost-legend"><div>${compostArt('carrot')}<strong>Catch food scraps</strong></div><div>${compostArt('wrapper')}<strong>Let plastic pass</strong></div></div><p class="compost-control-hint">${controlHint()}</p><button type="button" data-compost-start>Start</button></div></div>`;
 export function compostGame(summary={}){
   gardenSummary=summary;
   return `<section class="card compost-game" id="compost-game" aria-labelledby="compost-heading">
@@ -85,13 +86,14 @@ function finish(){
   const field=document.querySelector('#compost-field'),controls=document.querySelector('#compost-controls');
   const perfect=g.caught===g.good&&g.plasticCaught===0;
   const line=perfect?'Great work! Food scraps in, plastic out.':g.caught>0&&g.caught>=g.good-3?'Great catching!':'Good practice. Try another round.';
+  const tip=g.plasticCaught>0?'Watch for wrappers and spoons. Let them fall past the basket.':g.caught<g.good?'Try practice pace for more time to reach each food scrap.':'You kept food scraps and plastic apart. Keep it up!';
   const plasticResult=TOTAL>g.good?`<p class="compost-plastic-result"><span>Plastic kept out</span><strong data-no-translate>${g.plasticAvoided}/${TOTAL-g.good}</strong></p>`:'';
   const before=gardenState(carePoints(gardenSummary));
   recordCompost(g.caught,g.good);giveGameTreat('compost');
   const growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
   if(field)field.innerHTML=startPanel()+`<div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>`;
   const result=document.createElement('dialog');result.className='compost-result';result.setAttribute('aria-labelledby','compost-result-title');
-  result.innerHTML=`<div class="compost-done"><h3 id="compost-result-title">You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${plasticResult}<p class="compost-takeaway">${g.pace==='practice'?'Practice pace':'Regular pace'}</p>${growth}<p class="compost-takeaway">Catch food scraps. Let plastic pass.</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a></div></div><button type="button" class="secondary compost-result-close" aria-label="Close">×</button>`;
+  result.innerHTML=`<div class="compost-done"><h3 id="compost-result-title">You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${plasticResult}<p class="compost-takeaway">${g.pace==='practice'?'Practice pace':'Regular pace'}</p>${growth}<p class="compost-result-tip">${e(tip)}</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Proceed to Buddy garden</a></div></div><button type="button" class="secondary compost-result-close" aria-label="Close">×</button>`;
   document.querySelector('#compost-game')?.append(result);
   result.querySelector('.compost-result-close').addEventListener('click',()=>result.close());
   result.addEventListener('close',()=>{result.remove();document.querySelector('[data-compost-start]')?.focus({preventScroll:true});});
@@ -140,7 +142,7 @@ export function initCompost(){
   cleanupCompost();
   const field=document.querySelector('#compost-field');if(!field)return;
   const root=document.querySelector('#compost-game'),keys=new Set();
-  let hold=null,drag=null;
+  let hold=null,drag=null,resumeTimer=0;
   const direction=()=>{if(g)g.direction=hold?hold.direction:Number(keys.has('ArrowRight'))-Number(keys.has('ArrowLeft'));};
   const clearInput=()=>{
     keys.clear();
@@ -164,28 +166,45 @@ export function initCompost(){
   const togglePause=(force=false)=>{
     if(!g)return;
     clearInput();
-    g.paused=force||!g.paused;
-    document.querySelector('[data-compost-pause]').textContent=g.paused?'Resume':'Pause';
+    clearTimeout(resumeTimer);
+    const resume=!force&&g.paused&&!g.resuming;
+    g.resuming=false;g.paused=true;
+    document.querySelector('[data-compost-pause]').textContent=resume?'Pause':'Resume';
     field.classList.toggle('is-paused',g.paused);
     field.querySelector('.compost-paused')?.remove();
-    if(g.paused){
+    if(!resume){
       cancelAnimationFrame(raf);raf=0;
       const overlay=document.createElement('div');overlay.className='compost-paused';
       overlay.innerHTML='<div class="compost-pause-panel">'+compostArt('basket')+'<strong>Paused</strong><p>Take your time. Your round is waiting.</p><button type="button" data-compost-pause>Resume</button></div>';field.appendChild(overlay);
       if(!document.hidden)overlay.querySelector('button').focus();
-    }else{last=performance.now();raf=requestAnimationFrame(frame);field.focus({preventScroll:true});}
+    }else{
+      g.resuming=true;
+      const overlay=document.createElement('div');overlay.className='compost-paused';
+      overlay.innerHTML='<div class="compost-pause-panel"><strong role="status" aria-live="polite"><span>Get ready</span> <span data-no-translate>3</span></strong><button type="button" data-compost-pause>Pause</button></div>';
+      field.appendChild(overlay);overlay.querySelector('button').focus({preventScroll:true});
+      const deadline=performance.now()+3000;
+      const tick=()=>{
+        if(!g?.resuming)return;
+        const remaining=Math.ceil((deadline-performance.now())/1000);
+        if(remaining>0){overlay.querySelector('[data-no-translate]').textContent=remaining;resumeTimer=setTimeout(tick,100);return;}
+        g.resuming=false;g.paused=false;overlay.remove();field.classList.remove('is-paused');
+        document.querySelector('#compost-hud [data-compost-pause]').textContent='Pause';
+        last=performance.now();raf=requestAnimationFrame(frame);field.focus({preventScroll:true});
+      };
+      resumeTimer=setTimeout(tick,100);
+    }
   };
   const visibility=()=>{if(document.hidden)togglePause(true);};
   const release=event=>{if(hold?.id===event.pointerId){hold=null;direction();}if(drag===event.pointerId)drag=null;};
   const keyup=event=>{keys.delete(event.key);direction();};
-  const leave=()=>{clearInput();clearTimeout(feedbackTimer);cancelAnimationFrame(raf);cancelAnimationFrame(fitFrame);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);window.removeEventListener('resize',fitAfterText);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',clearInput);};
+  const leave=()=>{clearTimeout(resumeTimer);clearInput();clearTimeout(feedbackTimer);cancelAnimationFrame(raf);cancelAnimationFrame(fitFrame);raf=0;g=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('hashchange',leave);window.removeEventListener('resize',fitAfterText);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',clearInput);};
   document.addEventListener('visibilitychange',visibility);window.addEventListener('hashchange',leave);cleanupCompost=leave;
   window.addEventListener('resize',fitAfterText);
   window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);
   window.addEventListener('keyup',keyup);window.addEventListener('blur',clearInput);
   const start=()=>{
     document.querySelector('.compost-result')?.remove();
-    clearInput();clearTimeout(feedbackTimer);
+    clearTimeout(resumeTimer);clearInput();clearTimeout(feedbackTimer);
     cancelAnimationFrame(raf);
     const seq=makeSequence();
     const select=document.querySelector('#compost-pace');pace=Object.hasOwn(PACES,select.value)?select.value:'regular';select.disabled=true;

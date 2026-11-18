@@ -22,7 +22,7 @@ try {
       await expect(page.locator('.compost-legend')).toBeVisible();
       await expect(page.locator('#compost-hud')).toBeHidden();
       await page.screenshot({path:`test-results/arcade-compost-ready-${width}-${theme}.png`,fullPage:true});
-      await page.locator('[data-compost-start]').click();
+      await page.locator('[data-compost-start]').last().click();
       await expect(page.locator('#compost-hud')).toBeVisible();
       await page.locator('.compost-item svg').first().waitFor();
       await page.locator('#compost-hud [data-compost-pause]').click();
@@ -34,7 +34,7 @@ try {
   await page.evaluate(()=>{Math.random=()=>0.5;location.hash='compost';});
   await page.locator('[data-compost-start]').waitFor();
   await page.clock.install();
-  await page.locator('[data-compost-start]').click();
+  await page.locator('[data-compost-start]').last().click();
   await page.clock.runFor(5000);
   await expect(page.locator('#compost-status strong')).toHaveText(/Eggshell|Leftover rice/);
   assert.equal(await page.locator('.hipos-avatar.do-hop,.hipos-avatar.do-nod,.hipos-avatar.do-spin').count(),0,'reduced motion skips Buddy reactions');
@@ -44,7 +44,7 @@ try {
   await expect(page.locator('.compost-done .garden-growth')).toContainText('Sunflower · Sprout');
   await page.screenshot({path:'test-results/arcade-compost-growth.png',fullPage:true});
   assert.equal(await page.locator('#compost-progress').getAttribute('value'),'18');
-  await page.locator('[data-compost-start]').click();
+  await page.locator('[data-compost-start]').last().click();
   assert.equal(await page.locator('#compost-progress').getAttribute('value'),'0','replay resets progress');
   for(let i=0;i<5;i++)await page.locator('[data-compost-left]').click();
   await page.clock.runFor(6000);
@@ -55,9 +55,9 @@ try {
   await expect(page.locator('.compost-done .garden-growth')).toContainText('Sunflower · In bloom');
   await page.evaluate(()=>{Math.random=()=>0.9;});
   await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.locator('[data-compost-start]').click();
+  await page.locator('[data-compost-start]').last().click();
   const field=await page.locator('#compost-field').boundingBox();
-  await page.locator('#compost-field').dispatchEvent('pointerdown',{clientX:field.x+field.width*0.836,clientY:field.y+100});
+  await page.locator('#compost-field').dispatchEvent('pointerdown',{pointerId:1,button:0,isPrimary:true,clientX:field.x+field.width*0.836,clientY:field.y+100});
   await page.clock.runFor(4500);
   assert.ok(await page.locator('.hipos-avatar.do-nod').count()>0,'plastic catch gives a gentle nod');
   await expect(page.locator('#compost-status strong')).toHaveText(/Plastic spoon|Plastic wrapper/);

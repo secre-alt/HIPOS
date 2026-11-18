@@ -80,7 +80,7 @@ change them; update the relevant documentation when it does.
 
 - Compost Catch supports held movement buttons, arrow keys, and captured pointer
   dragging. Clear held input on release, cancellation, pause, window blur, and exit.
-  Pause preserves the visible field. Pace is selected between rounds; practice
+  Pause preserves the visible field. Resume uses a three-second countdown; pausing or hiding during the countdown cancels the resume. Ready screens show controls for the pointer type. Results offer a relevant practice tip and the next game. Pace is selected between rounds; practice
   slows falling items and spawning while preserving the same care reward rules.
   Show resolved-item progress and plastic kept out separately from food catches.
   Space pauses the focused field; Escape toggles pause within the game. Keep
