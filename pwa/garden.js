@@ -13,7 +13,7 @@ export function gardenPage(summary){
     return `<li><button type="button" class="garden-plot secondary" data-garden-plot="${i}" data-stage="${p.stage}"><span class="garden-icon" aria-hidden="true">${gardenArt(p.stage,i)}</span><span class="garden-name">${e(p.name)}</span><span class="garden-stage">${STAGE_TEXT[p.stage]}</span></button></li>`;
   }).join('');
   const line=g.complete?'Every flower is in bloom. What a lovely garden!':`${g.blooms} of ${g.plots.length} flowers in bloom`;
-  const next=g.complete?'':`<p class="note">${TIPS[g.points%TIPS.length]}</p>`;
+  const next=g.complete?'':`<p class="note">${TIPS[g.points%TIPS.length]}</p><p class="note">Each treat, completed game round, and completed challenge day counts as one care point. Three care points bring one flower into bloom.</p>`;
   return `<section class="card garden" id="garden" aria-labelledby="garden-heading">${miniBuddy('garden')}<h2 id="garden-heading">Your garden</h2>
   <p class="garden-count" role="status">${line}</p>${gardenProgress(g)}
   <ul class="garden-grid">${plots}</ul>${next}</section>`;
@@ -30,7 +30,7 @@ export function gardenGrowth(before,after){
   const changed=after.plots.map((p,i)=>({...p,index:i})).filter((p,i)=>p.stage>before.plots[i].stage);
   if(!changed.length)return '<div class="garden-growth"><p>Your garden is fully grown. Nothing wilts.</p></div>';
   const latest=changed[changed.length-1];
-  return `<div class="garden-growth"><span class="garden-growth-art" aria-hidden="true">${gardenArt(latest.stage,latest.index)}</span><div><strong>Your garden grew</strong><ul>${changed.map(p=>`<li><span>${e(p.name)}</span> · <span>${STAGE_TEXT[p.stage]}</span></li>`).join('')}</ul></div></div>`;
+  return `<div class="garden-growth"><span class="garden-growth-art" aria-hidden="true">${gardenArt(latest.stage,latest.index)}</span><div><strong>Your garden grew</strong><ul>${changed.map(p=>`<li><span>${e(p.name)}</span> · <span>${STAGE_TEXT[p.stage]}</span></li>`).join('')}</ul><p>Each completed round counts as one care point, plus one treat per game each day.</p><p>Three care points bring one flower into bloom.</p>${after.complete?'<p>Your garden is fully grown. Nothing wilts.</p>':''}</div></div>`;
 }
 
 export function initGarden(){

@@ -14,7 +14,7 @@ import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPoi
 import { compostGame, initCompost } from "./compost.js";
 import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
-import { home, selectWaste, wasteArt } from "./home.js";
+import { home, selectWaste, wasteArt, refreshTodayProgress } from "./home.js";
 import { revealOnScroll, initScrollEffects } from "./motion.js";
 import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter, resetGuideSearch } from "./guide.js";
 import { escapeHTML as e } from "./core.js";
@@ -88,8 +88,9 @@ function checkDailyCheer() {
   }, 3800);
 }
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) checkDailyCheer();
+  if (!document.hidden) { checkDailyCheer(); refreshTodayProgress(); }
 });
+window.addEventListener('storage', () => refreshTodayProgress());
 function onHabit(input) {
   if (!input.checked) {
     sound("undo");
@@ -217,6 +218,14 @@ document.addEventListener("click", async (event) => {
   const b = event.target.closest("button");
   if (!b) return;
   try {
+    if (b.dataset.dailyTarget) {
+      const target = document.getElementById(b.dataset.dailyTarget);
+      if (target) {
+        target.tabIndex = -1;
+        target.focus({preventScroll: true});
+        target.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+      }
+    }
     if (b.dataset.action === "about") {
       const about = document.querySelector("#about-dialog");
       about.innerHTML = aboutContent;
@@ -228,6 +237,7 @@ document.addEventListener("click", async (event) => {
       onChallenge(b.dataset.challenge);
       checkDailyCheer();
       checkBuddyUnlocks(true);
+      refreshTodayProgress();
     }
     if (b.hasAttribute("data-answer")) {
       answerQuiz(b);
@@ -236,6 +246,7 @@ document.addEventListener("click", async (event) => {
     if (b.hasAttribute("data-quiz-next")) {
       nextQuestion();
       if (document.querySelector("#quiz-summary")) dailyBuddy(localStorage, localDay()).quizDone();
+      refreshTodayProgress();
       checkDailyCheer();
     }
     if (b.hasAttribute("data-quiz-restart")) restartQuiz();
@@ -291,6 +302,7 @@ document.addEventListener("change", (event) => {
     onHabit(event.target);
     checkBuddyUnlocks(true);
     checkDailyCheer();
+    refreshTodayProgress();
     return;
   }
 });

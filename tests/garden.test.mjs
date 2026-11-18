@@ -18,6 +18,12 @@ test('a complete garden does not claim new growth from more rounds',()=>{
   assert.match(result,/fully grown/);
   assert.doesNotMatch(result,/Your garden grew/);
 });
+test('the final bloom explains the round reward and confirms completion',()=>{
+  const result=gardenGrowth(gardenState(26),gardenState(28));
+  assert.match(result,/Each completed round counts as one care point/);
+  assert.match(result,/one treat per game each day/);
+  assert.match(result,/Your garden is fully grown/);
+});
 
 test('garden progress includes challenge care and shows the next plant, then stops at completion',()=>{
   const partial=gardenPage({challengeDays:4});

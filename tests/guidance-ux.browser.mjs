@@ -22,6 +22,33 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`http://127.0.0.1:${port}/`);
     await expect(page.locator('#today-heading')).toHaveText(language === 'en' ? 'Today' : 'Ngayon');
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '0');
+    await page.locator('[data-daily-target="daily-heading"]').click();
+    await expect(page.locator('#daily-heading')).toBeFocused();
+    await page.locator('[data-habit="0"]').check();
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '1');
+    await page.locator('[data-challenge="skipped"]').click();
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '1');
+    await expect(page.locator('[data-daily-target="challenge-heading"]')).toContainText(language === 'en' ? 'Review' : 'Balikan');
+    await page.locator('[data-challenge=""]').click();
+    await page.locator('[data-challenge="done"]').click();
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '2');
+    await expect(page.locator('[data-daily-target="challenge-heading"]')).toHaveCount(0);
+    for(let i=0;i<3;i++) {
+      await page.locator('[data-answer="0"]').click();
+      await page.locator('[data-quiz-next]').click();
+    }
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '3');
+    await page.locator('[data-habit="1"]').check();
+    await page.locator('[data-habit="2"]').check();
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '5');
+    await expect(page.locator('[data-daily-target]')).toHaveCount(0);
+    await page.reload();
+    await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '5');
+    if(width===390) {
+      assert.notEqual(await page.locator('.classify-disc').evaluate(el=>getComputedStyle(el).boxShadow),'none');
+      assert.equal(await page.locator('.classify-disc').evaluate(el=>getComputedStyle(el).animationName),'none');
+    }
     assert.ok(await page.evaluate(() => document.querySelector('.waste-checker').compareDocumentPosition(document.querySelector('.home-today')) & Node.DOCUMENT_POSITION_FOLLOWING));
     await page.locator('[data-waste="5"]').click();
     await expect(page.locator('#waste-result')).toContainText(language === 'en' ? 'Do not touch' : 'Huwag');
@@ -47,6 +74,15 @@ try {
     await expect(page.locator('.visual-waste-card[data-kind="ok"]:visible')).toHaveCount(0);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No horizontal overflow');
     await page.screenshot({path: `test-results/ux-classify-${width}-${colorScheme}-${language}.png`, fullPage: true});
+    await page.evaluate(() => {
+      localStorage.setItem('hipos.buddy.v1', JSON.stringify({treats:27}));
+      location.hash='home';
+    });
+    await page.reload();
+    await expect(page.locator('#today-garden-note')).toHaveText(language === 'en' ? 'Your garden is fully grown. Nothing wilts.' : 'Ganap nang lumago ang iyong hardin. Walang nalalanta.');
+    await page.locator('.home-today a[href="#garden"]').click();
+    await expect(page.locator('#garden progress')).toHaveCount(0);
+    await expect(page.locator('.garden-next')).toHaveText(language === 'en' ? 'Your garden is fully grown. Nothing wilts.' : 'Ganap nang lumago ang iyong hardin. Walang nalalanta.');
     assert.deepEqual(errors, []);
     await context.close();
     console.log(`PASS guidance UX: ${width}px, ${colorScheme}, ${language}`);

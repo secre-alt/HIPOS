@@ -6,6 +6,7 @@ change them; update the relevant documentation when it does.
 ## Navigation and back to top
 
 - Mobile bottom navigation has Home, Prevent, raised Classify, Reuse, and More.
+  The Classify disc uses a steady neon green glow without pulsing or flashing.
   More opens Carry out and Games; it closes on outside click, Escape, or navigation.
   Game routes highlight More. The header menu remains available above phone widths.
 
@@ -100,6 +101,11 @@ change them; update the relevant documentation when it does.
 - Home keeps the waste checker before the optional Today activities; guides
   precede the games strip. Guidance results label the item-specific action while
   preserving the original safety text.
+- Today's summary counts three habits, a completed challenge, and a quiz finished
+  on the current local day. A skipped challenge is not complete. Shortcuts focus
+  unfinished activities; quiz replay does not remove today's completion.
+- Explain existing care rewards beside Today activities, garden progress, and
+  game results. A fully grown garden shows completion rather than promising more growth.
 - Classify search accepts English and Filipino keywords. Clear search preserves
   the chosen filter; the empty-state reset clears both search and filters. Both
   actions return keyboard focus to the search field and retain safe unknown-item advice.

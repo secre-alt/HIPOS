@@ -1,10 +1,11 @@
-import {dailyChallenge,weekly,recentGuides,schoolSection} from './engagement.js';
+import {dailyChallenge,weekly,recentGuides,schoolSection,weekSummary} from './engagement.js';
 import {waste} from './content.js';
 import {escapeHTML as e} from './core.js';
-import {checklist,quiz} from './activities.js';
+import {checklist,quiz,localDay} from './activities.js';
 import {buddyStrip} from './avatar.js';
-import {stats} from './buddy-fx.js';
+import {stats,carePoints,gardenState} from './buddy-fx.js';
 import {gamesStrip} from './games.js';
+import {dailyProgress} from './daily-buddy.js';
 
 // Interface direction informed by unslop by Damir Sokolovsky, CC BY 4.0.
 // https://heydamir.design/unslop
@@ -35,7 +36,24 @@ export function selectWaste(button){
   result.innerHTML=`<span class="result-label">${suitable?'Suitable only if clean, dry and nonhazardous':'Keep out of your dry-waste pouch'}</span><h3>${e(title)}</h3><p><strong>What to do</strong></p><p>${e(body)}</p><a href="#carry">Read the safe carry-out guide →</a>`;
 }
 
-export function activities(){return `<section class="home-today" aria-labelledby="today-heading"><h2 id="today-heading">Today</h2><p>Choose a small challenge, a quick quiz, or your daily reminders. These activities are optional.</p><div class="home-activities">${dailyChallenge()}${quiz()}${checklist()}</div></section>`;}
+export function todayProgress(){
+  let state;
+  try { state=dailyProgress(localStorage,localDay()); } catch { state={unavailable:true}; }
+  if(state.unavailable)return '<div id="today-progress"><p role="status">Daily progress could not be read. Your activities are still available below.</p></div>';
+  const link=(target,label)=>`<button type="button" class="secondary" data-daily-target="${target}">${label}</button>`;
+  return `<div id="today-progress"><p role="status"><span data-no-translate>${state.completed}</span> <span>of 5 daily actions completed</span></p><progress max="5" value="${state.completed}" aria-label="Daily progress"></progress><div class="actions">${state.habits<3?link('daily-heading','Daily reminders'):''}${!state.challenge?link('challenge-heading',state.skipped?'Review skipped challenge':'Daily challenge'):''}${!state.quiz?link('quiz-heading','Quick quiz'):''}</div>${state.completed===5?'<p>All daily activities completed. Thank you for caring!</p>':''}</div>`;
+}
+export function refreshTodayProgress(){
+  const panel=document.querySelector('#today-progress');
+  if(panel)panel.outerHTML=todayProgress();
+  const gardenNote=document.querySelector('#today-garden-note');
+  if(gardenNote)gardenNote.textContent=gardenCareNote();
+}
+function gardenCareNote(){
+  try { if(gardenState(carePoints(weekSummary())).complete)return 'Your garden is fully grown. Nothing wilts.'; } catch { /* Activity remains usable without history. */ }
+  return 'Habit treats and completed challenge days count toward garden care. Three care points bring one flower into bloom.';
+}
+export function activities(){return `<section class="home-today" aria-labelledby="today-heading"><h2 id="today-heading">Today</h2><p>Choose a small challenge, a quick quiz, or your daily reminders. These activities are optional.</p>${todayProgress()}<div class="home-activities">${dailyChallenge()}${quiz()}${checklist()}</div><p class="note" id="today-garden-note">${gardenCareNote()}</p><a class="button-link secondary" href="#garden">Visit your garden</a></section>`;}
 
 const reuseDrawings=[drawings[2],'<rect x="14" y="34" width="68" height="44" rx="12" fill="#dfc58c"/><rect x="12" y="28" width="72" height="14" rx="6" fill="#efdfba"/><path d="M41 29v49h14V29M34 28v-8h28v8"/>','<path d="M27 14v23m-8-23v15q0 10 8 10t8-10V14M27 39v43M65 14q-15 0-15 17t15 17q15 0 15-17T65 14M65 48v34" fill="#d9e5d3"/>'];
 export function reuseArt(index){return index<3?`<svg class="reuse-art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${reuseDrawings[index]}</svg>`:'';}

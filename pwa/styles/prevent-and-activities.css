@@ -212,6 +212,17 @@
   max-width: 65ch;
   margin: 0 0 20px;
 }
+#today-progress {
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+#today-progress p { margin: 0 0 12px; }
+#today-progress progress { display: block; width: 100%; margin-bottom: 12px; accent-color: var(--green); }
+#today-progress .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#today-progress button { min-height: 44px; }
 .home-activities {
   gap: 20px;
   align-items: start;
