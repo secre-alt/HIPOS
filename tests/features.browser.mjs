@@ -239,6 +239,9 @@ try{
       await page.locator('#sort-next').click();
     }
     assert.match(await page.locator('.sort-done h3').innerText(),/You sorted \d of 6 right\./);
+    assert.equal(await page.locator('dialog.sort-result[open]').count(),1,'the result opens as a modal');
+    await page.locator('[data-sort-result-close]').click();assert.equal(await page.locator('dialog.sort-result[open]').count(),0,'the result modal closes');
+    await page.locator('[data-sort-results]').click();assert.equal(await page.locator('dialog.sort-result[open]').count(),1,'See results reopens it');
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')||'{}').sorts===1);
     await page.locator('[data-sort-again]').click();assert.match(await page.locator('.sort-progress').innerText(),/Item 1 of 6/);
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();

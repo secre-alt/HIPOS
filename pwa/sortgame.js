@@ -47,7 +47,7 @@ function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
   const review=game.review.length?`<details class="sort-review"><summary>Review what you learned</summary><ul>${game.review.map(item=>`<li><strong>${e(item.title)}</strong><p>${e(item.body)}</p></li>`).join('')}</ul></details>`:'';
-  return `<div class="sort-done"><h3>You sorted ${score} of ${total} right.</h3><p>${line}</p>${game.growth||''}<p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div>`;
+  return `<div class="sort-finished"><p class="sort-finished-line">You sorted ${score} of ${total} right.</p><div class="actions"><button type="button" data-sort-results>See results</button><button type="button" class="secondary" data-sort-restart>Play again</button></div></div><dialog class="sort-answer-panel sort-result" id="sort-result-dialog" aria-labelledby="sort-result-title"><button type="button" class="secondary sort-modal-close" data-sort-result-close aria-label="Close">&times;</button><div class="sort-done"><h3 id="sort-result-title">You sorted ${score} of ${total} right.</h3><p>${line}</p>${game.growth||''}<p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#garden">Visit your garden</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div></dialog>`;
 }
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
@@ -80,6 +80,13 @@ function answer(choice){
   if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
   else{cheer('retry');}
 }
+function openResult(){
+  const modal=document.querySelector('#sort-result-dialog');if(!modal)return;
+  modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-result-close]'))modal.close();});
+  modal.addEventListener('close',()=>{document.querySelector('[data-sort-results]')?.focus({preventScroll:true});});
+  if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
+  const heading=modal.querySelector('h3');heading?.setAttribute('tabindex','-1');heading?.focus({preventScroll:true});modal.scrollTop=0;
+}
 function advance(){
   if(!game||!game.answered||game.i>=game.items.length)return;game.i++;game.answered=false;
   document.querySelector('#sort-answer-dialog')?.close();
@@ -92,7 +99,7 @@ function advance(){
     box.innerHTML=body();
     if(game.score===game.items.length){celebrate();cheer('complete');}
     else{cheer('complete');}
-    box.querySelector('h3')?.setAttribute('tabindex','-1');box.querySelector('h3')?.focus({preventScroll:true});
+    openResult();
     return true; // round finished: the caller refreshes stickers
   }
   box.innerHTML=body();
@@ -104,7 +111,8 @@ export function sortClick(button){
   if(button.hasAttribute('data-sort-review')){const modal=document.querySelector('#sort-answer-dialog');modal.showModal();document.querySelector('#sort-next').focus({preventScroll:true});return 'review';}
   if(button.hasAttribute('data-sort-bin'))return answer(button.dataset.sortBin)??'answered';
   if(button.hasAttribute('data-sort-next'))return advance()?'finished':'next';
-  if(button.hasAttribute('data-sort-again')){document.querySelector('#sort-game').classList.remove('is-answered');start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
+  if(button.hasAttribute('data-sort-results')){openResult();return 'results';}
+  if(button.hasAttribute('data-sort-again')||button.hasAttribute('data-sort-restart')){document.querySelector('#sort-game').classList.remove('is-answered');start();document.querySelector('#sort-body').innerHTML=body();fitGame();return 'again';}
 }
 // Keep the item and both bins on screen (above the bottom bar) so dragging always has a target.
 let fitFrame=0;

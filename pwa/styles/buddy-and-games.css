@@ -1503,3 +1503,9 @@ input[type=checkbox]:checked {
 @keyframes sg-hop { 0%, 100% { transform:translateY(0) scale(1.04, .96); } 50% { transform:translateY(-9px) scale(.96, 1.04); } }
 @keyframes sg-jump { 0%, 100% { transform:translateY(0); } 50% { transform:translateY(-14px) rotate(4deg); } }
 @keyframes sg-shake { 25% { transform:translateX(-5px); } 75% { transform:translateX(5px); } }
+
+/* Sorting game: the end-of-round summary is a modal; this stays behind it */
+.sort-finished { display:grid; justify-items:center; gap:12px; padding:16px 0; text-align:center; }
+.sort-finished-line { margin:0; font-weight:700; }
+.sort-finished .actions { justify-content:center; }
+.sort-result .sort-done { padding:8px 0 0; }
