@@ -528,6 +528,12 @@ export function loadAvatar() {
   }
 }
 
+// Applies and saves a new look (used by the first-run welcome).
+export function setAvatar(config) {
+  current = normalizeConfig(config);
+  return saveAvatar(current);
+}
+
 export function saveAvatar(config) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeConfig(config)));

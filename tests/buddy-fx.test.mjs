@@ -14,7 +14,7 @@ test('settings default to cheers on, sound off, default theme',()=>{
 test('one treat per habit per day: ticking again cannot farm treats',()=>{
   assert.equal(fx.giveTreat(0,'2026-11-15'),true);assert.equal(fx.giveTreat(0,'2026-11-15'),false);
   assert.equal(fx.giveTreat(1,'2026-11-15'),true);assert.equal(fx.giveTreat(0,'2026-11-16'),true);
-  assert.equal(fx.giveTreat(5,'2026-11-16'),false);assert.equal(fx.giveTreat(-1,'2026-11-16'),false);
+  assert.equal(fx.giveTreat(6,'2026-11-16'),false);assert.equal(fx.giveTreat(-1,'2026-11-16'),false);
   assert.equal(fx.stats().treats,3);
 });
 test('taps and finished sorting rounds are counted',()=>{
@@ -28,10 +28,10 @@ test('stickers come from badges and counters, are kept, and are announced once',
   assert.deepEqual(fx.syncStickers(week),[],'already collected');
   for(let i=0;i<7;i++)fx.recordTap();
   assert.deepEqual(fx.syncStickers({badges:[],challengeDays:3}).map(t=>t.key).sort(),['challenge3','tap10']);
-  assert.match(fx.stickerBook(),/6 of 15 stickers collected/);
+  assert.match(fx.stickerBook(),/6 of 17 stickers collected/);
 });
 test('damaged saved data falls back safely and is sanitized',async()=>{
-  localStorage.setItem('hipos.buddy.v1','{"taps":-5,"treats":"x","sorts":2.5,"stickers":["nope","first"],"seasons":["wika","bad","default"],"treatDays":{"bad":1,"2026-11-15":40}}');
+  localStorage.setItem('hipos.buddy.v1','{"taps":-5,"treats":"x","sorts":2.5,"stickers":["nope","first"],"seasons":["wika","bad","default"],"treatDays":{"bad":1,"2026-11-15":70}}');
   const fresh=await import('../pwa/buddy-fx.js?fresh1');const s=fresh.stats();
   assert.deepEqual([s.taps,s.treats,s.sorts],[0,0,0]);assert.deepEqual(s.stickers,['first']);assert.deepEqual(s.seasons,['wika']);assert.deepEqual(s.treatDays,{});
   localStorage.setItem('hipos.buddy.v1','not json');
@@ -90,4 +90,12 @@ test('compost rounds earn stickers; a perfect round earns the champ sticker',()=
   assert.ok(!fx.earnedKeys(week).has('compostperfect'));
   fx.recordCompost(12,12);
   assert.ok(fx.earnedKeys(week).has('compostperfect'));
+});
+test('hazard rounds count and a perfect one earns the detective sticker', () => {
+  const week = { badges: [], challengeDays: 0 };
+  fx.recordHazard(5, 8);
+  assert.ok(fx.earnedKeys(week).has('hazard1'));
+  assert.ok(!fx.earnedKeys(week).has('hazardperfect'));
+  fx.recordHazard(8, 8);
+  assert.ok(fx.earnedKeys(week).has('hazardperfect'));
 });

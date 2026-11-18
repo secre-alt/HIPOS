@@ -1509,3 +1509,35 @@ input[type=checkbox]:checked {
 .sort-finished-line { margin:0; font-weight:700; }
 .sort-finished .actions { justify-content:center; }
 .sort-result .sort-done { padding:8px 0 0; }
+
+/* First-run welcome */
+.welcome { text-align: left; }
+.welcome h2 { margin: 0 0 6px; font-size: 1.5rem; }
+.welcome p { margin: 0 0 12px; }
+.welcome .welcome-step { margin: 0 0 8px; font-size: .8125rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.welcome-buddies { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.welcome label { display: block; margin: 4px 0; font-weight: 700; }
+.welcome input[type=text] { width: 100%; min-height: 48px; }
+.welcome-langs, .welcome-start { display: grid; gap: 10px; }
+.welcome-actions { justify-content: space-between; margin-top: 18px; }
+@media (max-width: 480px) { .welcome-actions { flex-wrap: wrap; } }
+.garden-empty, .sticker-empty { margin: 12px 0; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 16px; }
+.garden-empty .note, .sticker-empty .note { margin: 0 0 10px; }
+
+/* Today: the first unfinished activity is the obvious next step */
+.next-up-tag { margin: 12px 0 6px; font-size: .8125rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+#today-progress .next-up { min-height: 48px; }
+
+.games-rewards { margin-top: 20px; }
+.games-rewards h2 { margin: 0 0 12px; }
+.games-rewards ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.games-rewards li { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 16px; }
+.rewards-art { flex: none; line-height: 0; opacity: .85; }
+.rewards-hint { display: block; color: var(--muted); font-size: .9rem; }
+
+/* Safe or Stay Away */
+.arcade-hazard .arcade-preview svg { transform:rotate(-4deg); }
+.hazard-item .game-item { width:min(40vw,150px); height:auto; }
+#hazard-feedback { min-height:3.2em; margin-top:12px; }
+#hazard-feedback:empty { min-height:0; margin:0; }
+.hazard-game .sort-bin { min-height:88px; }

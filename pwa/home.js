@@ -40,8 +40,13 @@ export function todayProgress(){
   let state;
   try { state=dailyProgress(localStorage,localDay()); } catch { state={unavailable:true}; }
   if(state.unavailable)return '<div id="today-progress"><p role="status">Daily progress could not be read. Your activities are still available below.</p></div>';
-  const link=(target,label)=>`<button type="button" class="secondary" data-daily-target="${target}">${label}</button>`;
-  return `<div id="today-progress"><p role="status"><span data-no-translate>${state.completed}</span> <span>of 5 daily actions completed</span></p><progress max="5" value="${state.completed}" aria-label="Daily progress"></progress><div class="actions">${state.habits<3?link('daily-heading','Daily reminders'):''}${!state.challenge?link('challenge-heading',state.skipped?'Review skipped challenge':'Daily challenge'):''}${!state.quiz?link('quiz-heading','Quick quiz'):''}</div>${state.completed===5?'<p>All daily activities completed. Thank you for caring!</p>':''}</div>`;
+  const pending=[];
+  if(state.habits<3)pending.push(['daily-heading','Daily reminders']);
+  if(!state.challenge)pending.push(['challenge-heading',state.skipped?'Review skipped challenge':'Daily challenge']);
+  if(!state.quiz)pending.push(['quiz-heading','Quick quiz']);
+  const link=([target,label],i)=>`<button type="button" class="${i===0?'next-up':'secondary'}" data-daily-target="${target}">${label}</button>`;
+  const done=state.completed===5?'<p>All daily activities completed. Thank you for caring!</p><div class="actions"><a class="button-link" href="#games">Play a game</a></div>':'';
+  return `<div id="today-progress"><p role="status"><span data-no-translate>${state.completed}</span> <span>of 5 daily actions completed</span></p><progress max="5" value="${state.completed}" aria-label="Daily progress"></progress>${pending.length?'<p class="next-up-tag">Next up</p>':''}<div class="actions">${pending.map(link).join('')}</div>${done}</div>`;
 }
 export function refreshTodayProgress(){
   const panel=document.querySelector('#today-progress');

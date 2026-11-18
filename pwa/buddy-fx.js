@@ -109,13 +109,13 @@ const SEASON_LINES={christmas:'Merry! Festive mode is on.',earth:'Happy Earth Da
 export function applySeason(){const s=season();if(s==='default')delete document.documentElement.dataset.season;else document.documentElement.dataset.season=s;}
 
 // ---------- Saved buddy progress ----------
-const blank=()=>({taps:0,treats:0,treatDays:{},sorts:0,perfect:0,compost:0,compostPerfect:0,seasons:[],stickers:[]});
+const blank=()=>({taps:0,treats:0,treatDays:{},sorts:0,perfect:0,compost:0,compostPerfect:0,hazard:0,hazardPerfect:0,seasons:[],stickers:[]});
 function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(STORE)||'null');if(!raw||typeof raw!=='object')return blank();
     const n=v=>Number.isInteger(v)&&v>=0&&v<1e6?v:0,out=blank();
-    out.taps=n(raw.taps);out.treats=n(raw.treats);out.sorts=n(raw.sorts);out.perfect=n(raw.perfect);out.compost=n(raw.compost);out.compostPerfect=n(raw.compostPerfect);
-    if(raw.treatDays&&typeof raw.treatDays==='object')for(const [k,v] of Object.entries(raw.treatDays).slice(-14))if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&Number.isInteger(v)&&v>=0&&v<32)out.treatDays[k]=v;
+    out.taps=n(raw.taps);out.treats=n(raw.treats);out.sorts=n(raw.sorts);out.perfect=n(raw.perfect);out.compost=n(raw.compost);out.compostPerfect=n(raw.compostPerfect);out.hazard=n(raw.hazard);out.hazardPerfect=n(raw.hazardPerfect);
+    if(raw.treatDays&&typeof raw.treatDays==='object')for(const [k,v] of Object.entries(raw.treatDays).slice(-14))if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&Number.isInteger(v)&&v>=0&&v<64)out.treatDays[k]=v;
     if(Array.isArray(raw.seasons))out.seasons=raw.seasons.filter(s=>SEASONS.includes(s)&&s!=='default');
     if(Array.isArray(raw.stickers))out.stickers=raw.stickers.filter(k=>STICKERS.some(s=>s.key===k));
     return out;
@@ -130,11 +130,12 @@ export const stats=()=>({...get()});
 
 export function recordTap(){const s=get();s.taps=Math.min(s.taps+1,999999);save();return s.taps;}
 export function recordSort(score,total){const s=get();s.sorts=Math.min(s.sorts+1,999999);if(score===total)s.perfect=Math.min(s.perfect+1,999999);save();}
+export function recordHazard(score,total){const s=get();s.hazard=Math.min(s.hazard+1,999999);if(total>0&&score===total)s.hazardPerfect=Math.min(s.hazardPerfect+1,999999);save();}
 export function recordCompost(caught,good){const s=get();s.compost=Math.min(s.compost+1,999999);if(good>0&&caught===good)s.compostPerfect=Math.min(s.compostPerfect+1,999999);save();}
 function markSeason(v){const s=get();if(!s.seasons.includes(v)){s.seasons.push(v);save();}}
 // One treat per habit per day, so ticking and unticking cannot farm them.
 export function giveTreat(index,day){
-  const s=get(),bit=1<<index;if(!Number.isInteger(index)||index<0||index>4)return false;
+  const s=get(),bit=1<<index;if(!Number.isInteger(index)||index<0||index>5)return false;
   if((s.treatDays[day]||0)&bit)return false;
   s.treatDays[day]=(s.treatDays[day]||0)|bit;s.treats=Math.min(s.treats+1,999999);
   const keys=Object.keys(s.treatDays).sort();while(keys.length>14)delete s.treatDays[keys.shift()];
@@ -142,7 +143,7 @@ export function giveTreat(index,day){
 }
 
 // Finishing a game round earns one treat per game per day (bits 3 and 4 beside the three habits).
-const GAME_BIT={sort:3,compost:4};
+const GAME_BIT={sort:3,compost:4,hazard:5};
 export const todayKey=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 export const giveGameTreat=(game,day=todayKey())=>game in GAME_BIT?giveTreat(GAME_BIT[game],day):false;
 
@@ -151,7 +152,7 @@ export const giveGameTreat=(game,day=todayKey())=>game in GAME_BIT?giveTreat(GAM
 // Nine plots, three care points each (seed, sprout, bloom). Nothing wilts and nothing is lost.
 export const PLOTS=[['🌻','Sunflower'],['🌷','Tulip'],['🌼','Daisy'],['🌸','Cherry blossom'],['🌹','Rose'],['🪻','Lavender'],['🌺','Hibiscus'],['🍓','Strawberry'],['🍅','Tomato']];
 export const POINTS_PER_PLOT=3;
-export const carePoints=(summary)=>{const s=get();return s.treats+s.sorts+s.compost+(summary?.challengeDays||0);};
+export const carePoints=(summary)=>{const s=get();return s.treats+s.sorts+s.compost+s.hazard+(summary?.challengeDays||0);};
 export function gardenState(points){
   const total=Math.max(0,Math.floor(points)||0);
   const plots=PLOTS.map(([bloom,name],i)=>{const stage=Math.max(0,Math.min(POINTS_PER_PLOT,total-i*POINTS_PER_PLOT));return {bloom,name,stage};});
@@ -173,6 +174,8 @@ export const STICKERS=[
   {key:'treat10',name:'Snack time',hint:'Share ten treats with your buddy by checking off habits.',color:'#ffc78a',icon:'M12 8c-2-2-6-1-6 3 0 5 4 9 6 9s6-4 6-9c0-4-4-5-6-3zM12 8c0-2 1-4 3-5'},
   {key:'compost1',name:'Compost helper',hint:'Finish a Compost Catch round.',color:'#c8e6a0',icon:'M5 14c0-5 4-9 14-9 0 10-4 14-9 14-3 0-5-2-5-5zM9 15c2-3 4-5 7-7'},
   {key:'compostperfect',name:'Compost champ',hint:'Catch every compostable scrap in one round.',color:'#a9d99b',icon:'M12 3c4 3 6 6 6 10a6 6 0 0 1-12 0c0-4 2-7 6-10zM12 21v-8'},
+  {key:'hazard1',name:'Safety spotter',hint:'Finish a Safe or Stay Away round.',color:'#ffd36b',icon:'M12 3l9 16H3zM12 10v4M12 17v.5'},
+  {key:'hazardperfect',name:'Danger detective',hint:'Spot every hazard in one round.',color:'#ffb347',icon:'M12 3l8 4v5c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V7zM9 12l2 2 4-4'},
   {key:'garden1',name:'Green thumb',hint:'Grow your first flower in the Buddy garden.',color:'#ffc2d4',icon:'M12 21v-9M12 12c-4 0-6-3-6-6 4 0 6 2 6 6zM12 12c4 0 6-3 6-6-4 0-6 2-6 6z'},
   {key:'garden9',name:'Garden party',hint:'Grow all nine flowers in the Buddy garden.',color:'#ffe08a',icon:'M12 3l2 5 5 .5-4 3.5 1.5 5L12 14.5 7.5 17 9 12 5 8.5 10 8z'},
   {key:'festive',name:'Festive friend',hint:'Try a seasonal theme in Settings.',color:'#ff8e8e',icon:'M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3'},
@@ -183,7 +186,7 @@ export function earnedKeys(summary){
   const s=get(),keys=new Set((summary?.badges||[]).filter(b=>b.earned).map(b=>b.key));
   if((summary?.challengeDays||0)>=3)keys.add('challenge3');
   if(s.sorts>=1)keys.add('sort1');if(s.sorts>=5)keys.add('sort5');if(s.perfect>=1)keys.add('perfect');
-  if(s.compost>=1)keys.add('compost1');if(s.compostPerfect>=1)keys.add('compostperfect');
+  if(s.hazard>=1)keys.add('hazard1');if(s.hazardPerfect>=1)keys.add('hazardperfect');if(s.compost>=1)keys.add('compost1');if(s.compostPerfect>=1)keys.add('compostperfect');
   const g=gardenState(carePoints(summary));if(g.blooms>=1)keys.add('garden1');if(g.complete)keys.add('garden9');
   if(s.taps>=10)keys.add('tap10');if(s.treats>=10)keys.add('treat10');if(s.seasons.length)keys.add('festive');
   return keys;
@@ -197,7 +200,7 @@ export function syncStickers(summary){
 const stickerArt=t=>`<svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="22" fill="${t.color}"/><circle cx="24" cy="24" r="22" fill="none" stroke="#ffffffaa" stroke-width="3" stroke-dasharray="3 5"/><g transform="translate(12 12)" fill="none" stroke="#143026" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${t.icon}"/></g></svg>`;
 export function stickerBook(){
   const have=new Set(get().stickers),count=STICKERS.filter(t=>have.has(t.key)).length;
-  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${STICKERS.length} stickers collected. Stickers stay yours once you earn them.</p><ul class="stickers">${STICKERS.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span></li>`;}).join('')}</ul></section>`;
+  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${STICKERS.length} stickers collected. Stickers stay yours once you earn them.</p>${count===0?'<div class="sticker-empty"><p class="note">No stickers yet. Finish a game round or check off a daily habit to earn your first one.</p><div class="actions"><a class="button-link" href="#games">Play a game</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}<ul class="stickers">${STICKERS.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span></li>`;}).join('')}</ul></section>`;
 }
 
 // ---------- Mood ----------

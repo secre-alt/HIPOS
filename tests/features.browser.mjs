@@ -210,7 +210,7 @@ try{
     assert.ok(await page.locator('#buddy-say').isHidden(),'cheers off hides the bubble');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
     assert.ok(await page.locator('.sticker.earned').count()>=1,'first step sticker earned');
-    assert.equal(await page.locator('.sticker').count(),15);
+    assert.equal(await page.locator('.sticker').count(),17);
     assert.ok(await page.locator('[data-mood]').count()>=1,'buddy has a mood');
     // Filipino
     await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
@@ -253,6 +253,44 @@ try{
     await close(s);
   });
 
+  await check('Safe or Stay Away: eight items, feedback, result modal, rewards and a sticker',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.goto(base+'#hazard');await page.locator('#hazard-game').waitFor();
+    assert.ok((await page.locator('#hazard-game .sort-bin').first().boundingBox()).height>=44,'touch size');
+    for(let i=0;i<8;i++){
+      await page.locator('[data-hazard="safe"]').click();
+      assert.ok(await page.locator('#hazard-feedback').innerText(),'feedback shown');
+      await page.locator('[data-hazard-next]').click();
+    }
+    await page.locator('dialog.hazard-result[open]').waitFor({timeout:5000});
+    assert.match(await page.locator('.hazard-result h3').innerText(),/of 8 right/);
+    const st=await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')));
+    assert.equal(st.hazard,1);
+    await page.locator('.hazard-result .compost-result-close').click();
+    await page.locator('dialog.hazard-result').waitFor({state:'detached',timeout:3000});
+    await page.goto(base+'#games');assert.ok(await page.locator('.arcade-hazard').isVisible(),'hub card');
+    await close(s);
+  });
+  await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    assert.equal(await page.locator('dialog.welcome').count(),0,'automated browsers are not interrupted');
+    await page.evaluate(()=>localStorage.setItem('hipos.welcome.v1','force'));
+    await page.reload();await page.locator('dialog.welcome[open]').waitFor({timeout:8000});
+    assert.match(await page.locator('.welcome h2').innerText(),/Meet your buddy/);
+    await page.locator('[data-welcome-buddy="bottle"]').click();await page.locator('#welcome-name').fill('Pip');
+    await page.locator('[data-welcome-next]').click();assert.match(await page.locator('.welcome h2').innerText(),/language/i);
+    await page.locator('[data-welcome-lang="fil"]').click();assert.equal(await page.evaluate(()=>document.documentElement.lang),'fil','language applies at once');
+    await page.locator('[data-welcome-lang="en"]').click();
+    await page.locator('[data-welcome-next]').click();assert.match(await page.locator('.welcome h2').innerText(),/small thing/);
+    assert.ok(await page.locator('.welcome a, .welcome button').evaluateAll(els=>els.filter(e=>e.getClientRects().length).every(e=>e.getBoundingClientRect().height>=44)),'welcome controls are touch sized');
+    await page.locator('[data-welcome-go][href="#sort"]').click();
+    await page.waitForFunction(()=>location.hash==='#sort'&&!document.querySelector('dialog.welcome'));
+    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.avatar.v1')).character),'bottle','buddy choice is saved');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.buddy.nickname.v1')),'Pip','nickname is saved');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('hipos.welcome.v1')),'done');
+    await page.reload();await page.waitForTimeout(1200);assert.equal(await page.locator('dialog.welcome').count(),0,'it never shows twice');
+    await close(s);
+  });
   await check('settings: theme and sound persist; seasonal theme unlocks its extra',async()=>{
     const s=await open({viewport:{width:1280,height:900},reducedMotion:'reduce'}),{page}=s;
     await openSettings(page,'personal');await page.selectOption('#season','christmas');await page.keyboard.press('Escape');
@@ -339,9 +377,9 @@ try{
     for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),0,name+' is grouped under Games');
     assert.equal(await page.locator('.games-strip a[href="#games"]').count(),1,'home links to Games');
     await page.locator('#nav a',{hasText:'Games'}).click();await page.locator('.games-grid').waitFor();
-    assert.equal(await page.locator('.arcade-meta').count(),3,'each game card shows progress');
+    assert.equal(await page.locator('.arcade-meta').count(),4,'each game card shows progress');
     assert.match(await page.locator('.arcade-meta').first().innerText(),/Not played yet/);
-    for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
+    for(const id of ['sort','compost','hazard','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
     await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
     assert.equal(await page.locator('#nav a.active').innerText(),'Games','a game keeps Games active in the menu');
     await page.locator('a',{hasText:'All games'}).click();await page.locator('.games-grid').waitFor();

@@ -16,7 +16,7 @@ export function gardenPage(summary){
   const next=g.complete?'':`<p class="note">${TIPS[g.points%TIPS.length]}</p><p class="note">Each treat, completed game round, and completed challenge day counts as one care point. Three care points bring one flower into bloom.</p>`;
   return `<section class="card garden" id="garden" aria-labelledby="garden-heading">${miniBuddy('garden')}<h2 id="garden-heading">Your garden</h2>
   <p class="garden-count" role="status">${line}</p>${gardenProgress(g)}
-  <ul class="garden-grid">${plots}</ul>${next}</section>`;
+  <ul class="garden-grid">${plots}</ul>${next}${g.points===0?'<div class="garden-empty"><p class="note">Your garden is waiting for its first care point. Try one of these:</p><div class="actions"><a class="button-link" href="#sort">Play the sorting game</a><a class="button-link secondary" href="#compost">Catch the compost</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}</section>`;
 }
 
 function gardenProgress(g){

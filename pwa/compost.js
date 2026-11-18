@@ -19,7 +19,9 @@ const ITEMS=[
 ];
 const TOTAL=18,BASKET_STEP=8,CATCH_Y=78,CATCH_RANGE=12,MOVE_SPEED=70;
 const PACES={regular:{spawn:1100,fall:21},practice:{spawn:1500,fall:14}};
-let g=null,raf=0,last=0,gardenSummary={},pace='regular',feedbackTimer=0;
+const PACE_KEY='hipos.compost.pace';
+const savedPace=()=>{try{const v=localStorage.getItem(PACE_KEY);return v==='practice'?'practice':'regular';}catch{return 'regular';}};
+let g=null,raf=0,last=0,gardenSummary={},pace=savedPace(),feedbackTimer=0;
 
 // Build a fair sequence: about two thirds compostable, never the same item twice in a row.
 export function makeSequence(random=Math.random){
@@ -207,7 +209,7 @@ export function initCompost(){
     clearTimeout(resumeTimer);clearInput();clearTimeout(feedbackTimer);
     cancelAnimationFrame(raf);
     const seq=makeSequence();
-    const select=document.querySelector('#compost-pace');pace=Object.hasOwn(PACES,select.value)?select.value:'regular';select.disabled=true;
+    const select=document.querySelector('#compost-pace');pace=Object.hasOwn(PACES,select.value)?select.value:'regular';select.disabled=true;try{localStorage.setItem(PACE_KEY,pace);}catch{/* the pace simply resets next time */}
     g={paused:false,direction:0,pace,...PACES[pace],seq,good:seq.filter(x=>x.good).length,spawned:0,resolved:0,falling:[],caught:0,plasticCaught:0,plasticAvoided:0,basket:50,clock:0};
     field.classList.remove('is-paused');
     field.innerHTML=`<div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>`;
