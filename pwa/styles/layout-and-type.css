@@ -646,3 +646,24 @@ html[data-font=pixelify] {
 /* Result modals: the close button gets its own row so it never touches the heading */
 .compost-result, .sort-result { padding-top:56px; }
 .compost-result .compost-result-close, .sort-result .sort-modal-close { top:8px; right:8px; }
+
+/* Footer: one quiet row of matching actions, the credit on its own line */
+footer { gap: 6px 24px; padding: 22px 0 8px; border-top: 1px solid var(--line); }
+.footer-info p { margin: 0 0 8px; font-size: .875rem; }
+footer .footer-actions { gap: 10px; }
+footer .footer-actions > a, footer .footer-actions > button, footer .footer-actions > #footer-install {
+  font-family: inherit; display: inline-flex; align-items: center; gap: 8px; margin: 0; min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--line); border-radius: 999px; background: transparent; box-shadow: none;
+  color: var(--ink); font-size: .875rem; font-weight: 600; letter-spacing: 0; text-transform: none; text-decoration: none; line-height: 1.2;
+}
+footer .footer-actions > a:hover, footer .footer-actions > button:hover, footer .footer-actions > #footer-install:hover { background: var(--leaf-soft); border-color: var(--green-mid, var(--green)); color: var(--ink); text-decoration: none; transform: none; }
+footer .footer-actions svg { flex: none; color: var(--green-mid, var(--green)); }
+footer .footer-actions > [hidden], footer .footer-actions > #footer-install[hidden] { display: none; }
+.developer-credit { color: var(--muted); }
+@media (max-width: 760px) {
+  footer { padding-top: 18px; }
+  footer .footer-actions > a, footer .footer-actions > button, footer .footer-actions > #footer-install { padding: 0 14px; }
+  .developer-credit { margin-top: 6px; }
+}
+:root[data-theme=dark] footer .footer-actions svg { color: #a9e57b; }
+footer .footer-actions > button, footer .footer-actions > button span, footer .footer-actions > #footer-install, footer .footer-actions > #footer-install span { font-family: var(--font-body); font-weight: 600; }
