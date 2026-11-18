@@ -632,3 +632,12 @@ html[data-font=pixelify] {
 .arcade-meta { display: block; margin: 0; align-self: end; font-size: .875rem; font-weight: 700; color: var(--muted); }
 /* The buddy bubble is a status message, so it never blocks dragging or tapping what is beneath it. */
 .buddy-say, .buddy-dock .buddy-say { pointer-events: none; }
+
+/* Compost Catch results open as a modal over the field */
+.compost-result { position:fixed; inset:0; margin:auto; width:min(440px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); padding:24px 20px 20px; border:2px solid var(--line); border-radius:28px 28px 28px 12px; background:var(--surface); color:var(--ink); overflow-y:auto; box-shadow:0 16px 48px #0003; }
+.compost-result::backdrop { background:#09271fd0; }
+.compost-result[open] { display:block; animation:compost-result-arrive .22s ease-out; }
+.compost-result .compost-done { position:static; height:auto; padding:0; overflow:visible; background:none; }
+.compost-result-close { z-index:3; position:absolute; top:8px; right:8px; width:44px; height:44px; min-height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--ink); font-size:1.5rem; box-shadow:none; }
+@keyframes compost-result-arrive { from { transform:translateY(12px) scale(.97); opacity:0; } }
+@media (prefers-reduced-motion: reduce) { .compost-result[open] { animation:none; } }
