@@ -49,6 +49,15 @@ function gamesProgress() {
     return {};
   }
 }
+// Messages and pop-ups wait until a round-result modal is closed, so they never cover its buttons.
+function whenResultClosed(fn) {
+  const modal = document.querySelector("dialog.sort-result[open], dialog.compost-result[open]");
+  if (!modal) return fn();
+  let ticks = 0;
+  const timer = setInterval(() => {
+    if (!modal.isConnected || !modal.open || ++ticks > 400) { clearInterval(timer); fn(); }
+  }, 250);
+}
 function checkBuddyUnlocks(announce = false) {
   try {
     const sum = summaryNow(), fresh = syncUnlocks(sum), stickers = syncStickers(sum);
@@ -116,7 +125,7 @@ function onWaste(button) {
   animate("hop");
   sound("boop");
 }
-document.addEventListener("hipos-game-done", () => checkBuddyUnlocks(true));
+document.addEventListener("hipos-game-done", () => whenResultClosed(() => checkBuddyUnlocks(true)));
 const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
 const greeted = /* @__PURE__ */ new Set();
 let firstRender = true;
@@ -240,7 +249,7 @@ document.addEventListener("click", async (event) => {
     }
     if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
       const result = sortClick(b);
-      if (result === "finished") checkBuddyUnlocks(true);
+      if (result === "finished") whenResultClosed(() => checkBuddyUnlocks(true));
     }
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {

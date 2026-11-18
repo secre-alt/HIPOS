@@ -642,3 +642,7 @@ html[data-font=pixelify] {
 .compost-result-close { z-index:3; position:absolute; top:8px; right:8px; width:44px; height:44px; min-height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--ink); font-size:1.5rem; box-shadow:none; }
 @keyframes compost-result-arrive { from { transform:translateY(12px) scale(.97); opacity:0; } }
 @media (prefers-reduced-motion: reduce) { .compost-result[open] { animation:none; } }
+
+/* Result modals: the close button gets its own row so it never touches the heading */
+.compost-result, .sort-result { padding-top:56px; }
+.compost-result .compost-result-close, .sort-result .sort-modal-close { top:8px; right:8px; }
