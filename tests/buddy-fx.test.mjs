@@ -112,3 +112,27 @@ test('review list keeps wrong answers, clears them when answered right, survives
   assert.deepEqual(reviewList(st), []);
   assert.deepEqual(reviewList({ getItem() { throw new Error('blocked'); } }), []);
 });
+test('a practice round starts with the missed items and keeps the round size', async () => {
+  const { makePracticeRound, makeRound } = await import('../pwa/sortgame.js');
+  const base = makeRound(() => 0.3);
+  const missed = base.slice(0, 2).map((x) => ({ title: x.title, body: x.body }));
+  const round = makePracticeRound(missed, () => 0.3);
+  assert.equal(round.length, base.length);
+  assert.equal(new Set(round.map((x) => x.title)).size, round.length);
+  for (const m of missed) assert.ok(round.some((x) => x.title === m.title), m.title + ' is practiced');
+});
+test('sticker progress counts toward a goal and never passes it', () => {
+  assert.deepEqual(fx.stickerProgress('streak3', { streak: { count: 2 } }), [2, 3]);
+  assert.deepEqual(fx.stickerProgress('streak7', { streak: { count: 9 } }), [7, 7]);
+  assert.equal(fx.stickerProgress('perfect', {}), null);
+});
+test('how-to tips show once and stay dismissed', async () => {
+  const { howTo } = await import('../pwa/howto.js');
+  const store = memoryStorage();
+  assert.match(howTo('sort', store), /How to play/);
+  store.setItem('hipos.howto.v1', JSON.stringify(['sort']));
+  assert.equal(howTo('sort', store), '');
+  assert.equal(howTo('nope', store), '');
+  store.setItem('hipos.howto.v1', '{bad');
+  assert.match(howTo('compost', store), /How to play/);
+});

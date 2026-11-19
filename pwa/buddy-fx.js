@@ -199,9 +199,16 @@ export function syncStickers(summary){
   return fresh;
 }
 const stickerArt=t=>`<svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="22" fill="${t.color}"/><circle cx="24" cy="24" r="22" fill="none" stroke="#ffffffaa" stroke-width="3" stroke-dasharray="3 5"/><g transform="translate(12 12)" fill="none" stroke="#143026" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${t.icon}"/></g></svg>`;
-export function stickerBook(){
+const progressBar=p=>p&&p[0]>0?`<span class="sticker-progress"><progress max="${p[1]}" value="${p[0]}" aria-hidden="true"></progress><span data-no-translate>${p[0]} / ${p[1]}</span></span>`:'';
+// How far along a count-based sticker is: [now, goal], or null when it is not a simple count.
+export function stickerProgress(key,summary){
+  const s=get(),streak=summary?.streak?.count||0;
+  const table={sort5:[s.sorts,5],treat10:[s.treats,10],tap10:[s.taps,10],challenge3:[summary?.challengeDays||0,3],streak3:[streak,3],streak7:[streak,7]};
+  const p=table[key];return p?[Math.min(p[0],p[1]),p[1]]:null;
+}
+export function stickerBook(summary){
   const have=new Set(get().stickers),available=STICKERS.filter(t=>!t.key.startsWith('hazard')||have.has(t.key)),count=available.filter(t=>have.has(t.key)).length;
-  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${available.length} stickers collected. Stickers stay yours once you earn them.</p>${count===0?'<div class="sticker-empty"><p class="note">No stickers yet. Finish a game round or check off a daily habit to earn your first one.</p><div class="actions"><a class="button-link" href="#games">Play a game</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}<ul class="stickers">${available.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span></li>`;}).join('')}</ul></section>`;
+  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${available.length} stickers collected. Stickers stay yours once you earn them.</p>${count===0?'<div class="sticker-empty"><p class="note">No stickers yet. Finish a game round or check off a daily habit to earn your first one.</p><div class="actions"><a class="button-link" href="#games">Play a game</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}<ul class="stickers">${available.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span>${on?'':progressBar(stickerProgress(t.key,summary))}</li>`;}).join('')}</ul></section>`;
 }
 
 // ---------- Mood ----------

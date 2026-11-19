@@ -8,6 +8,7 @@ import {wasteArt,moreWasteArt} from './home.js';
 import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,miniBuddy,carePoints,gardenState} from './buddy-fx.js';
 import {gardenGrowth} from './garden.js';
 import {celebrate} from './motion.js';
+import {queueGuideSearch} from './guide.js';
 
 const ROUND=6;
 const buddyFace=(x,y,scale)=>'<g transform="translate('+x+' '+y+') scale('+scale+')">'+FACES[0].draw()+'</g>';
@@ -26,7 +27,7 @@ export function updateReview(item,right,storage=globalThis.localStorage){
     storage.setItem(REVIEW_KEY,JSON.stringify(next));
   }catch{/* storage blocked: the game still works */}
 }
-const reviewLater=()=>{const list=reviewList();return list.length?`<details class="sort-review review-later"><summary><span>Review later</span> <span data-no-translate>(${list.length})</span></summary><ul>${list.map(x=>`<li><strong>${e(x.title)}</strong><p>${e(x.body)}</p></li>`).join('')}</ul><p class="note">Answer one right in a round and it leaves this list.</p></details>`:'';};
+const reviewLater=()=>{const list=reviewList();return list.length?`<details class="sort-review review-later"><summary><span>Review later</span> <span data-no-translate>(${list.length})</span></summary><ul>${list.map(x=>`<li><strong>${e(x.title)}</strong><p>${e(x.body)}</p></li>`).join('')}</ul><p class="note">Answer one right in a round and it leaves this list.</p><button type="button" class="secondary" data-sort-practice>Practice these</button></details>`:'';};
 
 export function makeRound(random=Math.random,previous=[]){
   const shuffle=a=>{const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
@@ -34,7 +35,14 @@ export function makeRound(random=Math.random,previous=[]){
   const yes=fresh(shuffle(all.filter(x=>x.suitable))).slice(0,ROUND/2),no=fresh(shuffle(all.filter(x=>!x.suitable))).slice(0,ROUND/2);
   return shuffle([...yes,...no]);
 }
-const start=()=>{game={items:makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[]};lastTitles=game.items.map(x=>x.title);};
+// A practice round starts with the items you missed before, then fills up with fresh ones.
+export function makePracticeRound(missed,random=Math.random,previous=[]){
+  const shuffle=a=>{const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
+  const names=new Set(missed.map(x=>x.title)),mine=pool().filter(x=>names.has(x.title)).slice(0,ROUND);
+  const rest=makeRound(random,previous).filter(x=>!names.has(x.title));
+  return shuffle([...mine,...rest].slice(0,ROUND));
+}
+const start=(practice=false)=>{game={items:practice?makePracticeRound(reviewList(),Math.random,lastTitles):makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[]};lastTitles=game.items.map(x=>x.title);};
 
 export function sortGame(summary={}){
   gardenSummary=summary;
@@ -77,10 +85,10 @@ function answer(choice){
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Let us try this together'}</h3><p id="sort-answer-item" class="sort-answer-item">${e(item.title)}</p><p id="sort-answer-summary" class="sort-answer-destination">${item.suitable?'Dry-waste pouch':'Ask school staff'}</p><div class="sort-explanation"><p>${e(item.body)}</p></div>`;
+  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Let us try this together'}</h3><p id="sort-answer-item" class="sort-answer-item">${e(item.title)}</p><p id="sort-answer-summary" class="sort-answer-destination">${item.suitable?'Dry-waste pouch':'Ask school staff'}</p><div class="sort-explanation"><p>${e(item.body)}</p></div><p class="sort-guide-link"><a class="button-link secondary" href="#classify" data-guide-for="${e(item.title)}">See in Waste Guide</a></p>`;
   const modal=document.querySelector('#sort-answer-dialog'),review=document.querySelector('[data-sort-review]');
   modal.querySelector('.sort-modal-buddy').innerHTML=renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true});
-  modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();});
+  modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();const g=event.target.closest('[data-guide-for]');if(g)queueGuideSearch(g.dataset.guideFor);});
   modal.addEventListener('keydown',event=>{
     if(event.key!=='Tab')return;
     const controls=[...modal.querySelectorAll('button:not([disabled]),summary,a[href],[tabindex="0"]')].filter(el=>el.getClientRects().length);
@@ -123,6 +131,7 @@ function advance(){
 // ---- input: click on bins/next/again, and pointer dragging of the item ----
 export function sortClick(button){
   if(button.hasAttribute('data-sort-review')){const modal=document.querySelector('#sort-answer-dialog');modal.showModal();document.querySelector('#sort-next').focus({preventScroll:true});return 'review';}
+  if(button.hasAttribute('data-sort-practice')){start(true);document.querySelector('#sort-game')?.classList.remove('is-answered');document.querySelector('#sort-body').innerHTML=body();document.querySelector('.review-later')?.removeAttribute('open');fitGame();return 'practice';}
   if(button.hasAttribute('data-sort-bin'))return answer(button.dataset.sortBin)??'answered';
   if(button.hasAttribute('data-sort-next'))return advance()?'finished':'next';
   if(button.hasAttribute('data-sort-results')){openResult();return 'results';}

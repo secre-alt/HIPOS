@@ -26,6 +26,19 @@ export function guideTools() {
 export function guideCards() {
   return items().map(({ title, suitable, body, art, words, extra }) => `<article class="card visual-waste-card${extra ? " extra" : ""}" data-kind="${suitable ? "ok" : "no"}" data-search="${e(norm(`${title} ${body} ${words}`))}"><div class="classify-art" aria-hidden="true">${art}</div><div class="classify-item-copy"><span class="pill ${suitable ? "" : "unsafe"}">${suitable ? "Suitable if clean and dry" : "Keep out of your pouch"}</span><h3>${e(title)}</h3><p><strong>What to do</strong></p><p>${e(body)}</p></div></article>`).join("") + '<div id="guide-empty" class="feedback" hidden><p>No match. If you’re unsure, keep it out of your pouch and ask school staff.</p><button type="button" class="secondary" data-guide-reset>Reset search and filters</button></div>';
 }
+// "See in Waste Guide" links leave the item name here; the Waste Guide page uses it once as its search.
+const PENDING_KEY = "hipos.guide.pending";
+export function queueGuideSearch(title) {
+  try { sessionStorage.setItem(PENDING_KEY, String(title)); } catch { /* the guide still opens */ }
+}
+export function applyPendingGuideSearch() {
+  let title = "";
+  try { title = sessionStorage.getItem(PENDING_KEY) || ""; sessionStorage.removeItem(PENDING_KEY); } catch { /* nothing queued */ }
+  const input = document.querySelector("#guide-search");
+  if (!title || !input) return;
+  input.value = title;
+  applyGuideFilter();
+}
 export function setGuideFilter(button) {
   document.querySelectorAll("[data-guide-filter]").forEach((el) => el.setAttribute("aria-pressed", String(el === button)));
   applyGuideFilter();

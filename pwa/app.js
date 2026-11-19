@@ -9,6 +9,7 @@ import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSumm
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initA11yPrefs, earlyApplyPrefs } from "./a11y-prefs.js";
+import { howTo, dismissHowTo } from "./howto.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
@@ -18,7 +19,7 @@ import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
 import { home, selectWaste, wasteArt, refreshTodayProgress } from "./home.js";
 import { revealOnScroll, initScrollEffects } from "./motion.js";
-import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter, resetGuideSearch } from "./guide.js";
+import { classifyPage, interactWithClassify, setGuideFilter, applyGuideFilter, resetGuideSearch, applyPendingGuideSearch } from "./guide.js";
 import { escapeHTML as e } from "./core.js";
 import { waste } from "./content.js";
 import { reusePage, interactWithReuse } from "./reuse.js";
@@ -46,7 +47,7 @@ function summaryNow() {
 function gamesProgress() {
   try {
     const st = stats();
-    return { sort: st.sorts, compost: st.compost, blooms: gardenState(carePoints(summaryNow())).blooms };
+    return { sort: st.sorts, compost: st.compost, streak: summaryNow().streak?.count || 0, blooms: gardenState(carePoints(summaryNow())).blooms };
   } catch {
     return {};
   }
@@ -218,13 +219,16 @@ function render() {
   if (page === "home") view.innerHTML = resume + home();
   if (page === "prevent") view.innerHTML = preventPage();
   if (page === "reuse") view.innerHTML = reusePage();
-  if (page === "classify") view.innerHTML = classifyPage();
+  if (page === "classify") {
+    view.innerHTML = classifyPage();
+    applyPendingGuideSearch();
+  }
   if (page === "carry") view.innerHTML = carryPage();
-  if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device.") + avatarEditor() + stickerBook();
+  if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device.") + avatarEditor() + stickerBook(summaryNow());
   if (page === "games") view.innerHTML = intro("Games", "Short, friendly games about waste. Nothing is graded or sent anywhere.") + gamesPage(gamesProgress());
-  if (page === "sort") view.innerHTML = gamesBack() + intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + sortGame(summaryNow()) + gameNavigation(page);
+  if (page === "sort") view.innerHTML = gamesBack() + intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + howTo("sort") + sortGame(summaryNow()) + gameNavigation(page);
   if (page === "garden") view.innerHTML = gamesBack() + intro("Buddy garden","Your flowers grow from the care you give. Nothing wilts and nothing is sent anywhere.") + gardenPage(summaryNow()) + gameNavigation(page);
-  if (page === "compost") view.innerHTML = gamesBack() + intro("Compost Catch","Catch the scraps that can be composted. Nothing is graded or sent anywhere.") + compostGame(summaryNow()) + gameNavigation(page);
+  if (page === "compost") view.innerHTML = gamesBack() + intro("Compost Catch","Catch the scraps that can be composted. Nothing is graded or sent anywhere.") + howTo("compost") + compostGame(summaryNow()) + gameNavigation(page);
   if (page === "privacy") view.innerHTML = intro("Private by choice. Local by default.", "HIPOS is an offline-first school project prototype.") + card("Offline access", "Open once online and wait for “Ready offline”. Install from the browser menu or the Install app button. On iPhone or iPad, use Safari → Share → Add to Home Screen. The first visit needs a connection; later visits use cached files.") + card("Your activity on this device", "Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server. Browser storage may be cleared or unavailable.") + card("Installation and hosting", "Installation and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved activity.") + versionCard();
   revealOnScroll();
   view.classList.remove("page-in");
@@ -285,10 +289,11 @@ document.addEventListener("click", async (event) => {
       tapBuddy(b);
       checkBuddyUnlocks(true);
     }
-    if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
+    if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-practice") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
       const result = sortClick(b);
       if (result === "finished") whenResultClosed(() => checkBuddyUnlocks(true));
     }
+    if (b.dataset.howtoDismiss) dismissHowTo(b.dataset.howtoDismiss);
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {
       avatarClick(b);

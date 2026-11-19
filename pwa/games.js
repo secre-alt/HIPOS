@@ -11,15 +11,16 @@ const games = [
 // Progress shown on each game card: rounds played, and flowers in bloom for the garden.
 const metaLine=(id,progress={})=>id==='garden'?`${progress.blooms||0} of 9 flowers in bloom`:(progress[id]||0)>0?`Rounds played: ${progress[id]}`:'Not played yet';
 // Buddies still to earn, with how to earn them; hidden once everything is unlocked.
-const rewards = () => {
+const unlockProgress = (id, progress) => (id === 'flick' ? [Math.min(progress.streak || 0, 3), 3] : null);
+const rewards = (progress = {}) => {
   const locked = CHARACTERS.filter((c) => isLocked(c));
   if (!locked.length) return '';
-  return `<section class="card games-rewards" aria-labelledby="rewards-heading"><h2 id="rewards-heading">Buddies to unlock</h2><ul>${locked.map((c) => `<li><span class="rewards-art" aria-hidden="true">${renderAvatar({ ...currentConfig(), character: c.id, color: 0, accessory: 'none' }, { size: 56, decorative: true, teaser: true })}</span><span><strong>${c.name}</strong><span class="rewards-hint">${c.hint}</span></span></li>`).join('')}</ul></section>`;
+  return `<section class="card games-rewards" aria-labelledby="rewards-heading"><h2 id="rewards-heading">Buddies to unlock</h2><ul>${locked.map((c) => `<li><span class="rewards-art" aria-hidden="true">${renderAvatar({ ...currentConfig(), character: c.id, color: 0, accessory: 'none' }, { size: 56, decorative: true, teaser: true })}</span><span><strong>${c.name}</strong><span class="rewards-hint">${c.hint}</span>${(() => { const p = unlockProgress(c.id, progress); return p && p[0] > 0 ? `<span class="sticker-progress"><progress max="${p[1]}" value="${p[0]}" aria-hidden="true"></progress><span data-no-translate>${p[0]} / ${p[1]}</span></span>` : ''; })()}</span></li>`).join('')}</ul></section>`;
 };
 export const gamesPage = (progress = {}) =>
   `<div class="home-guides games-grid">${games
     .map(([id, number, title, body, action]) => `<a class="card card-link arcade-card arcade-${id}" href="#${id}"><div class="arcade-preview">${gameLogo(id)}</div><span class="guide-number">${number}</span><h3>${title}</h3><p>${body}</p><span class="arcade-meta">${metaLine(id,progress)}</span><span class="guide-link">${action}</span></a>`)
-    .join("")}</div>${rewards()}`;
+    .join("")}</div>${rewards(progress)}`;
 // Shown on the Sorting game, Compost Catch and Buddy garden pages.
 export const gamesBack = () => '<p class="sort-promo"><a class="button-link secondary" href="#games">← All games</a></p>';
 // Follow the same order as the hub, with the hub as the start and finish.

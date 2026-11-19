@@ -312,6 +312,33 @@ try{
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal overflow with all options on');
     await close(s);
   });
+  await check('learning loop: how-to tip once, Waste Guide link from an answer, practice round, sticker progress',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.goto(base+'#sort');await page.locator('#sort-game').waitFor();
+    await page.locator('[data-howto="sort"]').waitFor();
+    await page.locator('[data-howto-dismiss="sort"]').click();
+    await page.reload();await page.locator('#sort-game').waitFor();
+    assert.equal(await page.locator('[data-howto="sort"]').count(),0,'tip stays dismissed');
+    await page.locator('[data-sort-bin="yes"]').click();
+    const link=page.locator('a[data-guide-for]');await link.waitFor();
+    const title=await link.getAttribute('data-guide-for');
+    await link.click();await page.locator('#guide-search').waitFor();
+    assert.equal(await page.locator('#guide-search').inputValue(),title,'guide opens on the item');
+    assert.ok(await page.locator('.visual-waste-card:not([hidden])').count()>=1,'item is shown');
+    await page.evaluate(t=>localStorage.setItem('hipos.review.v1',JSON.stringify([{title:t,body:'Practice me.'}])),title);
+    await page.goto(base+'#sort');await page.locator('.review-later summary').click();
+    await page.locator('[data-sort-practice]').click();
+    const seen=[];
+    for(let i=0;i<6;i++){
+      seen.push(await page.locator('.sort-item strong').innerText());
+      await page.locator('[data-sort-bin="yes"]').click();await page.locator('#sort-next').click();
+    }
+    assert.ok(seen.includes(title),'practice round includes the missed item: '+seen.join(' | '));
+    await page.evaluate(()=>localStorage.setItem('hipos.buddy.v1',JSON.stringify({taps:4})));
+    await page.goto(base+'#avatar');await page.locator('.sticker-book').waitFor();
+    assert.match(await page.locator('.sticker-progress').first().innerText(),/\d+ \/ \d+/);
+    await close(s);
+  });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     assert.equal(await page.locator('dialog.welcome').count(),0,'automated browsers are not interrupted');
