@@ -44,6 +44,8 @@ The **Text size** control (in **Settings**, the gear in the header) (Standard, L
 
 Safe or Stay Away is retired. Old `#hazard` links open Games; previously earned stickers and garden care remain on this device.
 
+A finished game round counts as that day's activity: it appears on the Today panel ("Game round done today") and keeps the streak going, the same as a habit or the daily challenge.
+
 A **first-run welcome** (`pwa/welcome.js`) offers three skippable steps (pick a buddy, choose a language, try one small thing) once per device; it never shows in automated browsers. Sorting answers you get wrong are kept in a **Review later** list (`hipos.review.v1`) and removed when answered right. If the browser blocks storage the app says progress will not be saved.
 
 All games are grouped under one **Games** item in the main menu (`#games`, built in `pwa/games.js`) and in a "Need a short break?" strip on Home. The Games page links to the Sorting game, Compost Catch and the Buddy garden; each of those pages has an **All games** link back, and Games stays highlighted in the menu while any of them is open. New games belong on that page, not in the main menu. Finishing a Compost Catch or Sorting round earns a sticker (Compost helper, Compost champ for a perfect round) and one treat per game per day. The garden has nine plots that grow from care already recorded on the device (habit treats, sorting and compost rounds, challenge days), three points per plot; nothing wilts or is lost, and two garden stickers (Green thumb, Garden party) are earned along the way. The rules (`gardenState`, game treats) are unit tested in `tests/buddy-fx.test.mjs`.

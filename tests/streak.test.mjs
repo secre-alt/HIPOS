@@ -38,3 +38,9 @@ test('one rest day can be forgiven when asked, but not two, and it is not counte
   assert.equal(g.count, 3); assert.equal(g.rested, true);
   assert.equal(currentStreak(on(day(2026,11,15), day(2026,11,12)), today, 1).count, 1);
 });
+test('a finished game round counts as an active day', () => {
+  assert.equal(isActive({ game: true }), true);
+  assert.equal(isActive({ game: false }), false);
+  const d = { [day(2026,11,15)]: { game: true }, [day(2026,11,14)]: { habits: 1 } };
+  assert.equal(currentStreak(d, today).count, 2);
+});

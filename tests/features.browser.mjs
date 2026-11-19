@@ -356,6 +356,14 @@ try{
     await page.waitForFunction(()=>location.hash===''||location.hash==='#home'||location.hash==='#');
     await close(s);
   });
+  await check('daily set: a finished game round shows on Today and keeps the streak',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.locator('.game-of-day:not(.is-done)').waitFor();
+    await page.evaluate(()=>document.dispatchEvent(new CustomEvent('hipos-game-done')));
+    await page.locator('.game-of-day.is-done').waitFor();
+    assert.match(await page.locator('.streak-count').innerText(),/1 day streak/);
+    await close(s);
+  });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     assert.equal(await page.locator('dialog.welcome').count(),0,'automated browsers are not interrupted');

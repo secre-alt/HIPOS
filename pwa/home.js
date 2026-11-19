@@ -1,4 +1,4 @@
-import {dailyChallenge,weekly,recentGuides,schoolSection,weekSummary} from './engagement.js';
+import {dailyChallenge,weekly,recentGuides,schoolSection,weekSummary,gamePlayedToday} from './engagement.js';
 import {waste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {checklist,quiz,localDay} from './activities.js';
@@ -46,7 +46,8 @@ export function todayProgress(){
   if(!state.quiz)pending.push(['quiz-heading','Quick quiz']);
   const link=([target,label],i)=>`<button type="button" class="${i===0?'next-up':'secondary'}" data-daily-target="${target}">${label}</button>`;
   const done=state.completed===5?'<p>All daily activities completed. Thank you for caring!</p><div class="actions"><a class="button-link" href="#games">Play a game</a></div>':'';
-  return `<div id="today-progress"><p role="status"><span data-no-translate>${state.completed}</span> <span>of 5 daily actions completed</span></p><progress max="5" value="${state.completed}" aria-label="Daily progress"></progress>${pending.length?'<p class="next-up-tag">Next up</p>':''}<div class="actions">${pending.map(link).join('')}</div>${done}</div>`;
+  const gameRow=gamePlayedToday()?'<p class="game-of-day is-done"><span aria-hidden="true">&#10003;</span> <span>Game round done today. Your streak is safe.</span></p>':'<p class="game-of-day"><span>One game round also keeps your streak going.</span> <a class="button-link secondary" href="#games">Play a game round</a></p>';
+  return `<div id="today-progress"><p role="status"><span data-no-translate>${state.completed}</span> <span>of 5 daily actions completed</span></p><progress max="5" value="${state.completed}" aria-label="Daily progress"></progress>${pending.length?'<p class="next-up-tag">Next up</p>':''}<div class="actions">${pending.map(link).join('')}</div>${done}${state.completed===5?'':gameRow}</div>`;
 }
 export function refreshTodayProgress(){
   const panel=document.querySelector('#today-progress');

@@ -5,7 +5,7 @@ import { initPwa } from "./pwa-runtime.js";
 import { needsWelcome, showWelcome } from "./welcome.js";
 import { dailyBuddy } from "./daily-buddy.js";
 import { initLanguage } from "./i18n.js";
-import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSummary } from "./engagement.js";
+import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSummary, recordGame } from "./engagement.js";
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initA11yPrefs, earlyApplyPrefs } from "./a11y-prefs.js";
@@ -130,7 +130,13 @@ function onWaste(button) {
   animate("hop");
   sound("boop");
 }
-document.addEventListener("hipos-game-done", () => whenResultClosed(() => checkBuddyUnlocks(true)));
+function onGameDone() {
+  recordGame();
+  refreshTodayProgress();
+  refreshWeekly();
+  whenResultClosed(() => checkBuddyUnlocks(true));
+}
+document.addEventListener("hipos-game-done", onGameDone);
 const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
 const greeted = /* @__PURE__ */ new Set();
 let firstRender = true;
@@ -292,7 +298,7 @@ document.addEventListener("click", async (event) => {
     }
     if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-practice") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
       const result = sortClick(b);
-      if (result === "finished") whenResultClosed(() => checkBuddyUnlocks(true));
+      if (result === "finished") onGameDone();
     }
     if (b.dataset.howtoDismiss) dismissHowTo(b.dataset.howtoDismiss);
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));

@@ -81,6 +81,13 @@ export function weekly(){
   const badgeItems=week.badges.map(b=>`<li class="badge${b.earned?' earned':''}"><span class="badge-name">${e(b.name)}</span><span class="badge-desc">${e(b.description)}</span><span class="badge-state">${b.earned?'Earned':'Locked'}</span></li>`).join('');
   return `<section id="weekly-activity" class="card" aria-labelledby="weekly-heading"><h2 id="weekly-heading">Your last seven days</h2><p>A private record of your choices on this device. Missing a day is okay.</p><div class="streak"><span class="streak-flame${count?' lit':''}">${flame}</span><div class="streak-copy"><strong class="streak-count">${streakText}</strong><span class="streak-note">${streakNote}</span>${bestLine}</div></div><ul class="week-days">${cells.join('')}</ul><h3 class="badges-heading">Badges</h3><ul class="badges">${badgeItems}</ul><div class="actions"><button class="secondary" data-action="share-week">Save my week as an image</button></div><p class="note">The image has no name or personal details. This records completed actions, not environmental impact.</p></section>`;
 }
+// Finishing a game round counts as today's activity (it keeps the streak going).
+export function recordGame(){
+  try{const data=read(),day=localDay();data.days[day]={...data.days[day],game:true};write(data);}catch{/* history unavailable: the game still counted for buddy rewards */}
+}
+export function gamePlayedToday(){
+  try{return read().days[localDay()]?.game===true;}catch{return false;}
+}
 export function refreshWeekly(){const panel=document.querySelector('#weekly-activity');if(panel)panel.outerHTML=weekly();}
 const guides={prevent:'Prevent',reuse:'Reuse',classify:'Classify',carry:'Carry out'};
 export function rememberGuide(page){

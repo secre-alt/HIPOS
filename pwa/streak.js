@@ -1,7 +1,7 @@
 // Streaks and badges, computed only from the activity history already kept on this device.
-// A day counts as active when at least one habit was checked or the daily challenge was completed,
+// A day counts as active when at least one habit was checked, the daily challenge was completed or a game round was finished,
 // the same rule the "last seven days" strip uses.
-export const isActive=entry=>Boolean(entry&&(entry.habits>0||entry.challenge==='done'));
+export const isActive=entry=>Boolean(entry&&(entry.habits>0||entry.challenge==='done'||entry.game===true));
 const id=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 const addDays=(date,n)=>{const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()+n);return d;};
 

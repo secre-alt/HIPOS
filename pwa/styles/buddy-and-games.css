@@ -1640,3 +1640,9 @@ main .home-activities .challenge-panel[data-state=skipped] > h2 ~ p:not(#challen
 .leave-dialog h2 { margin:0 0 8px; }
 .leave-dialog .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
 .leave-dialog .actions button { min-height:48px; flex:1 1 140px; }
+
+/* Game round on the Today panel */
+#today-progress .game-of-day { display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px; margin:14px 0 0; padding:10px 14px; border-radius:14px; background:rgba(255,216,77,.2); }
+#today-progress .game-of-day span:first-child { flex:1 1 200px; }
+#today-progress .game-of-day.is-done { background:rgba(185,242,107,.22); font-weight:700; }
+#today-progress .game-of-day .button-link { min-height:44px; }
