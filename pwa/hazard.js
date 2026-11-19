@@ -29,24 +29,32 @@ export function hazardGame(summary={}){
   gardenSummary=summary;begin();
   return `<section class="card hazard-game" id="hazard-game" aria-labelledby="hazard-heading"><h2 id="hazard-heading">Safe or Stay Away</h2><div id="hazard-body">${body()}</div></section>`;
 }
+const checkIcon='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+const stopIcon='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3.5l9 16H3z"/><path d="M12 10v4.5M12 17.6v.2"/></svg>';
+const scoreLine=()=>`<p class="hazard-score" aria-hidden="true"><span>Right so far</span> <strong data-no-translate>${g.score}</strong></p>`;
 function body(){
   if(!g)return '';
   const it=g.items[g.i];
-  return `<div class="sort-round"><p class="sort-progress" role="status">Item ${g.i+1} of ${g.items.length}</p><div class="round-markers" aria-hidden="true">${g.items.map((_,i)=>`<span class="${i<g.i?'is-complete':i===g.i?'is-current':''}"></span>`).join('')}</div></div>
-  <p class="note">Is it safe for the dry-waste pouch, or should you stay away and ask school staff?</p>
-  <div class="sort-stage"><div class="sort-item hazard-item"><span class="item-art">${gameArt(it.art)}</span><strong>${e(it.name)}</strong></div></div>
-  <div class="sort-bins"><button type="button" class="sort-bin sort-yes secondary" data-hazard="safe"><strong>Safe for the pouch</strong><small>Clean, dry, nonhazardous</small></button><button type="button" class="sort-bin sort-no secondary" data-hazard="stay"><strong>Stay away</strong><small>Ask school staff</small></button></div>
-  <div id="hazard-feedback" class="feedback" role="status" aria-live="polite"></div>
-  <div class="actions"><button type="button" id="hazard-next" data-hazard-next hidden>${g.i+1===g.items.length?'See my result':'Next item'}</button></div>`;
+  return `<div class="hazard-top"><p class="sort-progress" role="status">Item ${g.i+1} of ${g.items.length}</p>${scoreLine()}</div>
+  <div class="round-markers hazard-markers" aria-hidden="true">${g.items.map((_,i)=>`<span class="${i<g.i?'is-complete':i===g.i?'is-current':''}"></span>`).join('')}</div>
+  <p class="note hazard-question">Safe for the pouch, or stay away?</p>
+  <div class="hazard-stage"><div class="hazard-item" id="hazard-item"><span class="item-art">${gameArt(it.art)}</span><strong>${e(it.name)}</strong></div></div>
+  <div class="hazard-choices"><button type="button" class="hazard-choice hazard-safe" data-hazard="safe"><span class="hazard-choice-icon">${checkIcon}</span><span class="hazard-choice-text"><strong>Safe for the pouch</strong><small>Clean, dry, nonhazardous</small></span></button><button type="button" class="hazard-choice hazard-stay" data-hazard="stay"><span class="hazard-choice-icon">${stopIcon}</span><span class="hazard-choice-text"><strong>Stay away</strong><small>Ask school staff</small></span></button></div>
+  <p class="hazard-keys note">Tip: press the left or right arrow key.</p>
+  <div id="hazard-feedback" class="hazard-feedback" role="status" aria-live="polite"></div>
+  <div class="actions"><button type="button" id="hazard-next" data-hazard-next hidden><span>${g.i+1===g.items.length?'See my result':'Next item'}</span><span aria-hidden="true">&rarr;</span></button></div>`;
 }
 function answer(choice){
   if(!g||g.answered)return;
   const it=g.items[g.i],right=(choice==='safe')===it.safe;g.answered=true;if(right)g.score++;
+  document.querySelector('.hazard-keys')?.setAttribute('hidden','');
   document.querySelectorAll('[data-hazard]').forEach(b=>{b.disabled=true;if(b.dataset.hazard===choice)b.classList.add(right?'is-right':'is-wrong');if((b.dataset.hazard==='safe')===it.safe)b.classList.add('is-answer');});
-  const fb=document.querySelector('#hazard-feedback');fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<strong>${right?'Correct!':'Let us try this together'}</strong> <span>${e(it.why)}</span>`;
+  document.querySelector('#hazard-item')?.classList.add(right?'is-right':'is-wrong');
+  const score=document.querySelector('.hazard-score strong');if(score)score.textContent=String(g.score);
+  const fb=document.querySelector('#hazard-feedback');fb.className='hazard-feedback is-shown '+(right?'is-right':'is-wrong');
+  fb.innerHTML=`<span class="hazard-feedback-icon" aria-hidden="true">${right?checkIcon:stopIcon}</span><p><strong>${right?'Correct!':'Let us try this together'}</strong> <span>${e(it.why)}</span></p>`;
   const next=document.querySelector('#hazard-next');next.hidden=false;next.focus({preventScroll:true});
-  if(right){cheer('correct');sparkle(document.querySelector('.hazard-item'),5);buzz(10);}else cheer('retry');
+  if(right){cheer('correct');sparkle(document.querySelector('#hazard-item'),5);buzz(10);}else cheer('retry');
 }
 function finish(){
   const total=g.items.length,perfect=g.score===total;
@@ -63,7 +71,7 @@ function finish(){
   if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
   document.dispatchEvent(new CustomEvent('hipos-game-done'));
   cheer('complete');
-  document.querySelector('#hazard-body').innerHTML=`<div class="sort-finished"><p class="sort-finished-line">You got ${g.score} of ${total} right.</p><div class="actions"><button type="button" data-hazard-again>Play again</button></div></div>`;
+  document.querySelector('#hazard-body').innerHTML=`<div class="sort-finished hazard-finished"><p class="sort-finished-line">You got ${g.score} of ${total} right.</p><div class="actions"><button type="button" data-hazard-again>Play again</button></div></div>`;
   g.finished=true;
 }
 export function hazardClick(b){
@@ -76,3 +84,12 @@ export function hazardClick(b){
   }
   if(b.hasAttribute('data-hazard-again')){document.querySelector('.hazard-result')?.close();begin();document.querySelector('#hazard-body').innerHTML=body();document.querySelector('[data-hazard]')?.focus({preventScroll:true});return 'again';}
 }
+
+// Left arrow = safe, right arrow = stay away (desktop shortcut; buttons still work for touch and screen readers).
+if(typeof document!=='undefined')document.addEventListener('keydown',event=>{
+  if(!g||g.answered||g.finished||event.altKey||event.ctrlKey||event.metaKey)return;
+  if(!document.querySelector('#hazard-game')||document.querySelector('dialog[open]'))return;
+  if(event.target.closest?.('input,textarea,select'))return;
+  const choice=event.key==='ArrowLeft'?'safe':event.key==='ArrowRight'?'stay':null;
+  if(!choice)return;event.preventDefault();document.querySelector(`[data-hazard="${choice}"]`)?.click();
+});

@@ -1624,3 +1624,77 @@ main .home-activities .challenge-panel > .guide-number { min-height:0; max-width
 main .home-activities .quiz-panel > h2 + p,
 main .home-activities .daily-panel > h2 + p { padding-right:72px; }
 @media (min-width:700px) { main .home-activities .quiz-panel > h2 + p, main .home-activities .daily-panel > h2 + p { padding-right:0; } }
+
+/* ---- Safe or Stay Away redesign ---- */
+main .hazard-game { position:relative; overflow:hidden; padding-top:34px; }
+main .hazard-game::before {
+  content:""; position:absolute; inset:0 0 auto 0; height:12px;
+  background:repeating-linear-gradient(-45deg,#FFD84D 0 14px,#2F3A33 14px 28px);
+}
+main .hazard-game > h2 { margin-top:0; }
+.hazard-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 8px; }
+.hazard-top .sort-progress { margin:0; }
+.hazard-score { margin:0; padding:6px 12px; border-radius:999px; background:rgba(255,216,77,.28); font-weight:700; font-size:.875rem; white-space:nowrap; }
+.hazard-markers { display:flex; gap:6px; margin:0 0 14px; }
+.hazard-markers span { flex:1; height:8px; border-radius:999px; background:rgba(120,140,125,.28); border:0; min-width:0; width:auto; }
+.hazard-markers span.is-current { background:#FFB347; }
+.hazard-markers span.is-complete { background:var(--leaf,#b9f26b); }
+.hazard-question { margin:0 0 12px; font-weight:700; font-size:1.0625rem; }
+.hazard-stage { display:grid; place-items:center; padding:20px 12px; border-radius:24px; background:rgba(255,216,77,.16); border:2px dashed rgba(255,179,71,.6); }
+.hazard-item { display:grid; justify-items:center; gap:8px; text-align:center; padding:8px 20px 14px; border-radius:20px; transition:background .2s; }
+.hazard-item .item-art { display:block; }
+.hazard-item .game-item { width:min(46vw,170px); height:auto; filter:drop-shadow(0 8px 10px rgba(0,0,0,.15)); }
+.hazard-item strong { font-size:1.375rem; line-height:1.2; }
+.hazard-item.is-right { background:rgba(185,242,107,.3); }
+.hazard-item.is-wrong { background:rgba(255,140,90,.28); }
+.hazard-choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+@media (max-width:520px) { .hazard-choices { grid-template-columns:1fr; } }
+.hazard-choice { display:flex; align-items:center; gap:14px; text-align:left; justify-content:flex-start; min-height:84px; padding:14px 16px; border-radius:20px; border:3px solid transparent; width:100%; }
+.hazard-choice-icon { flex:none; display:grid; place-items:center; width:52px; height:52px; border-radius:50%; }
+.hazard-choice-text { display:grid; gap:2px; min-width:0; }
+.hazard-choice-text strong { font-size:1.125rem; }
+.hazard-choice-text small { font-size:.875rem; opacity:.85; }
+main .hazard-safe { background:#DDF6B8; color:#1E4A2C; border-color:#B9F26B; }
+main .hazard-safe .hazard-choice-icon { background:#B9F26B; color:#1E4A2C; }
+main .hazard-stay { background:#FFE6BE; color:#6B3A0B; border-color:#FFB347; }
+main .hazard-stay .hazard-choice-icon { background:#FFB347; color:#4B2A06; }
+:where(:root[data-theme=dark]) main .hazard-safe { background:rgba(185,242,107,.16); color:#E3F9BF; border-color:rgba(185,242,107,.55); }
+:where(:root[data-theme=dark]) main .hazard-stay { background:rgba(255,179,71,.16); color:#FFE3B8; border-color:rgba(255,179,71,.6); }
+main .hazard-choice:not(:disabled):hover { transform:translateY(-2px); }
+main .hazard-choice:disabled { opacity:.55; }
+main .hazard-choice.is-answer { opacity:1; box-shadow:0 0 0 4px rgba(185,242,107,.7); }
+main .hazard-choice.is-wrong { opacity:1; border-style:dashed; }
+.hazard-keys { display:none; margin:10px 0 0; text-align:center; }
+@media (hover:hover) and (pointer:fine) { .hazard-keys:not([hidden]) { display:block; } }
+.hazard-feedback:not(.is-shown) { display:none; }
+.hazard-feedback { display:flex; align-items:flex-start; gap:12px; margin-top:14px; padding:14px 16px; border-radius:18px; border-left:6px solid; }
+.hazard-feedback p { margin:0; line-height:1.5; }
+.hazard-feedback-icon { flex:none; display:grid; place-items:center; width:40px; height:40px; border-radius:50%; }
+.hazard-feedback-icon svg { width:24px; height:24px; }
+.hazard-feedback.is-right { background:rgba(185,242,107,.22); border-color:#8BD13C; }
+.hazard-feedback.is-right .hazard-feedback-icon { background:#B9F26B; color:#1E4A2C; }
+.hazard-feedback.is-wrong { background:rgba(255,179,71,.2); border-color:#FFB347; }
+.hazard-feedback.is-wrong .hazard-feedback-icon { background:#FFB347; color:#4B2A06; }
+.hazard-game [data-hazard-next] { width:100%; min-height:52px; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:10px; }
+@media (prefers-reduced-motion:no-preference) {
+  .hazard-item { animation:hazard-pop .35s ease-out; }
+  .hazard-item.is-wrong .game-item { animation:hazard-shake .4s ease-in-out; }
+  .hazard-item.is-right .game-item { animation:hazard-hop .45s ease-out; }
+  .hazard-feedback.is-shown { animation:hazard-pop .25s ease-out; }
+  @keyframes hazard-pop { from { transform:scale(.92); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes hazard-shake { 20%,60% { transform:translateX(-6px); } 40%,80% { transform:translateX(6px); } }
+  @keyframes hazard-hop { 40% { transform:translateY(-12px); } }
+}
+main .hazard-game .hazard-item .item-art { display:block; width:auto; height:auto; min-width:0; background:none; border-radius:0; padding:0; box-shadow:none; }
+main .hazard-game .hazard-item { background:transparent; border:0; box-shadow:none; min-height:0; width:auto; cursor:default; }
+main .hazard-game .hazard-item.is-right { background:rgba(185,242,107,.3); }
+main .hazard-game .hazard-item.is-wrong { background:rgba(255,140,90,.28); }
+main .hazard-game .hazard-choice { background-image:none !important; box-shadow:none !important; text-shadow:none; }
+main .hazard-game .hazard-choice.hazard-safe { background:#DDF6B8 !important; color:#1E4A2C !important; border-color:#B9F26B; }
+main .hazard-game .hazard-choice.hazard-stay { background:#FFE6BE !important; color:#6B3A0B !important; border-color:#FFB347; }
+main .hazard-game .hazard-choice strong, main .hazard-game .hazard-choice small { color:inherit !important; }
+main .hazard-game .hazard-choice:disabled { opacity:.7; }
+main .hazard-game .hazard-choice.is-answer { opacity:1; box-shadow:0 0 0 4px rgba(94,170,50,.55) !important; }
+:where(:root[data-theme=dark]) main .hazard-game .hazard-choice.hazard-safe { background:#24402C !important; color:#E3F9BF !important; border-color:rgba(185,242,107,.55); }
+:where(:root[data-theme=dark]) main .hazard-game .hazard-choice.hazard-stay { background:#47381F !important; color:#FFE3B8 !important; border-color:rgba(255,179,71,.6); }
+main .hazard-game .hazard-feedback p, main .hazard-game .hazard-feedback span { color:var(--ink) !important; }

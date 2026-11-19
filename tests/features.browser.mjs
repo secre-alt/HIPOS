@@ -256,8 +256,9 @@ try{
   await check('Safe or Stay Away: eight items, feedback, result modal, rewards and a sticker',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await page.goto(base+'#hazard');await page.locator('#hazard-game').waitFor();
-    assert.ok((await page.locator('#hazard-game .sort-bin').first().boundingBox()).height>=44,'touch size');
-    for(let i=0;i<8;i++){
+    assert.ok((await page.locator('#hazard-game .hazard-choice').first().boundingBox()).height>=44,'touch size');
+    await page.keyboard.press('ArrowRight');assert.ok(await page.locator('#hazard-feedback').innerText(),'arrow key answers');await page.locator('[data-hazard-next]').click();
+    for(let i=0;i<7;i++){
       await page.locator('[data-hazard="safe"]').click();
       assert.ok(await page.locator('#hazard-feedback').innerText(),'feedback shown');
       await page.locator('[data-hazard-next]').click();
