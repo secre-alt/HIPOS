@@ -15,7 +15,7 @@ export function readDaily(storage=localStorage,day=localDay()){
 export function checklist(){
   let daily,error='';
   try{daily=readDaily();}catch{daily={day:localDay(),checked:habits.map(()=>false)};error='Saved checklist could not be read. Changes will only be shown if they can be saved.';}
-  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}">${activityArt('habits')}<h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
+  return `<section class="daily-panel card" aria-labelledby="daily-heading" data-day="${daily.day}">${activityArt('habits')}<h2 id="daily-heading">Ready for your school day?</h2><p>Optional reminders, where school rules permit. Starts fresh each day on this device.</p><progress class="daily-meter" max="${habits.length}" value="${daily.checked.filter(Boolean).length}" aria-hidden="true"></progress><div class="daily-items">${habits.map((label,i)=>`<label><input type="checkbox" data-habit="${i}" ${daily.checked[i]?'checked':''}><span>${label}</span></label>`).join('')}</div><p id="daily-progress" role="status">${error||progress(daily.checked)}</p></section>`;
 }
 function progress(checked){return `${checked.filter(Boolean).length} of ${habits.length} actions completed today${checked.every(Boolean)?' · Ready for today':''}`;}
 export function updateHabit(input){
@@ -30,6 +30,7 @@ export function updateHabit(input){
     daily.checked[index]=input.checked;
     localStorage.setItem(checklistKey,JSON.stringify(daily));
     document.querySelector('#daily-progress').textContent=progress(daily.checked);
+    const meter=panel.querySelector('.daily-meter');if(meter)meter.value=daily.checked.filter(Boolean).length;
     const wasAll=previous?.day===daily.day&&Array.isArray(previous.checked)&&previous.checked.length===habits.length&&previous.checked.every(v=>v===true);
     if(daily.checked.every(Boolean)&&!wasAll)celebrate();
     try{recordChecklist(daily.checked,previous);refreshWeekly();}catch{document.querySelector('#daily-progress').append(' · Checklist saved, but weekly history could not be updated.');}

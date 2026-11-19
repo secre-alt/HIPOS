@@ -1541,3 +1541,86 @@ input[type=checkbox]:checked {
 #hazard-feedback { min-height:3.2em; margin-top:12px; }
 #hazard-feedback:empty { min-height:0; margin:0; }
 .hazard-game .sort-bin { min-height:88px; }
+
+/* ---- Home activity cards: challenge, quick check, school-day reminders ---- */
+main .home-activities > .card { display:flex; flex-direction:column; gap:0; }
+main .home-activities h2 { min-height:0; }
+main .home-activities > .card > p:not(.muted) { margin-bottom:12px; }
+
+/* Challenge */
+main .home-activities .challenge-panel > .guide-number {
+  display:inline-flex; align-self:flex-start; align-items:center; gap:6px; padding:6px 12px; border-radius:999px;
+  background:var(--leaf); color:#254b38; font-size:.8125rem; font-weight:800; letter-spacing:.02em;
+}
+:where(:root[data-theme=dark]) main .home-activities .challenge-panel > .guide-number { background:rgba(185,242,107,.16); color:#d8f7a6; }
+main .home-activities .challenge-panel > .muted { order:5; margin-top:4px; }
+main .home-activities .challenge-panel .actions { margin-top:12px; }
+main .home-activities .challenge-panel .actions button:not(.secondary) { min-width:160px; }
+main .home-activities .challenge-panel .actions button.secondary[data-challenge=""] {
+  background:none; border:0; box-shadow:none; text-decoration:underline; text-underline-offset:3px; padding:10px 8px; min-height:44px;
+}
+main .home-activities .challenge-panel[data-state=done] .muted,
+main .home-activities .challenge-panel[data-state=skipped] .muted { display:none; }
+main .home-activities .challenge-panel #challenge-feedback:not(:empty) {
+  display:flex; align-items:center; gap:10px; align-self:flex-start; margin:14px 0 0; padding:10px 14px 10px 10px;
+  border-radius:14px; background:rgba(255,255,255,.55); font-weight:700;
+}
+:where(:root[data-theme=dark]) main .home-activities .challenge-panel #challenge-feedback:not(:empty) { background:rgba(185,242,107,.12); }
+main .home-activities .challenge-panel[data-state=done] #challenge-feedback::before {
+  content:""; flex:none; width:28px; height:28px; margin:0; border-radius:50%; background:var(--leaf);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23254b38' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E");
+  background-size:18px; background-position:center; background-repeat:no-repeat;
+}
+main .home-activities .challenge-panel[data-state=skipped] #challenge-feedback::before {
+  content:""; flex:none; width:28px; height:28px; border-radius:50%; background:rgba(120,120,120,.25);
+}
+
+/* Quick sorting check */
+main .quiz-panel .quiz-markers { display:flex; gap:8px; margin:4px 0 12px; }
+main .quiz-panel .quiz-markers span { flex:1; height:8px; border-radius:999px; background:rgba(120,140,125,.28); font-size:0; border:0; width:auto; min-width:0; padding:0; }
+main .quiz-panel .quiz-markers span.is-current { background:var(--green-mid,#4c9a68); }
+main .quiz-panel .quiz-markers span.is-finished { background:var(--leaf,#b9f26b); }
+main .quiz-panel .quiz-step { margin:0 0 4px; font-size:.875rem; font-weight:700; }
+main .quiz-panel #quiz-question { margin:0 0 12px; font-size:1.25rem; }
+main .quiz-panel .quiz-options { display:grid; gap:10px; }
+main .quiz-panel .quiz-options button {
+  display:flex; align-items:center; gap:12px; justify-content:flex-start; text-align:left; min-height:56px; padding:12px 16px; border-radius:16px; width:100%;
+}
+main .quiz-panel .quiz-options button::before {
+  content:""; flex:none; width:28px; height:28px; border-radius:50%; background-size:16px; background-position:center; background-repeat:no-repeat; background-color:rgba(120,190,120,.28);
+}
+main .quiz-panel .quiz-options button[data-answer="0"]::before { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23327a4c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E"); }
+main .quiz-panel .quiz-options button[data-answer="1"]::before { background-color:rgba(240,160,90,.3); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b4601f' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 6v8M12 18v.5'/%3E%3C/svg%3E"); }
+main .quiz-panel .quiz-options button[aria-pressed=true] { outline:3px solid var(--green-mid,#4c9a68); outline-offset:1px; opacity:1; }
+main .quiz-panel .quiz-options button:disabled:not([aria-pressed=true]) { opacity:.6; }
+main .quiz-panel #quiz-feedback:not(:empty) { margin:12px 0 0; padding:12px 14px; border-radius:14px; border-left:5px solid var(--leaf,#b9f26b); background:rgba(185,242,107,.16); }
+main .quiz-panel #quiz-feedback p { margin:0; }
+main .quiz-panel [data-quiz-next], .quiz-panel .actions button { width:100%; margin-top:12px; min-height:48px; }
+
+/* School-day reminders */
+main .daily-panel .daily-meter { width:100%; height:10px; margin:2px 0 12px; border:0; border-radius:999px; overflow:hidden; background:rgba(120,140,125,.28); appearance:none; }
+main .daily-panel .daily-meter::-webkit-progress-bar { background:rgba(120,140,125,.28); }
+main .daily-panel .daily-meter::-webkit-progress-value { background:var(--leaf,#b9f26b); border-radius:999px; }
+main .daily-panel .daily-meter::-moz-progress-bar { background:var(--leaf,#b9f26b); border-radius:999px; }
+@media (prefers-reduced-motion:no-preference) { .daily-panel .daily-meter::-webkit-progress-value { transition:width .3s ease; } }
+main .daily-panel .daily-items { display:grid; gap:10px; }
+main .daily-panel .daily-items label {
+  display:flex; align-items:center; gap:14px; min-height:60px; padding:8px 16px 8px 12px; border:2px solid rgba(120,140,125,.35); border-radius:16px; cursor:pointer; margin:0; background:transparent;
+}
+main .daily-panel .daily-items label:has(:checked) { border-color:var(--leaf,#b9f26b); background:rgba(185,242,107,.16); }
+main .daily-panel .daily-items label:has(:focus-visible) { outline:3px solid var(--green-mid,#4c9a68); outline-offset:2px; }
+main .daily-panel .daily-items input[type=checkbox] {
+  appearance:none; flex:none; width:44px; height:44px; min-width:44px; min-height:44px; border:2px solid currentColor; border-radius:12px; background:transparent; display:grid; place-items:center; margin:0; opacity:.7;
+  position:relative;
+}
+main .daily-panel .daily-items input[type=checkbox]:checked { background:var(--leaf,#b9f26b); border-color:var(--leaf,#b9f26b); opacity:1; }
+main .daily-panel .daily-items input[type=checkbox]:checked {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23254b38' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E"); background-size:26px; background-position:center; background-repeat:no-repeat;
+}
+main .daily-panel .daily-items input[type=checkbox]::after,main .daily-panel .daily-items input[type=checkbox]::before { content:none; }
+main .daily-panel .daily-items label:has(:checked) span { text-decoration:none !important; opacity:1; font-weight:700; color:inherit; }
+#daily-progress { margin-top:12px; font-weight:700; }
+main .home-activities .challenge-panel > .guide-number { min-height:0; max-width:none; line-height:1.2; width:auto; height:auto; margin-bottom:0; }
+main .home-activities .quiz-panel > h2 + p,
+main .home-activities .daily-panel > h2 + p { padding-right:72px; }
+@media (min-width:700px) { main .home-activities .quiz-panel > h2 + p, main .home-activities .daily-panel > h2 + p { padding-right:0; } }
