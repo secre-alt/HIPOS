@@ -176,3 +176,4 @@ export function sortPointerUp(event){
   if(target)answer(target);else item.style.transform='';
 }
 export const sortActive=()=>Boolean(game);
+export const sortInProgress=()=>Boolean(game)&&game.i<game.items.length&&(game.i>0||game.answered)&&Boolean(document.querySelector('#sort-game'));

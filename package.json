@@ -7,7 +7,10 @@
     "build": "node scripts/build-pwa.mjs",
     "dev": "node scripts/serve-pwa.mjs",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs && node tests/features.browser.mjs && node tests/classify.browser.mjs && node tests/carry.browser.mjs && node tests/guidance-ux.browser.mjs && node tests/game-layout.browser.mjs && node tests/game-navigation.browser.mjs && node tests/sorting-feedback.browser.mjs",
+    "test:browser": "npm run test:browser:core && npm run test:browser:guides && npm run test:browser:games",
+    "test:browser:core": "node tests/browser.mjs && node tests/features.browser.mjs",
+    "test:browser:guides": "node tests/classify.browser.mjs && node tests/carry.browser.mjs && node tests/guidance-ux.browser.mjs",
+    "test:browser:games": "node tests/game-layout.browser.mjs && node tests/game-navigation.browser.mjs && node tests/sorting-feedback.browser.mjs",
     "test:features": "node tests/features.browser.mjs"
   },
   "dependencies": { "jsqr": "1.4.0", "qrcode": "1.5.4" },

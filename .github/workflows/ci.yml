@@ -13,9 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,14 +27,32 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+
+  browser:
+    # The browser suites run in parallel shards so a push gets an answer in a few minutes.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [core, guides, games]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
       - name: Install browser
         run: npx playwright install --with-deps chromium
-      - name: Browser tests
-        run: npm run test:browser
+      - name: Browser tests (${{ matrix.shard }})
+        run: npm run test:browser:${{ matrix.shard }}
       - name: Keep screenshots and traces from a failed run
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-${{ matrix.shard }}
           path: test-results/
           if-no-files-found: ignore

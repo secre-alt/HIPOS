@@ -1634,3 +1634,9 @@ main .home-activities .quiz-panel:has(#quiz-summary),
 main .home-activities .daily-panel:has(.daily-meter[value="3"]) { order:5; }
 main .home-activities .challenge-panel[data-state=done] > h2 ~ p:not(#challenge-feedback),
 main .home-activities .challenge-panel[data-state=skipped] > h2 ~ p:not(#challenge-feedback) { display:none; }
+
+/* Leave-this-round confirmation */
+.leave-dialog { max-width:min(92vw,420px); padding:24px; border-radius:20px; }
+.leave-dialog h2 { margin:0 0 8px; }
+.leave-dialog .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+.leave-dialog .actions button { min-height:48px; flex:1 1 140px; }

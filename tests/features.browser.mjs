@@ -322,7 +322,7 @@ try{
     await page.locator('[data-sort-bin="yes"]').click();
     const link=page.locator('a[data-guide-for]');await link.waitFor();
     const title=await link.getAttribute('data-guide-for');
-    await link.click();await page.locator('#guide-search').waitFor();
+    await link.click();await page.locator('[data-leave-go]').click();await page.locator('#guide-search').waitFor();
     assert.equal(await page.locator('#guide-search').inputValue(),title,'guide opens on the item');
     assert.ok(await page.locator('.visual-waste-card:not([hidden])').count()>=1,'item is shown');
     await page.evaluate(t=>localStorage.setItem('hipos.review.v1',JSON.stringify([{title:t,body:'Practice me.'}])),title);
@@ -337,6 +337,23 @@ try{
     await page.evaluate(()=>localStorage.setItem('hipos.buddy.v1',JSON.stringify({taps:4})));
     await page.goto(base+'#avatar');await page.locator('.sticker-book').waitFor();
     assert.match(await page.locator('.sticker-progress').first().innerText(),/\d+ \/ \d+/);
+    await close(s);
+  });
+  await check('leaving a round: asks only when a round is under way; Keep playing stays, Leave goes',async()=>{
+    const s=await open({viewport:{width:1280,height:800}}),{page}=s;
+    await page.goto(base+'#sort');await page.locator('#sort-game').waitFor();
+    await page.locator('#nav a',{hasText:'Games'}).click();
+    await page.locator('.games-grid').waitFor();
+    assert.equal(await page.locator('dialog.leave-dialog').count(),0,'no question before playing');
+    await page.goto(base+'#sort');await page.locator('#sort-game').waitFor();
+    await page.locator('[data-sort-bin="yes"]').click();await page.locator('#sort-next').click();
+    await page.locator('#nav a',{hasText:'Home'}).click();
+    await page.locator('dialog.leave-dialog[open]').waitFor();
+    await page.locator('[data-leave-stay]').click();
+    assert.match(page.url(),/#sort$/);assert.equal(await page.locator('dialog.leave-dialog').count(),0);
+    await page.locator('#nav a',{hasText:'Home'}).click();
+    await page.locator('[data-leave-go]').click();
+    await page.waitForFunction(()=>location.hash===''||location.hash==='#home'||location.hash==='#');
     await close(s);
   });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{

@@ -140,6 +140,7 @@ function frame(now){
 }
 
 let cleanupCompost=()=>{};
+export const compostActive=()=>Boolean(g)&&Boolean(document.querySelector('#compost-field'));
 export function initCompost(){
   cleanupCompost();
   const field=document.querySelector('#compost-field');if(!field)return;
