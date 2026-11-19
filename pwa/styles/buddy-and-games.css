@@ -1646,3 +1646,9 @@ main .home-activities .challenge-panel[data-state=skipped] > h2 ~ p:not(#challen
 #today-progress .game-of-day span:first-child { flex:1 1 200px; }
 #today-progress .game-of-day.is-done { background:rgba(185,242,107,.22); font-weight:700; }
 #today-progress .game-of-day .button-link { min-height:44px; }
+
+/* Today progress bar: same look in light and dark */
+#today-progress progress { appearance:none; width:100%; height:10px; border:0; border-radius:999px; overflow:hidden; background:rgba(120,140,125,.32); }
+#today-progress progress::-webkit-progress-bar { background:rgba(120,140,125,.32); border-radius:999px; }
+#today-progress progress::-webkit-progress-value { background:var(--leaf,#b9f26b); border-radius:999px; }
+#today-progress progress::-moz-progress-bar { background:var(--leaf,#b9f26b); border-radius:999px; }
