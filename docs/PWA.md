@@ -42,7 +42,7 @@ The **Text size** control (in **Settings**, the gear in the header) (Standard, L
 
 **Compost Catch** (Games → Compost Catch, or `#compost`) is a short falling-scraps game. The buddy's basket moves with the arrow keys, the Left and Right buttons, or by dragging across the field. Only compostable scraps should be caught. Nothing is stored or sent. Its round-building rules are unit tested in `tests/compost.test.mjs`.
 
-**Safe or Stay Away** (`#hazard`, `pwa/hazard.js`) is an eight-item round: tap *Safe for the pouch* or *Stay away* and read a short reason. A finished round gives a treat, counts toward the garden, and can earn the *Safety spotter* and *Danger detective* stickers. Results open in a modal.
+Safe or Stay Away is retired. Old `#hazard` links open Games; previously earned stickers and garden care remain on this device.
 
 A **first-run welcome** (`pwa/welcome.js`) offers three skippable steps (pick a buddy, choose a language, try one small thing) once per device; it never shows in automated browsers. Sorting answers you get wrong are kept in a **Review later** list (`hipos.review.v1`) and removed when answered right. If the browser blocks storage the app says progress will not be saved.
 

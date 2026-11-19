@@ -9,7 +9,7 @@ try {
   const context=await browser.newContext({viewport:{width,height:844},colorScheme:theme,reducedMotion:'reduce'}),page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(lang=>localStorage.setItem('hipos.language',lang),language);
   await page.goto('http://localhost:4190/#sort');
-  for(const [route,back,next] of [['sort','games','compost'],['compost','sort','hazard'],['hazard','compost','garden'],['garden','hazard','games']]) {
+  for(const [route,back,next] of [['sort','games','compost'],['compost','sort','garden'],['garden','compost','games']]) {
    await page.waitForFunction(route=>location.hash==='#'+route,route);
    const nav=page.locator('.game-pagination');await nav.waitFor();
    await page.waitForFunction(b=>document.querySelector('.game-pagination a')?.getAttribute('href')==='#'+b,back);

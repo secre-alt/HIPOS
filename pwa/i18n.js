@@ -1,4 +1,5 @@
 const pairs=[
+ ['Sort items, catch compost, or tend your Buddy garden.','Mag-uri ng mga aytem, sumalo ng compost, o alagaan ang hardin ng buddy mo.'],
  ['Daily progress','Progreso ngayong araw'],
  ['of 5 daily actions completed','sa 5 pang-araw-araw na gawain ang natapos'],
  ['Daily reminders','Mga pang-araw-araw na paalala'],

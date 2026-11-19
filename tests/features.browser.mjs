@@ -253,23 +253,18 @@ try{
     await close(s);
   });
 
-  await check('Safe or Stay Away: eight items, feedback, result modal, rewards and a sticker',async()=>{
+  await check('retired hazard game opens Games and preserves saved rewards',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
-    await page.goto(base+'#hazard');await page.locator('#hazard-game').waitFor();
-    assert.ok((await page.locator('#hazard-game .hazard-choice').first().boundingBox()).height>=44,'touch size');
-    await page.keyboard.press('ArrowRight');assert.ok(await page.locator('#hazard-feedback').innerText(),'arrow key answers');await page.locator('[data-hazard-next]').click();
-    for(let i=0;i<7;i++){
-      await page.locator('[data-hazard="safe"]').click();
-      assert.ok(await page.locator('#hazard-feedback').innerText(),'feedback shown');
-      await page.locator('[data-hazard-next]').click();
-    }
-    await page.locator('dialog.hazard-result[open]').waitFor({timeout:5000});
-    assert.match(await page.locator('.hazard-result h3').innerText(),/of 8 right/);
-    const st=await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')));
-    assert.equal(st.hazard,1);
-    await page.locator('.hazard-result .compost-result-close').click();
-    await page.locator('dialog.hazard-result').waitFor({state:'detached',timeout:3000});
-    await page.goto(base+'#games');assert.ok(await page.locator('.arcade-hazard').isVisible(),'hub card');
+    const legacy={treats:2,hazard:3,hazardPerfect:1,stickers:['hazard1','hazardperfect']};
+    await page.evaluate(data=>localStorage.setItem('hipos.buddy.v1',JSON.stringify(data)),legacy);
+    await page.goto(base+'#hazard');await page.reload();await page.locator('.games-grid').waitFor();
+    assert.equal(await page.locator('a[href="#hazard"]').count(),0);
+    assert.equal(await page.locator('#hazard-game').count(),0);
+    const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.buddy.v1')));
+    for(const key of ['treats','hazard','hazardPerfect'])assert.equal(saved[key],legacy[key]);
+    assert.ok(legacy.stickers.every(key=>saved.stickers.includes(key)));
+    await page.goto(base+'#avatar');await page.locator('.sticker-book').waitFor();
+    assert.match(await page.locator('.sticker-book').innerText(),/Safety spotter/);
     await close(s);
   });
   await check('review later: wrong sorting answers are kept, shown, and cleared when answered right',async()=>{
@@ -283,20 +278,13 @@ try{
     assert.equal(await page.locator('.review-later').count(),0,'damaged data is ignored');
     await close(s);
   });
-  await check('reduced motion: game pages and result dialogs have no running animations; dialogs are named',async()=>{
+  await check('reduced motion: remaining game pages have no running animations',async()=>{
     const s=await open({viewport:{width:390,height:800},reducedMotion:'reduce'}),{page}=s;
-    for(const hash of ['games','sort','compost','hazard','garden']){
+    for(const hash of ['games','sort','compost','garden']){
       await page.goto(base+'#'+hash);await page.waitForTimeout(300);
       const running=await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity).length);
       assert.equal(running,0,hash+' has no endless animations');
     }
-    await page.goto(base+'#hazard');await page.locator('#hazard-game').waitFor();
-    for(let i=0;i<8;i++){await page.locator('[data-hazard="safe"]').click();await page.locator('[data-hazard-next]').click();}
-    const d=page.locator('dialog.hazard-result[open]');await d.waitFor();
-    const labelled=await d.evaluate(el=>document.getElementById(el.getAttribute('aria-labelledby'))?.textContent.length>0);
-    assert.ok(labelled,'result dialog has an accessible name');
-    await page.keyboard.press('Escape');await page.locator('dialog.hazard-result').waitFor({state:'detached',timeout:3000});
-    assert.ok(await page.evaluate(()=>document.activeElement?.closest('#hazard-game')!==null),'focus returns to the game');
     await close(s);
   });
   await check('blocked storage: the app still opens, says progress will not be saved, and no welcome loops',async()=>{
@@ -418,7 +406,7 @@ try{
     await page.locator('#nav a',{hasText:'Games'}).click();await page.locator('.games-grid').waitFor();
     assert.equal(await page.locator('.arcade-meta').count(),4,'each game card shows progress');
     assert.match(await page.locator('.arcade-meta').first().innerText(),/Not played yet/);
-    for(const id of ['sort','compost','hazard','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
+    for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
     await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
     assert.equal(await page.locator('#nav a.active').innerText(),'Games','a game keeps Games active in the menu');
     await page.locator('a',{hasText:'All games'}).click();await page.locator('.games-grid').waitFor();

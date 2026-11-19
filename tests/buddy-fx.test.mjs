@@ -28,7 +28,8 @@ test('stickers come from badges and counters, are kept, and are announced once',
   assert.deepEqual(fx.syncStickers(week),[],'already collected');
   for(let i=0;i<7;i++)fx.recordTap();
   assert.deepEqual(fx.syncStickers({badges:[],challengeDays:3}).map(t=>t.key).sort(),['challenge3','tap10']);
-  assert.match(fx.stickerBook(),/6 of 17 stickers collected/);
+  assert.match(fx.stickerBook(),/6 of 15 stickers collected/);
+  assert.doesNotMatch(fx.stickerBook(),/Safety spotter|Danger detective/);
 });
 test('damaged saved data falls back safely and is sanitized',async()=>{
   localStorage.setItem('hipos.buddy.v1','{"taps":-5,"treats":"x","sorts":2.5,"stickers":["nope","first"],"seasons":["wika","bad","default"],"treatDays":{"bad":1,"2026-11-15":70}}');

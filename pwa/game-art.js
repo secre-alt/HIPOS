@@ -80,7 +80,6 @@ const logos = {
 ${face(60, 74, 0.95)}</g>${sparkle(98, 22, '#FFD84D', 1)}${sparkle(20, 30, '#9EE7FF', 2)}${sparkle(104, 62, '#FFB3C7', 3)}`,
 
   // Compost Catch: a basket catching falling scraps
-  hazard: () => `${shadow}<g class="gl-hop"><path d="M60 12 L108 98 Q112 108 100 108 H20 Q8 108 12 98 Z" fill="#FFD84D"/><path d="M60 34 V68" stroke="#2F3A33" stroke-width="8" stroke-linecap="round"/><circle cx="60" cy="84" r="5.5" fill="#2F3A33"/></g>${sparkle(100, 26, '#FFB347', 1)}${sparkle(16, 44, '#9EE7FF', 2)}`,
   compost: () => `${shadow}
 <g class="gl-scrap gl-s1"><circle cx="38" cy="14" r="7.5" fill="#FF7A7A"/><path d="M38 7 Q40 2 44 2" stroke="#6BB36F" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="35.5" cy="12" rx="2" ry="3" fill="#fff" opacity=".5"/></g>
 <g class="gl-scrap gl-s2"><path d="M60 6 Q72 10 70 24 Q58 22 60 6 Z" fill="#7ED68F"/><path d="M62 10 Q66 16 68 22" stroke="#4E9F5E" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>

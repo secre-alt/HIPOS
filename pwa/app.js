@@ -13,7 +13,6 @@ import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
-import { hazardGame, hazardClick } from "./hazard.js";
 import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
 import { home, selectWaste, wasteArt, refreshTodayProgress } from "./home.js";
@@ -33,7 +32,7 @@ view.addEventListener("click", interactWithCarry);
 const links = [["home", "Home"], ["prevent", "Prevent"], ["reuse", "Reuse"], ["classify", "Classify"], ["carry", "Carry out"], ["games", "Games"]];
 // Sorting game, Compost Catch and Buddy garden live under the single Games menu item.
 const navId = (page) => (gamePages.includes(page) ? "games" : page);
-const pageTitles = { avatar: "My buddy", sort: "Sorting game", compost: "Compost Catch", hazard: "Safe or Stay Away", garden: "Buddy garden" };
+const pageTitles = { avatar: "My buddy", sort: "Sorting game", compost: "Compost Catch", garden: "Buddy garden" };
 function message(text) {
   if (text) toasts.push(text, noticeType(text));
   document.querySelector("#notice").textContent = text;
@@ -46,14 +45,14 @@ function summaryNow() {
 function gamesProgress() {
   try {
     const st = stats();
-    return { sort: st.sorts, compost: st.compost, hazard: st.hazard, blooms: gardenState(carePoints(summaryNow())).blooms };
+    return { sort: st.sorts, compost: st.compost, blooms: gardenState(carePoints(summaryNow())).blooms };
   } catch {
     return {};
   }
 }
 // Messages and pop-ups wait until a round-result modal is closed, so they never cover its buttons.
 function whenResultClosed(fn) {
-  const modal = document.querySelector("dialog.sort-result[open], dialog.compost-result[open], dialog.hazard-result[open], dialog.welcome[open]");
+  const modal = document.querySelector("dialog.sort-result[open], dialog.compost-result[open], dialog.welcome[open]");
   if (!modal) return fn();
   let ticks = 0;
   const timer = setInterval(() => {
@@ -129,7 +128,7 @@ function onWaste(button) {
   sound("boop");
 }
 document.addEventListener("hipos-game-done", () => whenResultClosed(() => checkBuddyUnlocks(true)));
-const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", hazard: "Spot the hazards!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
+const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
 const greeted = /* @__PURE__ */ new Set();
 let firstRender = true;
 const card = (title, body, note = "") => `<article class="card"><h3>${e(title)}</h3>${body.startsWith("Requires school approval") ? '<span class="approval-label">Requires school approval</span>' : ""}<p>${e(body)}</p>${note ? `<p class="note">${e(note)}</p>` : ""}</article>`;
@@ -165,8 +164,9 @@ async function shareWeek() {
 const versionCard = () => `<article class="card version-card"><h3>App version</h3><p>HIPOS checks for updates each time you open it online. You can also check now.</p><p class="note" data-no-translate>Version ${e(build.version)}${build.date ? " · " + e(build.date) : ""}</p><div class="actions"><button class="secondary" data-action="check-update">Check for updates</button></div></article>`;
 const intro = (title, body) => `<section class="intro"><h1>${title}</h1><p>${body}</p></section>`;
 function current() {
-  const p = location.hash.slice(1) || "home";
-  return [...links.map((x) => x[0]), "privacy", "avatar", "sort", "compost", "hazard", "garden"].includes(p) ? p : "home";
+  const requested = location.hash.slice(1) || "home";
+  const p = requested === "hazard" ? "games" : requested;
+  return [...links.map((x) => x[0]), "privacy", "avatar", "sort", "compost", "garden"].includes(p) ? p : "home";
 }
 function modal(html) {
   document.querySelector("#dialog-body").innerHTML = html;
@@ -200,7 +200,6 @@ function render() {
   if (page === "sort") view.innerHTML = gamesBack() + intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + sortGame(summaryNow()) + gameNavigation(page);
   if (page === "garden") view.innerHTML = gamesBack() + intro("Buddy garden","Your flowers grow from the care you give. Nothing wilts and nothing is sent anywhere.") + gardenPage(summaryNow()) + gameNavigation(page);
   if (page === "compost") view.innerHTML = gamesBack() + intro("Compost Catch","Catch the scraps that can be composted. Nothing is graded or sent anywhere.") + compostGame(summaryNow()) + gameNavigation(page);
-  if (page === "hazard") view.innerHTML = gamesBack() + intro("Safe or Stay Away","Spot what is safe for the pouch and what needs school staff. Nothing is graded or sent anywhere.") + hazardGame(summaryNow()) + gameNavigation(page);
   if (page === "privacy") view.innerHTML = intro("Private by choice. Local by default.", "HIPOS is an offline-first school project prototype.") + card("Offline access", "Open once online and wait for “Ready offline”. Install from the browser menu or the Install app button. On iPhone or iPad, use Safari → Share → Add to Home Screen. The first visit needs a connection; later visits use cached files.") + card("Your activity on this device", "Daily reminders, challenges, quiz progress, recent guides, your buddy, and language choice are saved in this browser. Older weekly history is removed when you save new activity. These records are not sent to a server. Browser storage may be cleared or unavailable.") + card("Installation and hosting", "Installation and offline caching require HTTPS in production. Localhost is suitable for development. Use the same web address to keep access to your saved activity.") + versionCard();
   revealOnScroll();
   view.classList.remove("page-in");
@@ -264,9 +263,6 @@ document.addEventListener("click", async (event) => {
     if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
       const result = sortClick(b);
       if (result === "finished") whenResultClosed(() => checkBuddyUnlocks(true));
-    }
-    if (b.hasAttribute("data-hazard") || b.hasAttribute("data-hazard-next") || b.hasAttribute("data-hazard-again")) {
-      if (hazardClick(b) === "finished") whenResultClosed(() => checkBuddyUnlocks(true));
     }
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {

@@ -109,6 +109,7 @@ const SEASON_LINES={christmas:'Merry! Festive mode is on.',earth:'Happy Earth Da
 export function applySeason(){const s=season();if(s==='default')delete document.documentElement.dataset.season;else document.documentElement.dataset.season=s;}
 
 // ---------- Saved buddy progress ----------
+// Preserve retired Safe or Stay Away counters and stickers so existing care is not lost.
 const blank=()=>({taps:0,treats:0,treatDays:{},sorts:0,perfect:0,compost:0,compostPerfect:0,hazard:0,hazardPerfect:0,seasons:[],stickers:[]});
 function load(){
   try{
@@ -199,8 +200,8 @@ export function syncStickers(summary){
 }
 const stickerArt=t=>`<svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="22" fill="${t.color}"/><circle cx="24" cy="24" r="22" fill="none" stroke="#ffffffaa" stroke-width="3" stroke-dasharray="3 5"/><g transform="translate(12 12)" fill="none" stroke="#143026" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${t.icon}"/></g></svg>`;
 export function stickerBook(){
-  const have=new Set(get().stickers),count=STICKERS.filter(t=>have.has(t.key)).length;
-  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${STICKERS.length} stickers collected. Stickers stay yours once you earn them.</p>${count===0?'<div class="sticker-empty"><p class="note">No stickers yet. Finish a game round or check off a daily habit to earn your first one.</p><div class="actions"><a class="button-link" href="#games">Play a game</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}<ul class="stickers">${STICKERS.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span></li>`;}).join('')}</ul></section>`;
+  const have=new Set(get().stickers),available=STICKERS.filter(t=>!t.key.startsWith('hazard')||have.has(t.key)),count=available.filter(t=>have.has(t.key)).length;
+  return `<section class="card sticker-book" aria-labelledby="sticker-heading"><h2 id="sticker-heading">Sticker book</h2><p class="note">${count} of ${available.length} stickers collected. Stickers stay yours once you earn them.</p>${count===0?'<div class="sticker-empty"><p class="note">No stickers yet. Finish a game round or check off a daily habit to earn your first one.</p><div class="actions"><a class="button-link" href="#games">Play a game</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}<ul class="stickers">${available.map(t=>{const on=have.has(t.key);return `<li class="sticker${on?' earned':''}">${stickerArt(t)}<span class="sticker-name">${t.name}</span><span class="sticker-hint">${on?'Collected':t.hint}</span></li>`;}).join('')}</ul></section>`;
 }
 
 // ---------- Mood ----------

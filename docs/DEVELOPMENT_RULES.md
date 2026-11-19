@@ -71,6 +71,9 @@ change them; update the relevant documentation when it does.
 
 ## Games and garden
 
+- Safe or Stay Away is retired. Its old `#hazard` route opens Games. Keep
+  legacy round counts, care points, and earned stickers; hide its unearned
+  stickers. Game navigation goes Sorting → Compost Catch → Buddy garden.
 - Sorting keeps answered items readable and labels the chosen and correct
   destinations. Name the item and correct destination in the buddy feedback modal with the original safety guidance always visible, without a separator line.
   Keep Next item visible in the modal. Escape or Close returns to a Review answer
