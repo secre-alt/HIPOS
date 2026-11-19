@@ -3,13 +3,14 @@ import { initToasts, noticeType } from "./toast.js";
 import { carryPage, interactWithCarry } from "./carry.js";
 import { initPwa } from "./pwa-runtime.js";
 import { needsWelcome, showWelcome } from "./welcome.js";
-import { dailyBuddy } from "./daily-buddy.js";
+import { dailyBuddy, dailyProgress } from "./daily-buddy.js";
 import { initLanguage } from "./i18n.js";
-import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSummary, recordGame } from "./engagement.js";
+import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSummary, recordGame, gamePlayedToday } from "./engagement.js";
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
 import { initA11yPrefs, earlyApplyPrefs } from "./a11y-prefs.js";
 import { howTo, dismissHowTo } from "./howto.js";
+import { initReminders, nudgeHtml, snoozeToday } from "./reminders.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
@@ -223,7 +224,7 @@ function render() {
   document.querySelector("#mobile-more-toggle").classList.toggle("is-current", ["carry", "games"].includes(navId(page)));
   document.querySelector("#nav").innerHTML = links.map(([id, label]) => `<a href="#${id}" ${id === navId(page) ? 'class="active" aria-current="page"' : ""}>${label}</a>`).join("");
   document.querySelector("#page-label").textContent = page === "home" ? "Your daily guide" : pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "About HIPOS";
-  if (page === "home") view.innerHTML = resume + home();
+  if (page === "home") view.innerHTML = resume + nudgeHtml(activeToday()) + home();
   if (page === "prevent") view.innerHTML = preventPage();
   if (page === "reuse") view.innerHTML = reusePage();
   if (page === "classify") {
@@ -299,6 +300,10 @@ document.addEventListener("click", async (event) => {
     if (b.hasAttribute("data-sort-review") || b.hasAttribute("data-sort-practice") || b.hasAttribute("data-sort-bin") || b.hasAttribute("data-sort-next") || b.hasAttribute("data-sort-again") || b.hasAttribute("data-sort-results") || b.hasAttribute("data-sort-restart")) {
       const result = sortClick(b);
       if (result === "finished") onGameDone();
+    }
+    if (b.hasAttribute("data-reminder-snooze")) {
+      snoozeToday();
+      b.closest(".reminder-nudge")?.remove();
     }
     if (b.dataset.howtoDismiss) dismissHowTo(b.dataset.howtoDismiss);
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
@@ -447,6 +452,14 @@ earlyApplyPrefs();
 initLeaveGuard(() => compostActive() || sortInProgress());
 initTextSize();
 initA11yPrefs();
+function activeToday() {
+  try {
+    return dailyProgress(localStorage, localDay()).completed > 0 || gamePlayedToday();
+  } catch {
+    return false;
+  }
+}
+initReminders({ mount: document.querySelector("#reminder-mount"), deliver: deliverFile, activeToday, message });
 initFontStyle();
 initBuddySettings();
 document.addEventListener("pointerdown", sortPointerDown);

@@ -364,6 +364,40 @@ try{
     assert.match(await page.locator('.streak-count').innerText(),/1 day streak/);
     await close(s);
   });
+  await check('daily reminder: setting saves, Home nudge, calendar file, notification once, snooze',async()=>{
+    const s=await open({viewport:{width:1280,height:800}}),{page}=s;
+    // Headless Chromium refuses notification permission, so the browser calls are replaced by recorders.
+    await s.ctx.addInitScript(()=>{
+      Object.defineProperty(Notification,'permission',{get:()=>window.__perm||'default'});
+      Notification.requestPermission=async()=>{window.__perm='granted';return 'granted';};
+      window.__notes=[];ServiceWorkerRegistration.prototype.showNotification=async function(title,options){window.__notes.push({title,options});};
+    });
+    await page.reload();await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
+    await openSettings(page,'personal');
+    await page.locator('#reminder-on').check();
+    await page.locator('#reminder-time').fill('00:00');
+    for(const box of await page.locator('[data-reminder-day]').all())if(!(await box.isChecked()))await box.check();
+    const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.reminder.v1')));
+    assert.equal(saved.on,true);assert.equal(saved.time,'00:00');assert.equal(saved.days.length,7);
+    const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#reminder-ics').click()]);
+    const text=await (await import('node:fs/promises')).readFile(await download.path(),'utf8');
+    assert.match(text,/RRULE:FREQ=WEEKLY;BYDAY=SU,MO,TU,WE,TH,FR,SA/);assert.match(text,/DTSTART:\d{8}T000000/);
+    await page.locator('#reminder-notify').click();
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem('hipos.reminder.v1')).notify===true);
+    await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+    await page.waitForFunction(()=>window.__notes.length===1,null,{timeout:8000});
+    assert.match(await page.evaluate(()=>window.__notes[0].options.body),/Small choices add up/);
+    await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(()=>window.__notes.length),1,'only one a day');
+    await page.keyboard.press('Escape');
+    await page.goto(base+'#games');await page.goto(base+'#home');
+    await page.locator('.reminder-nudge').waitFor();
+    await page.locator('[data-reminder-snooze]').click();
+    assert.equal(await page.locator('.reminder-nudge').count(),0);
+    await page.reload();await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
+    assert.equal(await page.locator('.reminder-nudge').count(),0,'snooze lasts the day');
+    await close(s);
+  });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     assert.equal(await page.locator('dialog.welcome').count(),0,'automated browsers are not interrupted');
