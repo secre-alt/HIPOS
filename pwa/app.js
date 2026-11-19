@@ -8,10 +8,11 @@ import { initLanguage } from "./i18n.js";
 import { updateChallenge, rememberGuide, dailyChallenge, refreshWeekly, weekSummary } from "./engagement.js";
 import { weekCardBlob } from "./summary-card.js";
 import { initTextSize } from "./textsize.js";
+import { initA11yPrefs, earlyApplyPrefs } from "./a11y-prefs.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
-import { sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
+import { reviewList, sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost } from "./compost.js";
 import { gardenPage, initGarden } from "./garden.js";
 import { answerQuiz, nextQuestion, restartQuiz, updateHabit, localDay, checklist } from "./activities.js";
@@ -163,6 +164,28 @@ async function shareWeek() {
 }
 const versionCard = () => `<article class="card version-card"><h3>App version</h3><p>HIPOS checks for updates each time you open it online. You can also check now.</p><p class="note" data-no-translate>Version ${e(build.version)}${build.date ? " · " + e(build.date) : ""}</p><div class="actions"><button class="secondary" data-action="check-update">Check for updates</button></div></article>`;
 const intro = (title, body) => `<section class="intro"><h1>${title}</h1><p>${body}</p></section>`;
+const LAST_KEY = "hipos.lastpage.v1";
+function rememberPage(page) {
+  if (page === "home" || page === "privacy") return;
+  try {
+    localStorage.setItem(LAST_KEY, JSON.stringify({ page, at: Date.now() }));
+  } catch {
+    /* blocked storage: nothing to remember */
+  }
+}
+// On a fresh open of Home, offer a way back to the last page used in the past week.
+function resumeChip() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+    if (!saved || typeof saved.page !== "string" || !(Date.now() - saved.at < 7 * 864e5)) return "";
+    const page = saved.page;
+    if (page === "home" || !["prevent", "reuse", "classify", "carry", "avatar", "games", "sort", "compost", "garden"].includes(page)) return "";
+    const label = pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "";
+    return label ? `<p class="resume-chip"><a class="button-link secondary" href="#${page}"><span>Continue where you left off:</span> <strong>${label}</strong> <span aria-hidden="true">&rarr;</span></a></p>` : "";
+  } catch {
+    return "";
+  }
+}
 function current() {
   const requested = location.hash.slice(1) || "home";
   const p = requested === "hazard" ? "games" : requested;
@@ -181,6 +204,8 @@ function render() {
   if (gamePages.includes(page)) view.dataset.gamePage = page;
   else delete view.dataset.gamePage;
   rememberGuide(page);
+  const resume = firstRender && page === "home" ? resumeChip() : "";
+  rememberPage(page);
   checkBuddyUnlocks();
   refreshAvatars();
   document.querySelectorAll(".mobile-bottom-nav a").forEach((a) => {
@@ -190,7 +215,7 @@ function render() {
   document.querySelector("#mobile-more-toggle").classList.toggle("is-current", ["carry", "games"].includes(navId(page)));
   document.querySelector("#nav").innerHTML = links.map(([id, label]) => `<a href="#${id}" ${id === navId(page) ? 'class="active" aria-current="page"' : ""}>${label}</a>`).join("");
   document.querySelector("#page-label").textContent = page === "home" ? "Your daily guide" : pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "About HIPOS";
-  if (page === "home") view.innerHTML = home();
+  if (page === "home") view.innerHTML = resume + home();
   if (page === "prevent") view.innerHTML = preventPage();
   if (page === "reuse") view.innerHTML = reusePage();
   if (page === "classify") view.innerHTML = classifyPage();
@@ -211,7 +236,7 @@ function render() {
   checkBuddyUnlocks();
   if (!firstRender && PAGE_LINES[page] && !greeted.has(page)) {
     greeted.add(page);
-    buddySay(PAGE_LINES[page]);
+    buddySay(page === "sort" && reviewList().length ? "Want to practice the ones we missed?" : PAGE_LINES[page]);
     animate("hop");
   }
   firstRender = false;
@@ -406,7 +431,9 @@ if (storageBlocked) setTimeout(() => message("This browser is blocking storage, 
 }
 checkDailyCheer();
 if (firstRun) setTimeout(() => showWelcome(), 700);
+earlyApplyPrefs();
 initTextSize();
+initA11yPrefs();
 initFontStyle();
 initBuddySettings();
 document.addEventListener("pointerdown", sortPointerDown);

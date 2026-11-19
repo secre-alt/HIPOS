@@ -4,10 +4,10 @@ import {currentStreak,bestRun,badges,isActive} from '../pwa/streak.js';
 const day=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 const on=(...ids)=>Object.fromEntries(ids.map(id=>[id,{habits:1}]));
 const today=new Date(2026,10,15);
-test('an empty history has no streak',()=>{assert.deepEqual(currentStreak({},today),{count:0,todayDone:false});});
+test('an empty history has no streak',()=>{assert.deepEqual({...currentStreak({},today),rested:undefined},{count:0,todayDone:false,rested:undefined});});
 test('today counts, and yesterday keeps a streak alive until today is done',()=>{
-  assert.deepEqual(currentStreak(on(day(2026,11,15),day(2026,11,14)),today),{count:2,todayDone:true});
-  assert.deepEqual(currentStreak(on(day(2026,11,14),day(2026,11,13)),today),{count:2,todayDone:false});
+  assert.deepEqual({...currentStreak(on(day(2026,11,15),day(2026,11,14)),today),rested:undefined},{count:2,todayDone:true,rested:undefined});
+  assert.deepEqual({...currentStreak(on(day(2026,11,14),day(2026,11,13)),today),rested:undefined},{count:2,todayDone:false,rested:undefined});
 });
 test('a missed day ends the streak',()=>{
   assert.equal(currentStreak(on(day(2026,11,15),day(2026,11,13)),today).count,1);
@@ -30,4 +30,11 @@ test('badges unlock from habits, runs and first action',()=>{
   const some=badges({[day(2026,11,1)]:{habits:3}},3);
   assert.deepEqual(some.map(b=>[b.key,b.earned]),[['first',true],['habits',true],['streak3',true],['streak7',false]]);
   assert.equal(badges({[day(2026,11,1)]:{habits:1}},1).find(b=>b.key==='habits').earned,false);
+});
+test('one rest day can be forgiven when asked, but not two, and it is not counted', () => {
+  const days = on(day(2026,11,15), day(2026,11,13), day(2026,11,12));
+  assert.equal(currentStreak(days, today).count, 1);
+  const g = currentStreak(days, today, 1);
+  assert.equal(g.count, 3); assert.equal(g.rested, true);
+  assert.equal(currentStreak(on(day(2026,11,15), day(2026,11,12)), today, 1).count, 1);
 });

@@ -577,3 +577,32 @@ aside::after {
 .textsize-control select {
   min-width: 7.5rem;
 }
+
+/* ---- Easier viewing options (Settings > Text & readability) ---- */
+.a11y-prefs { display:grid; gap:8px; margin-top:16px; }
+.a11y-label { margin:0; font-weight:800; }
+.a11y-toggle { display:flex; align-items:center; gap:12px; min-height:48px; padding:6px 4px; cursor:pointer; }
+.a11y-toggle input { width:24px; height:24px; min-width:24px; margin:0; accent-color:var(--green-deep,#1f6b45); }
+.a11y-toggle input:focus-visible { outline:3px solid currentColor; outline-offset:3px; }
+
+/* High contrast: pure ink on paper (or white on near-black), visible borders, underlined links. */
+:root[data-contrast=high] { --ink:#000; --muted:#1b1b1b; --line:#000; }
+:root[data-contrast=high][data-theme=dark] { --ink:#fff; --muted:#f2f2f2; --line:#fff; }
+:root[data-contrast=high] body { color:var(--ink); }
+:root[data-contrast=high] :is(.card,.intro) :is(p,li,small), :root[data-contrast=high] .card .note, :root[data-contrast=high] .card .muted { color:var(--ink) !important; opacity:1 !important; }
+:root[data-contrast=high] .card, :root[data-contrast=high] dialog, :root[data-contrast=high] input, :root[data-contrast=high] select { border:2px solid var(--ink) !important; }
+:root[data-contrast=high] button, :root[data-contrast=high] .button-link { border:2px solid var(--ink) !important; }
+:root[data-contrast=high] main a:not(.button-link):not(.card-link) { text-decoration:underline; text-underline-offset:3px; }
+:root[data-contrast=high] :focus-visible { outline:4px solid #ffbf00 !important; outline-offset:3px !important; box-shadow:0 0 0 7px #000 !important; }
+
+/* Easier reading: more space between lines, words and letters, and left-aligned text. */
+:root[data-reading=easy] body { line-height:1.85; letter-spacing:.04em; word-spacing:.16em; }
+:root[data-reading=easy] main p, :root[data-reading=easy] main li { line-height:1.9; max-width:68ch; text-align:left; }
+:root[data-reading=easy] :is(h1,h2,h3) { letter-spacing:.03em; line-height:1.4; }
+
+/* Bigger touch targets for hands that find small buttons hard. */
+:root[data-touch=large] :is(button,.button-link,.chip,select,input:not([type=checkbox]):not([type=radio]),summary) { min-height:56px; }
+:root[data-touch=large] :is(input[type=checkbox],input[type=radio]) { min-width:32px; min-height:32px; }
+:root[data-touch=large] :is(nav a,.mobile-bottom-nav a,.mobile-bottom-nav button) { min-height:56px; }
+.resume-chip { margin:0 0 16px; }
+.resume-chip .button-link { display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:48px; }

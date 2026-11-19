@@ -6,11 +6,16 @@ const id=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0'
 const addDays=(date,n)=>{const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()+n);return d;};
 
 // Consecutive active days ending today. If today is not done yet, yesterday still keeps the streak alive.
-export function currentStreak(days,today=new Date()){
+// With grace=1 one rest day inside the run is forgiven: it keeps the streak going but is not counted.
+export function currentStreak(days,today=new Date(),grace=0){
   const todayDone=isActive(days[id(today)]);
-  let cursor=todayDone?today:addDays(today,-1),count=0;
-  while(isActive(days[id(cursor)])){count++;cursor=addDays(cursor,-1);}
-  return {count,todayDone};
+  let cursor=todayDone?today:addDays(today,-1),count=0,spare=grace,rested=false;
+  for(;;){
+    if(isActive(days[id(cursor)])){count++;cursor=addDays(cursor,-1);continue;}
+    if(count>0&&spare>0&&isActive(days[id(addDays(cursor,-1))])){spare--;rested=true;cursor=addDays(cursor,-1);continue;}
+    break;
+  }
+  return {count,todayDone,rested};
 }
 // Longest run of consecutive active days in the history that is still kept.
 export function bestRun(days){

@@ -65,7 +65,7 @@ function weekData(){
     const id=localDay(date),entry=data.days[id];
     days.push({id,date,entry,active:isActive(entry)});
   }
-  const streak=currentStreak(data.days,today),best=Math.max(Number(data.best)||0,bestRun(data.days),streak.count);
+  const streak=currentStreak(data.days,today,1),best=Math.max(Number(data.best)||0,bestRun(data.days),currentStreak(data.days,today).count);
   return {days,streak,best,badges:badgeList(data.days,best),challengeDays:Object.values(data.days).filter(entry=>entry?.challenge==='done').length};
 }
 // Used by the "save my week as an image" card.
@@ -74,9 +74,9 @@ const flame='<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" 
 export function weekly(){
   let week;try{week=weekData();}catch{return '<section id="weekly-activity" class="card"><h2>Your last seven days</h2><p>Activity history could not be read. Try again after checking browser storage.</p></section>';}
   const cells=week.days.map(({id,date,entry,active})=>`<li class="${active?'activity-done':''}"><time datetime="${id}">${date.getMonth()+1}/${date.getDate()}</time><span>${active?'Completed an action':entry?.challenge==='skipped'?'Challenge skipped':'No actions recorded'}</span></li>`);
-  const {count,todayDone}=week.streak;
+  const {count,todayDone,rested}=week.streak;
   const streakText=count?`${count} day streak`:'No streak yet';
-  const streakNote=!count?'Do one small action today to start a streak.':todayDone?'Today is done. See you tomorrow!':'Do one small action today to keep it going.';
+  const streakNote=!count?'Do one small action today to start a streak.':rested&&!todayDone?'You took a rest day and your streak is safe. Do one small action today to keep it going.':todayDone?'Today is done. See you tomorrow!':'Do one small action today to keep it going.';
   const bestLine=week.best>=2?`<span class="streak-best">Best: ${week.best} days</span>`:'';
   const badgeItems=week.badges.map(b=>`<li class="badge${b.earned?' earned':''}"><span class="badge-name">${e(b.name)}</span><span class="badge-desc">${e(b.description)}</span><span class="badge-state">${b.earned?'Earned':'Locked'}</span></li>`).join('');
   return `<section id="weekly-activity" class="card" aria-labelledby="weekly-heading"><h2 id="weekly-heading">Your last seven days</h2><p>A private record of your choices on this device. Missing a day is okay.</p><div class="streak"><span class="streak-flame${count?' lit':''}">${flame}</span><div class="streak-copy"><strong class="streak-count">${streakText}</strong><span class="streak-note">${streakNote}</span>${bestLine}</div></div><ul class="week-days">${cells.join('')}</ul><h3 class="badges-heading">Badges</h3><ul class="badges">${badgeItems}</ul><div class="actions"><button class="secondary" data-action="share-week">Save my week as an image</button></div><p class="note">The image has no name or personal details. This records completed actions, not environmental impact.</p></section>`;

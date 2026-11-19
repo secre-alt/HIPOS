@@ -210,7 +210,7 @@ try{
     assert.ok(await page.locator('#buddy-say').isHidden(),'cheers off hides the bubble');
     await page.evaluate(()=>{location.hash='avatar';});await page.locator('.sticker-book').waitFor();
     assert.ok(await page.locator('.sticker.earned').count()>=1,'first step sticker earned');
-    assert.equal(await page.locator('.sticker').count(),17);
+    assert.equal(await page.locator('.sticker').count(),15);
     assert.ok(await page.locator('[data-mood]').count()>=1,'buddy has a mood');
     // Filipino
     await openSettings(page,'language');await page.selectOption('#language','fil');await page.keyboard.press('Escape');await page.waitForTimeout(400);
@@ -297,6 +297,20 @@ try{
     assert.equal(await page.locator('dialog.welcome').count(),0);
     assert.deepEqual(errs,[],'no uncaught errors');
     await ctx.close();
+  });
+  await check('easier viewing: high contrast, easier reading and bigger touch persist; resume chip offers the last page',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await openSettings(page,'text');
+    for(const n of ['contrast','reading','touch'])await page.locator(`[data-a11y="${n}"]`).check();
+    const attrs=await page.evaluate(()=>({...document.documentElement.dataset}));
+    assert.equal(attrs.contrast,'high');assert.equal(attrs.reading,'easy');assert.equal(attrs.touch,'large');
+    await page.reload();await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
+    assert.equal(await page.evaluate(()=>document.documentElement.dataset.contrast),'high','saved before paint');
+    await page.goto(base+'#compost');await page.locator('#compost-game').waitFor();
+    await page.goto(base);await page.reload();
+    await page.locator('.resume-chip a[href="#compost"]').waitFor({timeout:8000});
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal overflow with all options on');
+    await close(s);
   });
   await check('first-run welcome: three skippable steps once, never for returning users or automated browsers',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
@@ -404,7 +418,7 @@ try{
     for(const name of ['Compost Catch','Buddy garden'])assert.equal(await page.locator('#nav a',{hasText:name}).count(),0,name+' is grouped under Games');
     assert.equal(await page.locator('.games-strip a[href="#games"]').count(),1,'home links to Games');
     await page.locator('#nav a',{hasText:'Games'}).click();await page.locator('.games-grid').waitFor();
-    assert.equal(await page.locator('.arcade-meta').count(),4,'each game card shows progress');
+    assert.equal(await page.locator('.arcade-meta').count(),3,'each game card shows progress');
     assert.match(await page.locator('.arcade-meta').first().innerText(),/Not played yet/);
     for(const id of ['sort','compost','garden'])assert.equal(await page.locator(`.games-grid a[href="#${id}"]`).count(),1,id+' on the Games page');
     await page.locator('.games-grid a[href="#compost"]').click();await page.locator('#compost-game').waitFor();
