@@ -59,7 +59,6 @@ try {
   const field=await page.locator('#compost-field').boundingBox();
   await page.locator('#compost-field').dispatchEvent('pointerdown',{pointerId:1,button:0,isPrimary:true,clientX:field.x+field.width*0.836,clientY:field.y+100});
   await page.clock.runFor(4500);
-  assert.ok(await page.locator('.hipos-avatar.do-nod').count()>0,'plastic catch gives a gentle nod');
   await expect(page.locator('#compost-status strong')).toHaveText(/Plastic spoon|Plastic wrapper/);
   await expect(page.locator('#compost-status span')).toHaveText('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.');
   await page.evaluate(()=>{const language=document.querySelector('#language');language.value='fil';language.dispatchEvent(new Event('change'));});

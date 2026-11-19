@@ -7,11 +7,12 @@
     "build": "node scripts/build-pwa.mjs",
     "dev": "node scripts/serve-pwa.mjs",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "npm run test:browser:app && npm run test:browser:features && npm run test:browser:guides && npm run test:browser:layout && npm run test:browser:games",
+    "test:browser": "npm run test:browser:app && npm run test:browser:features && npm run test:browser:guides && npm run test:browser:layout && npm run test:browser:games && npm run test:browser:extras",
     "test:browser:app": "node tests/browser.mjs",
     "test:browser:features": "node tests/features.browser.mjs",
     "test:browser:guides": "node tests/classify.browser.mjs && node tests/carry.browser.mjs && node tests/guidance-ux.browser.mjs",
     "test:browser:layout": "node tests/game-layout.browser.mjs",
+    "test:browser:extras": "node tests/arcade.browser.mjs && node tests/compost-experience.browser.mjs && node tests/mobile-navigation.browser.mjs && node tests/toast.browser.mjs && node tests/buddy-nickname.browser.mjs && node tests/buddy-voice.browser.mjs",
     "test:browser:games": "node tests/game-navigation.browser.mjs && node tests/sorting-feedback.browser.mjs",
     "test:features": "node tests/features.browser.mjs"
   },
