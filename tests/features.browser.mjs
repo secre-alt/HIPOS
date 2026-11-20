@@ -298,7 +298,7 @@ try{
     assert.deepEqual(errs,[],'no uncaught errors');
     await ctx.close();
   });
-  await check('easier viewing: high contrast, easier reading and bigger touch persist; resume chip offers the last page',async()=>{
+  await check('easier viewing: high contrast, easier reading and bigger touch persist',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await openSettings(page,'text');
     for(const n of ['contrast','reading','touch'])await page.locator(`[data-a11y="${n}"]`).check();
@@ -306,9 +306,6 @@ try{
     assert.equal(attrs.contrast,'high');assert.equal(attrs.reading,'easy');assert.equal(attrs.touch,'large');
     await page.reload();await page.locator('#connection',{hasText:'Ready offline'}).waitFor({state:'attached',timeout:20000});
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.contrast),'high','saved before paint');
-    await page.goto(base+'#compost');await page.locator('#compost-game').waitFor();
-    await page.goto(base);await page.reload();
-    await page.locator('.resume-chip a[href="#compost"]').waitFor({timeout:8000});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal overflow with all options on');
     await close(s);
   });

@@ -6,7 +6,6 @@ These Filipino translations were written by Claude and have not yet been checked
 | --- | --- |
 | Sort items, catch compost, or tend your Buddy garden. | Mag-uri ng mga aytem, sumalo ng compost, o alagaan ang hardin ng buddy mo. |
 | Want to practice the ones we missed? | Gusto mo bang pag-aralan ang mga nakaligtaan natin? |
-| Continue where you left off: | Ituloy kung saan ka huminto: |
 | You took a rest day and your streak is safe. Do one small action today to keep it going. | Nagpahinga ka at ligtas pa rin ang streak mo. Gumawa ng isang maliit na aksyon ngayon para magpatuloy. |
 | Easier viewing | Mas madaling pagtingin |
 | High contrast | Mataas na contrast |

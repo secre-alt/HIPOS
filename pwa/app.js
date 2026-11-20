@@ -173,28 +173,6 @@ async function shareWeek() {
 }
 const versionCard = () => `<article class="card version-card"><h3>App version</h3><p>HIPOS checks for updates each time you open it online. You can also check now.</p><p class="note" data-no-translate>Version ${e(build.version)}${build.date ? " · " + e(build.date) : ""}</p><div class="actions"><button class="secondary" data-action="check-update">Check for updates</button></div></article>`;
 const intro = (title, body) => `<section class="intro"><h1>${title}</h1><p>${body}</p></section>`;
-const LAST_KEY = "hipos.lastpage.v1";
-function rememberPage(page) {
-  if (page === "home" || page === "privacy") return;
-  try {
-    localStorage.setItem(LAST_KEY, JSON.stringify({ page, at: Date.now() }));
-  } catch {
-    /* blocked storage: nothing to remember */
-  }
-}
-// On a fresh open of Home, offer a way back to the last page used in the past week.
-function resumeChip() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
-    if (!saved || typeof saved.page !== "string" || !(Date.now() - saved.at < 7 * 864e5)) return "";
-    const page = saved.page;
-    if (page === "home" || !["prevent", "reuse", "classify", "carry", "avatar", "games", "sort", "compost", "garden"].includes(page)) return "";
-    const label = pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "";
-    return label ? `<p class="resume-chip"><a class="button-link secondary" href="#${page}"><span>Continue where you left off:</span> <strong>${label}</strong> <span aria-hidden="true">&rarr;</span></a></p>` : "";
-  } catch {
-    return "";
-  }
-}
 function current() {
   const requested = location.hash.slice(1) || "home";
   const p = requested === "hazard" ? "games" : requested;
@@ -213,8 +191,6 @@ function render() {
   if (gamePages.includes(page)) view.dataset.gamePage = page;
   else delete view.dataset.gamePage;
   rememberGuide(page);
-  const resume = firstRender && page === "home" ? resumeChip() : "";
-  rememberPage(page);
   checkBuddyUnlocks();
   refreshAvatars();
   document.querySelectorAll(".mobile-bottom-nav a").forEach((a) => {
@@ -224,7 +200,7 @@ function render() {
   document.querySelector("#mobile-more-toggle").classList.toggle("is-current", ["carry", "games"].includes(navId(page)));
   document.querySelector("#nav").innerHTML = links.map(([id, label]) => `<a href="#${id}" ${id === navId(page) ? 'class="active" aria-current="page"' : ""}>${label}</a>`).join("");
   document.querySelector("#page-label").textContent = page === "home" ? "Your daily guide" : pageTitles[page] || links.find((x) => x[0] === page)?.[1] || "About HIPOS";
-  if (page === "home") view.innerHTML = resume + nudgeHtml(activeToday()) + home();
+  if (page === "home") view.innerHTML = nudgeHtml(activeToday()) + home();
   if (page === "prevent") view.innerHTML = preventPage();
   if (page === "reuse") view.innerHTML = reusePage();
   if (page === "classify") {
@@ -439,6 +415,11 @@ const storageBlocked = (() => {
     return true;
   }
 })();
+try {
+  localStorage.removeItem("hipos.lastpage.v1"); // from a removed "continue where you left off" button
+} catch {
+  /* nothing to tidy */
+}
 const firstRun = !storageBlocked && needsWelcome(localStorage, navigator.webdriver === true);
 if (storageBlocked) setTimeout(() => message("This browser is blocking storage, so your progress will not be saved on this device."), 1200);
 {
