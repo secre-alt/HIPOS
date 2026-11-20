@@ -411,11 +411,16 @@ try{
     assert.match(text,/RRULE:FREQ=WEEKLY;BYDAY=SU,MO,TU,WE,TH,FR,SA/);assert.match(text,/DTSTART:\d{8}T000000/);
     await page.locator('#reminder-notify').click();
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('hipos.reminder.v1')).notify===true);
+    await page.locator('#reminder-test').waitFor();
     await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
     await page.waitForFunction(()=>window.__notes.length===1,null,{timeout:8000});
     assert.match(await page.evaluate(()=>window.__notes[0].options.body),/Small choices add up/);
     await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await page.waitForTimeout(500);
     assert.equal(await page.evaluate(()=>window.__notes.length),1,'only one a day');
+    await page.locator('#reminder-test').click();
+    await page.waitForFunction(()=>window.__notes.length===2);
+    assert.match(await page.locator('#reminder-status').innerText(),/Test sent/);
+    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('hipos.reminder.v1')).lastShown!==''),true);
     await page.keyboard.press('Escape');
     await page.goto(base+'#games');await page.goto(base+'#home');
     await page.locator('.reminder-nudge').waitFor();

@@ -118,3 +118,7 @@ These Filipino translations were written by Claude and have not yet been checked
 | Keep going! | Tuloy lang! |
 | You are doing great. | Ang galing mo. |
 | Small steps count. | Mahalaga ang maliliit na hakbang. |
+| Send a test notification | Magpadala ng test na abiso |
+| Test sent. If you did not see it, check your phone’s notification settings for HIPOS or your browser. | Naipadala na ang test. Kung hindi mo ito nakita, tingnan ang mga setting ng abiso ng telepono mo para sa HIPOS o sa browser. |
+| Add HIPOS to your home screen so the browser can send reminders in the background. | Idagdag ang HIPOS sa home screen para makapagpadala ng paalala ang browser sa background. |
+| Could not show a notification. Check that notifications are allowed for HIPOS. | Hindi makapagpakita ng abiso. Tiyaking pinapayagan ang mga abiso para sa HIPOS. |

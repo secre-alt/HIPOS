@@ -79,7 +79,7 @@ export function renderSetting(){
 <label class="language-control" for="reminder-time">Time<input type="time" id="reminder-time" required></label>
 <div class="reminder-days" role="group" aria-labelledby="reminder-days-label"><p id="reminder-days-label" class="a11y-label">Days</p><div>${DAY_LABELS.map((d,i)=>`<label class="reminder-day"><input type="checkbox" data-reminder-day="${i}"><span>${d}</span></label>`).join('')}</div></div>
 <p class="note">Reminders are best-effort. They stay on this device and use no account. Phones and notifications may not be allowed during class.</p>
-<div class="actions"><button type="button" class="secondary" id="reminder-notify">Turn on notifications</button><button type="button" class="secondary" id="reminder-ics">Add to my calendar</button><button type="button" class="secondary" id="reminder-snooze">Snooze today</button></div>
+<div class="actions"><button type="button" class="secondary" id="reminder-notify">Turn on notifications</button><button type="button" class="secondary" id="reminder-test" hidden>Send a test notification</button><button type="button" class="secondary" id="reminder-ics">Add to my calendar</button><button type="button" class="secondary" id="reminder-snooze">Snooze today</button></div>
 <p id="reminder-status" role="status"></p></div></div>`;
 }
 
@@ -97,6 +97,7 @@ export function initReminders({mount,deliver,activeToday,message}){
     btn.hidden=perm==='unsupported';
     btn.textContent=translate(perm==='granted'&&prefs.notify?'Notifications are on':'Turn on notifications');
     btn.setAttribute('aria-pressed',String(perm==='granted'&&prefs.notify));
+    $('#reminder-test').hidden=!(perm==='granted'&&prefs.notify);
     $('#reminder-snooze').disabled=prefs.snooze===today;
   };
   $('#reminder-on').addEventListener('change',e=>{prefs={...prefs,on:e.target.checked};if(!prefs.on)registerPeriodic(false);persist();paint();});
@@ -119,8 +120,14 @@ export function initReminders({mount,deliver,activeToday,message}){
     if(result==='default'){try{result=await Notification.requestPermission();}catch{result='denied';}}
     if(result==='granted'){
       prefs={...prefs,notify:true};persist();const periodic=await registerPeriodic(true);paint();
-      status(periodic?'Notifications are on, even when the app is closed (the browser decides the exact time).':'Notifications are on while HIPOS is open. For an exact time, add it to your calendar.');
+      const installed=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+      status(periodic&&!installed?'Add HIPOS to your home screen so the browser can send reminders in the background.':periodic?'Notifications are on, even when the app is closed (the browser decides the exact time).':'Notifications are on while HIPOS is open. For an exact time, add it to your calendar.');
     }else{prefs={...prefs,notify:false};persist();paint();status('Notifications are blocked in this browser. You can use the calendar file instead.');}
+  });
+  $('#reminder-test').addEventListener('click',async()=>{
+    if(permission()!=='granted'){status('Could not show a notification. Check that notifications are allowed for HIPOS.');return;}
+    try{await showNotice();status('Test sent. If you did not see it, check your phone’s notification settings for HIPOS or your browser.');}
+    catch{status('Could not show a notification. Check that notifications are allowed for HIPOS.');}
   });
   paint();syncWorkerState(prefs,today);
   async function tick(){
