@@ -63,7 +63,7 @@ export function lineFor(el, index) {
   return FALLBACK_LINES[index % FALLBACK_LINES.length];
 }
 
-let dock = null, link = null, cards = [], active = -1, hop = null, pos = null, ready = false;
+let dock = null, link = null, cards = [], active = -1, hop = null, ready = false;
 let said = new Set(), sayTimer = 0, pageKey = '', queued = false;
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 // The sticky top bar is the only thing the buddy must stay below.
@@ -83,28 +83,56 @@ function target(i) {
   y = Math.max(y, headBottom());
   return { x, y };
 }
-const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-
-function draw(now) {
-  if (!dock || active < 0 || !cards[active]?.isConnected) return;
-  const t = target(active);
-  let { x, y } = t, sx = 1, sy = 1;
-  if (hop) {
-    const p = Math.min(1, (now - hop.t0) / hop.dur), e = ease(p);
-    x = hop.from.x + (t.x - hop.from.x) * e;
-    y = hop.from.y + (t.y - hop.from.y) * e - Math.sin(Math.PI * p) * 64;
-    if (p < 0.15) { sy = 1 - 0.22 * (p / 0.15); sx = 1 + 0.14 * (p / 0.15); }
-    else if (p < 0.85) { sy = 1.1; sx = 0.94; }
-    else { const q = (p - 0.85) / 0.15; sy = 0.8 + 0.2 * q; sx = 1.12 - 0.12 * q; }
-    if (p >= 1) hop = null;
+// Squash and stretch keyframes (vertical scale over the hop), blended with smoothstep so
+// there are no sudden changes: crouch, spring, stretch in the air, land, settle.
+const SQUASH = [[0, 1], [0.16, 0.8], [0.4, 1.12], [0.8, 1.05], [0.9, 0.86], [1, 1]];
+const smooth = (t) => t * t * (3 - 2 * t);
+const smoother = (t) => t * t * t * (t * (6 * t - 15) + 10);
+function squash(p) {
+  for (let i = 1; i < SQUASH.length; i++) {
+    if (p <= SQUASH[i][0]) {
+      const [p0, v0] = SQUASH[i - 1], [p1, v1] = SQUASH[i];
+      return v0 + (v1 - v0) * smooth((p - p0) / (p1 - p0));
+    }
   }
-  pos = { x: t.x, y: t.y, drawX: x, drawY: y };
-  dock.style.transform = `translate3d(${Math.round(x)}px,${Math.round(y)}px,0)`;
+  return 1;
+}
+
+let cur = null, last = 0, raf = 0;
+function draw(now) {
+  if (!dock || active < 0 || !cards[active]?.isConnected) return false;
+  const dt = Math.min(64, last ? now - last : 16);
+  last = now;
+  const t = target(active), calm = reduced() || !cheersOn();
+  cur = cur || { x: t.x, y: t.y };
+  let sy = 1;
+  if (hop) {
+    const p = Math.min(1, (now - hop.t0) / hop.dur);
+    // Crouch first, fly through the middle, land at the end.
+    const m = smoother(Math.min(1, Math.max(0, (p - 0.16) / 0.68)));
+    const flight = Math.min(1, Math.max(0, (p - 0.16) / 0.68));
+    cur = { x: hop.from.x + (t.x - hop.from.x) * m, y: hop.from.y + (t.y - hop.from.y) * m - 4 * hop.arc * flight * (1 - flight) };
+    sy = squash(p);
+    if (p >= 1) hop = null;
+  } else if (calm) {
+    cur = { x: t.x, y: t.y };
+  } else {
+    // Glide after the card while scrolling instead of snapping to it.
+    const k = 1 - Math.exp(-dt / 45);
+    cur = { x: cur.x + (t.x - cur.x) * k, y: cur.y + (t.y - cur.y) * k };
+  }
+  dock.style.transform = `translate3d(${cur.x.toFixed(2)}px,${cur.y.toFixed(2)}px,0)`;
   // Squash the artwork, not the tap target, so the button never shrinks below 44px.
   const art = link.querySelector('.hipos-avatar');
-  if (art) art.style.scale = sx === 1 && sy === 1 ? '' : `${sx} ${sy}`;
-  if (hop) requestAnimationFrame(draw);
+  if (art) art.style.scale = Math.abs(sy - 1) < 0.002 ? '' : `${(1 + (1 - sy) * 0.55).toFixed(3)} ${sy.toFixed(3)}`;
+  return !!hop || Math.abs(t.x - cur.x) > 0.25 || Math.abs(t.y - cur.y) > 0.25;
 }
+function tick(now) {
+  raf = 0;
+  if (draw(now)) raf = requestAnimationFrame(tick);
+  else last = 0;
+}
+const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
 
 function sayFor(i) {
   const el = cards[i];
@@ -123,7 +151,7 @@ function update() {
   const next = pickActive(cards.map((c) => c.getBoundingClientRect().top), innerHeight * 0.35, atBottom);
   dock.dataset.perch = 'on';
   if (next !== active || !cards[active]?.isConnected) {
-    const first = !pos;
+    const first = !cur;
     active = next;
     dock.dataset.side = sideFor(active);
     clearTimeout(sayTimer);
@@ -133,16 +161,17 @@ function update() {
     } else {
       if (document.querySelector('#buddy-say:not([hidden])')) hideBubble();
       const animated = !reduced() && cheersOn();
-      hop = animated ? { from: { x: pos.drawX, y: pos.drawY }, t0: performance.now(), dur: 520 } : null;
-      sayTimer = setTimeout(() => sayFor(active), animated ? 620 : 250);
+      const t = target(active), dist = Math.hypot(t.x - cur.x, t.y - cur.y);
+      hop = animated ? { from: { x: cur.x, y: cur.y }, t0: performance.now(), dur: Math.min(950, Math.max(600, 560 + dist * 0.3)), arc: Math.min(84, Math.max(36, dist * 0.22)) } : null;
+      sayTimer = setTimeout(() => sayFor(active), animated ? hop.dur + 80 : 250);
     }
   }
-  draw(performance.now());
+  kick();
 }
 const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
 function stop() {
   clearTimeout(sayTimer);
-  active = -1; pos = null; hop = null;
+  active = -1; cur = null; hop = null; last = 0;
   if (dock) { delete dock.dataset.perch; delete dock.dataset.side; dock.style.transform = ''; }
   const art = link?.querySelector('.hipos-avatar');
   if (art) art.style.scale = '';
