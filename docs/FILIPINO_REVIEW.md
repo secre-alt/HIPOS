@@ -77,3 +77,44 @@ These Filipino translations were written by Claude and have not yet been checked
 | Back | Bumalik |
 | Filipino | Filipino |
 | Sort items, catch compost, spot hazards, or tend your Buddy garden. | Mag-uri, sumalo ng compost, tumukoy ng panganib, o alagaan ang hardin ng buddy mo. |
+| Hi! Let us look around. | Hi! Tingnan natin ang paligid. |
+| Tap what you are holding. | I-tap ang hawak mo. |
+| Tick off today’s habits. | Markahan ang mga gawi ngayon. |
+| That is me! Say hi. | Ako ’yan! Mag-hi ka. |
+| Look back at these. | Balikan natin ang mga ito. |
+| Pick one small change. | Pumili ng isang maliit na pagbabago. |
+| Need a quick break? | Kailangan ng pahinga? |
+| Look how far you came! | Tingnan mo ang narating mo! |
+| Know who to ask. | Alamin kung sino ang tatanungin. |
+| Know what you carry. | Alamin ang dala mo. |
+| Carry out with care. | Iuwi nang maingat. |
+| Stop waste early! | Pigilan agad ang basura! |
+| Use it again! | Gamitin ulit! |
+| Try this tip! | Subukan ang tip na ito! |
+| Small habit, big help. | Maliit na gawi, malaking tulong. |
+| Easy, right? | Madali lang, di ba? |
+| Wash it, use it! | Hugasan, gamitin! |
+| Keep it going. | Ituloy mo lang. |
+| Great idea to reuse. | Magandang ideya ang muling paggamit. |
+| A neat school idea! | Magandang ideya para sa paaralan! |
+| Search for an item. | Maghanap ng aytem. |
+| Check the guide. | Tingnan ang gabay. |
+| Clean and dry first. | Linisin at patuyuin muna. |
+| Sort it right. | Iuri nang tama. |
+| Step by step. | Isa-isang hakbang. |
+| Almost there! | Malapit na! |
+| You can do it. | Kaya mo ’yan. |
+| A fun sorting game! | Masayang laro sa pag-uuri! |
+| Catch the scraps! | Salohin ang mga tira! |
+| Grow some flowers! | Magtanim ng bulaklak! |
+| Unlock new buddies! | Mag-unlock ng bagong buddy! |
+| Give me a name! | Bigyan mo ako ng pangalan! |
+| Do I look great? | Ang ganda ko ba? |
+| Pick my new look! | Piliin ang bago kong itsura! |
+| Collect every sticker! | Kolektahin ang lahat ng sticker! |
+| Look how they grow! | Tingnan mo kung paano sila lumalaki! |
+| Always ready offline. | Laging handa kahit offline. |
+| Take a look around! | Tingnan ang paligid! |
+| Keep going! | Tuloy lang! |
+| You are doing great. | Ang galing mo. |
+| Small steps count. | Mahalaga ang maliliit na hakbang. |

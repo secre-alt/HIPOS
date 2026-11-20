@@ -13,6 +13,7 @@ import { howTo, dismissHowTo } from "./howto.js";
 import { initReminders, nudgeHtml, snoozeToday } from "./reminders.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
+import { refreshPerch } from "./buddy-hop.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { reviewList, sortInProgress, sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost, compostActive } from "./compost.js";
@@ -227,6 +228,7 @@ function render() {
     buddySay(page === "sort" && reviewList().length ? "Want to practice the ones we missed?" : PAGE_LINES[page]);
     animate("hop");
   }
+  refreshPerch();
   firstRender = false;
 }
 document.addEventListener("click", async (event) => {

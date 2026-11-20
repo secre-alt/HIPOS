@@ -298,6 +298,36 @@ try{
     assert.deepEqual(errs,[],'no uncaught errors');
     await ctx.close();
   });
+  await check('buddy hops from card to card, alternating sides, with a short line on every page',async()=>{
+    const s=await open({viewport:{width:390,height:800}});
+    const dock=()=>s.page.evaluate(()=>{const d=document.querySelector('.buddy-dock'),r=d.getBoundingClientRect(),a=document.querySelector('aside').getBoundingClientRect();return {perch:d.dataset.perch,side:d.dataset.side,x:r.x,y:r.y,w:r.width,head:a.bottom,text:document.querySelector('#buddy-say:not([hidden]) .buddy-say-text')?.textContent||''};});
+    await s.page.evaluate(()=>{localStorage.setItem('hipos.cheers','on');});
+    const seen=new Set(),lines=new Set();
+    for(const page of ['home','prevent','reuse','classify','carry','games','privacy']){
+      await s.page.evaluate(h=>{location.hash=h;},'#'+page);await s.page.waitForTimeout(1500);
+      for(let i=0;i<5;i++){
+        const d=await dock();
+        assert.equal(d.perch,'on',page+' perch');
+        assert.ok(d.y>=d.head,`${page} buddy under the top bar (${d.y} vs ${d.head})`);
+        assert.ok(d.x>=0&&d.x+d.w<=390,page+' buddy inside the screen');
+        seen.add(d.side);if(d.text)lines.add(d.text);
+        await s.page.mouse.wheel(0,650);await s.page.waitForTimeout(1200);
+      }
+    }
+    assert.deepEqual([...seen].sort(),['left','right']);
+    assert.ok(lines.size>=6,'lines spoken: '+[...lines].join(' | '));
+    const tap=await s.page.locator('#avatar-link').boundingBox();assert.ok(tap.width>=44&&tap.height>=44,'buddy tap size');
+    assert.equal(await s.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no sideways scroll');
+    await close(s);
+  });
+  await check('buddy does not jump when reduced motion is on, and stays tappable',async()=>{
+    const s=await open({viewport:{width:390,height:800},reducedMotion:'reduce'});
+    await s.page.evaluate(()=>{location.hash='#prevent';});await s.page.waitForTimeout(1200);
+    await s.page.mouse.wheel(0,900);await s.page.waitForTimeout(600);
+    const link=await s.page.evaluate(()=>getComputedStyle(document.querySelector('#avatar-link .hipos-avatar')).scale);
+    assert.ok(link==='none'||link==='1',`no squash under reduced motion: ${link}`);
+    await close(s);
+  });
   await check('easier viewing: high contrast, easier reading and bigger touch persist',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await openSettings(page,'text');

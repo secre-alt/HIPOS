@@ -280,10 +280,10 @@ function ensureBubble(){
   document.body.append(bubble);return bubble;
 }
 export function hideBubble(){clearTimeout(hideTimer);clearTimeout(fadeTimer);if(bubble){bubble.hidden=true;bubble.classList.remove("is-leaving");}}
-export function buddySay(text,{force=false,ms=4200,delay=0}={}){
+export function buddySay(text,{force=false,ms=4200,delay=0,voice:speak=true}={}){
   if(!text||(!force&&!cheersOn()))return;
-  if(delay){setTimeout(()=>buddySay(text,{force,ms}),delay);return;}
-  if(voiceOn() && voiceReady && !document.hidden) {
+  if(delay){setTimeout(()=>buddySay(text,{force,ms,voice:speak}),delay);return;}
+  if(speak && voiceOn() && voiceReady && !document.hidden) {
     try { voice.play(translate(text),getLanguage(),{tone:voiceTone(),pack:voicePack(),character:currentConfig().character}); } catch { /* Optional audio never interrupts guidance. */ }
   }
   const box=ensureBubble();

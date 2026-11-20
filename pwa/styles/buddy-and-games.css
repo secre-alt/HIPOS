@@ -1652,3 +1652,40 @@ main .home-activities .challenge-panel[data-state=skipped] > h2 ~ p:not(#challen
 #today-progress progress::-webkit-progress-bar { background:rgba(120,140,125,.32); border-radius:999px; }
 #today-progress progress::-webkit-progress-value { background:var(--leaf,#b9f26b); border-radius:999px; }
 #today-progress progress::-moz-progress-bar { background:var(--leaf,#b9f26b); border-radius:999px; }
+/* Buddy perch: the companion hops from card to card and stands on each card's top edge. */
+.buddy-dock[data-perch] {
+  top: 0;
+  left: 0;
+  display: block;
+  width: 48px;
+  height: 48px;
+  will-change: transform;
+}
+.buddy-dock[data-perch] #avatar-link,
+.buddy-dock[data-perch] #avatar-link .hipos-avatar {
+  width: 48px;
+  height: 48px;
+}
+.buddy-dock[data-perch] #avatar-link .hipos-avatar {
+  transform-origin: 50% 100%;
+}
+.buddy-dock[data-perch] .buddy-say {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 12px);
+  width: max-content;
+  max-width: min(240px, calc(100vw - 96px));
+  margin-top: -22px;
+}
+.buddy-dock[data-perch][data-side=right] .buddy-say {
+  left: auto;
+  right: calc(100% + 12px);
+}
+.buddy-dock[data-perch][data-side=right] .buddy-say::before {
+  left: auto;
+  right: -6px;
+  border-left: 0;
+  border-bottom: 0;
+  border-top: 1px solid var(--buddy-border);
+  border-right: 1px solid var(--buddy-border);
+}
