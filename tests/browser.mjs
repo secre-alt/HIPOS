@@ -150,6 +150,8 @@ try{
     await p.evaluate(()=>localStorage.setItem('hipos.quiz.v2',JSON.stringify({ids:[0,1,2],answers:[],position:0})));
     await p.reload();await expect(p.getByLabel('Packed my clean bottle',{exact:true})).toBeChecked();
     await p.getByRole('button',{name:'Keep out of the pouch',exact:true}).click();
+    await expect(p.locator('#quiz-result')).toBeVisible();await expect(p.locator('#quiz-result')).toContainText('Let');await expect(p.locator('#quiz-result [data-quiz-next]')).toBeFocused();
+    await p.keyboard.press('Escape');await expect(p.locator('#quiz-result')).toBeHidden();await expect(p.locator('#quiz-content > [data-quiz-next]')).toBeVisible();
     await expect(p.locator('#quiz-feedback')).toContainText('Let');
     await p.reload();await expect(p.locator('#quiz-feedback')).toContainText('Let');
     await expect(p.locator('[data-answer]').first()).toBeDisabled();
@@ -212,6 +214,7 @@ try{
     await expect(p.getByRole('button',{name:'Mark complete',exact:true})).toHaveAttribute('aria-pressed','false');
     await p.locator('[data-answer]').first().click();
     await expect(p.locator('#quiz-storage')).toContainText('could not be saved');
+    await p.keyboard.press('Escape');
     await openSettings(p,'language');await p.locator('#language').selectOption('fil');await p.keyboard.press('Escape');
     await expect(p.locator('#language')).toHaveValue('en');
     await expect(p.locator('#notice')).toContainText('Could not save language');

@@ -1689,3 +1689,13 @@ main .home-activities .challenge-panel[data-state=skipped] > h2 ~ p:not(#challen
   border-top: 1px solid var(--buddy-border);
   border-right: 1px solid var(--buddy-border);
 }
+/* Quiz answer modal reuses the sorting answer panel. */
+.quiz-result h3 {
+  margin: 8px 0;
+  font-size: 1.75rem;
+}
+.quiz-result p {
+  margin: 0;
+  text-align: left;
+  color: var(--ink);
+}

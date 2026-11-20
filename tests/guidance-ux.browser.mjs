@@ -36,7 +36,7 @@ try {
     await expect(page.locator('[data-daily-target="challenge-heading"]')).toHaveCount(0);
     for(let i=0;i<3;i++) {
       await page.locator('[data-answer="0"]').click();
-      await page.locator('[data-quiz-next]').click();
+      await page.locator('#quiz-result [data-quiz-next]').click();
     }
     await expect(page.locator('#today-progress progress')).toHaveAttribute('value', '3');
     await page.locator('[data-habit="1"]').check();

@@ -2,6 +2,7 @@ import {activityArt} from './activity-art.js';
 import {escapeHTML as e} from './core.js';
 import {recordChecklist,refreshWeekly} from './engagement.js';
 import {celebrate} from './motion.js';
+import {renderAvatar,currentConfig} from './avatar.js';
 
 const checklistKey='hipos.daily.v1';
 const habits=['Packed my clean bottle','Brought my lunchbox','Brought reusable utensils'];
@@ -80,7 +81,21 @@ function quizMarkers(){return `<div class="quiz-markers" aria-hidden="true">${[0
 function quizContent(){
   if(session.position===3)return `${quizMarkers()}<h3 tabindex="-1" id="quiz-summary">${score()} of 3 correct</h3><p>Clean, dry and nonhazardous only. Ask authorized staff about unsuitable waste.</p><p>Keep learning with the handling guide.</p><a class="button-link secondary" href="#${questionBank[session.ids[0]].guide}">Review a related guide</a><div class="actions"><button data-quiz-restart>Try again</button></div>`;
   const q=questionBank[session.ids[session.position]],answered=session.answers.length>session.position;
-  return `${quizMarkers()}<p class="quiz-step">Question ${session.position+1} of 3</p><h3 id="quiz-question" tabindex="-1">${e(q.title)}</h3><div class="quiz-options" role="group" aria-labelledby="quiz-question"><button class="secondary" data-answer="0" aria-pressed="${answered&&session.answers[session.position]===0}" ${answered?'disabled':''}>Suitable if clean and dry</button><button class="secondary" data-answer="1" aria-pressed="${answered&&session.answers[session.position]===1}" ${answered?'disabled':''}>Keep out of the pouch</button></div><div id="quiz-feedback" role="status" aria-live="polite" aria-atomic="true">${answered?answerFeedback(q):''}</div><button data-quiz-next ${answered?'':'hidden'}>${session.position===2?'See results':'Next question'}</button>`;
+  return `${quizMarkers()}<p class="quiz-step">Question ${session.position+1} of 3</p><h3 id="quiz-question" tabindex="-1">${e(q.title)}</h3><div class="quiz-options" role="group" aria-labelledby="quiz-question"><button class="secondary" data-answer="0" aria-pressed="${answered&&session.answers[session.position]===0}" ${answered?'disabled':''}>Suitable if clean and dry</button><button class="secondary" data-answer="1" aria-pressed="${answered&&session.answers[session.position]===1}" ${answered?'disabled':''}>Keep out of the pouch</button></div><div id="quiz-feedback" role="status" aria-live="polite" aria-atomic="true">${answered?answerFeedback(q):''}</div><button data-quiz-next ${answered?'':'hidden'}>${session.position===2?'See results':'Next question'}</button>${answered?resultDialog(q):''}`;
+}
+function resultDialog(q){
+  const right=session.answers[session.position]===q.correct;
+  return `<dialog class="sort-answer-panel quiz-result" id="quiz-result" aria-labelledby="quiz-result-title" aria-describedby="quiz-result-text"><button type="button" class="secondary sort-modal-close" data-quiz-close aria-label="Close answer">&times;</button><div class="sort-modal-buddy" aria-hidden="true">${renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true})}</div><h3 id="quiz-result-title">${right?'Correct.':'Let’s check that.'}</h3><p id="quiz-result-text">${e(q.explanation)}</p><div class="actions"><button type="button" data-quiz-next>${session.position===2?'See results':'Next question'}</button></div></dialog>`;
+}
+// The answer opens in a modal. The inline copy stays hidden while it is open and returns if it is closed.
+function showQuizResult(){
+  const dialog=document.querySelector('#quiz-result');if(!dialog)return;
+  const inline=[document.querySelector('#quiz-feedback'),document.querySelector('#quiz-content > [data-quiz-next]')].filter(Boolean);
+  inline.forEach(el=>{el.hidden=true;});
+  dialog.addEventListener('click',event=>{if(event.target===dialog||event.target.closest('[data-quiz-close]'))dialog.close();});
+  dialog.addEventListener('close',()=>{inline.forEach(el=>{el.hidden=false;});document.querySelector('#quiz-content > [data-quiz-next]')?.focus({preventScroll:true});},{once:true});
+  if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+  dialog.querySelector('[data-quiz-next]')?.focus({preventScroll:true});
 }
 function answerFeedback(q){return `<p><strong>${session.answers[session.position]===q.correct?'Correct.':'Let’s check that.'}</strong> ${e(q.explanation)}</p>`;}
 export function answerQuiz(button){
@@ -89,8 +104,10 @@ export function answerQuiz(button){
   session.answers.push(answer);saveQuiz();
   document.querySelectorAll('[data-answer]').forEach(el=>{el.disabled=true;el.setAttribute('aria-pressed',String(Number(el.dataset.answer)===answer));});
   document.querySelector('#quiz-feedback').innerHTML=answerFeedback(questionBank[session.ids[session.position]]);
-  document.querySelector('[data-quiz-next]').hidden=false;
+  document.querySelector('#quiz-content > [data-quiz-next]').hidden=false;
+  document.querySelector('#quiz-content').insertAdjacentHTML('beforeend',resultDialog(questionBank[session.ids[session.position]]));
   document.querySelector('#quiz-storage').textContent=quizError;
+  showQuizResult();
 }
 export function nextQuestion(){
   if(session.position===3||session.answers.length<=session.position)return;
