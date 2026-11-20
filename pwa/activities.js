@@ -59,7 +59,7 @@ export function makeSession(previous=[],random=Math.random){
   for(let i=ids.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
   // Prefer fresh questions; the bank has enough for consecutive nonoverlapping sets.
   ids=[...ids.filter(id=>!previous.includes(id)),...ids.filter(id=>previous.includes(id))].slice(0,3);
-  return {ids,answers:[],position:0};
+  return {ids,answers:[],position:0,day:localDay()};
 }
 export function validSession(s){
   return s&&Array.isArray(s.ids)&&s.ids.length===3&&new Set(s.ids).size===3&&s.ids.every(id=>Number.isInteger(id)&&id>=0&&id<questionBank.length)&&Array.isArray(s.answers)&&s.answers.length<=3&&s.answers.every(a=>a===0||a===1)&&Number.isInteger(s.position)&&s.position>=0&&s.position<=3&&(s.position===3?s.answers.length===3:s.answers.length===s.position||s.answers.length===s.position+1);
@@ -67,9 +67,22 @@ export function validSession(s){
 function saveQuiz(){
   try{localStorage.setItem(quizKey,JSON.stringify(session));quizError='';}catch{quizError='Quiz progress could not be saved. You can continue, but reloading may lose it.';}
 }
+// The sorting check starts fresh each day. A finished or older set is replaced; one started
+// today (or by an older version that did not record the day) carries on.
+export function quizForToday(saved,today=localDay(),make=makeSession){
+  if(!validSession(saved))return make();
+  if(saved.day===today)return saved;
+  if(saved.day===undefined&&saved.position<3)return {...saved,day:today};
+  return make(saved.ids);
+}
 function loadQuiz(){
-  if(session)return;
-  try{const saved=JSON.parse(localStorage.getItem(quizKey)||'null');session=validSession(saved)?saved:makeSession();if(!validSession(saved))saveQuiz();}
+  const today=localDay();
+  if(session?.day===today)return;
+  try{
+    const saved=session||JSON.parse(localStorage.getItem(quizKey)||'null');
+    session=quizForToday(saved,today);
+    if(session!==saved)saveQuiz();
+  }
   catch{session=makeSession();quizError='Quiz progress could not be read. A new quiz is available.';}
 }
 function score(){return session.answers.reduce((total,answer,i)=>total+Number(answer===questionBank[session.ids[i]].correct),0);}

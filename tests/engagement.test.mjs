@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {makeSession,validSession,questionBank,localDay,readDaily} from '../pwa/activities.js';
+import {makeSession,validSession,quizForToday,questionBank,localDay,readDaily} from '../pwa/activities.js';
 import {challengeIndex,schoolSection} from '../pwa/engagement.js';
 import {schoolInfo} from '../pwa/school-info.js';
 
@@ -38,4 +38,17 @@ test('school information is unpublished without approval metadata and escapes ap
   schoolInfo.entries.push({title:'<script>test</script>',detail:'Approved example',status:'approved',approvedBy:'School office',reviewedOn:'2026-11-14',source:'School memo'});
   assert.match(schoolSection(),/&lt;script&gt;/);
   schoolInfo.entries.length=0;
+});
+
+test('the sorting check starts fresh each day without pressing Try again',()=>{
+  const finished={ids:[3,4,5],answers:[1,1,0],position:3,day:'2026-11-20'};
+  assert.equal(quizForToday(finished,'2026-11-20'),finished,'same day keeps the result');
+  const next=quizForToday(finished,'2026-11-21');
+  assert.deepEqual([next.answers.length,next.position,next.day],[0,0,localDay()]);
+  assert.equal(next.ids.some(id=>finished.ids.includes(id)),false,'new day avoids yesterday’s questions');
+  const midway={ids:[0,1,2],answers:[0],position:0,day:'2026-11-19'};
+  assert.equal(quizForToday(midway,'2026-11-20').answers.length,0,'yesterday’s half-done quiz is replaced');
+  assert.equal(quizForToday({ids:[0,1,2],answers:[0],position:0},'2026-11-20').day,'2026-11-20','old saves without a day carry on today');
+  assert.equal(quizForToday({ids:[0,1,2],answers:[0,0,0],position:3},'2026-11-20').position,0,'old finished saves reset');
+  assert.equal(quizForToday(null,'2026-11-20').position,0);
 });
