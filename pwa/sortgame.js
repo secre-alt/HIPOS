@@ -5,7 +5,7 @@ import { FACES, renderAvatar, currentConfig } from './avatar.js';
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,miniBuddy,carePoints,gardenState} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,carePoints,gardenState} from './buddy-fx.js';
 import {gardenGrowth} from './garden.js';
 import {celebrate} from './motion.js';
 import {queueGuideSearch} from './guide.js';

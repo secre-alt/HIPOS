@@ -1,6 +1,6 @@
 // Buddy garden: a cosy plot of nine flowers that grows from the care you already give on this device.
 // Nothing wilts, nothing is lost, and nothing leaves the device.
-import {gardenState,carePoints,POINTS_PER_PLOT,buddySay,animate,sparkle,sound,miniBuddy} from './buddy-fx.js';
+import {gardenState,carePoints,POINTS_PER_PLOT,buddySay,animate,sparkle,sound} from './buddy-fx.js';
 import {gardenArt} from './game-art.js';
 import {escapeHTML as e} from './core.js';
 
@@ -14,7 +14,7 @@ export function gardenPage(summary){
   }).join('');
   const line=g.complete?'Every flower is in bloom. What a lovely garden!':`${g.blooms} of ${g.plots.length} flowers in bloom`;
   const next=g.complete?'':`<p class="note">${TIPS[g.points%TIPS.length]}</p><p class="note">Each treat, completed game round, and completed challenge day counts as one care point. Three care points bring one flower into bloom.</p>`;
-  return `<section class="card garden" id="garden" aria-labelledby="garden-heading">${miniBuddy('garden')}<h2 id="garden-heading">Your garden</h2>
+  return `<section class="card garden" id="garden" aria-labelledby="garden-heading"><h2 id="garden-heading">Your garden</h2>
   <p class="garden-count" role="status">${line}</p>${gardenProgress(g)}
   <ul class="garden-grid">${plots}</ul>${next}${g.points===0?'<div class="garden-empty"><p class="note">Your garden is waiting for its first care point. Try one of these:</p><div class="actions"><a class="button-link" href="#sort">Play the sorting game</a><a class="button-link secondary" href="#compost">Catch the compost</a><a class="button-link secondary" href="#home">Do a daily habit</a></div></div>':''}</section>`;
 }

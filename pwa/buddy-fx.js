@@ -230,10 +230,7 @@ export function applyMood(summary){
   return mood;
 }
 
-// ---------- Helper buddy that sits inside activity cards ----------
-export function miniBuddy(kind){
-  return `<button type="button" class="mini-buddy secondary" data-buddy-tap data-hint="${kind}" aria-label="Ask your buddy for a hint"><span class="mini-buddy-art">${renderAvatar(currentConfig(),{size:40,decorative:true})}</span></button>`;
-}
+// ---------- Hints from the activity illustrations ----------
 const HINTS={
   quiz:['Is it clean and dry? Then it may fit the pouch.','Wet, sharp or chemical? Keep it out and ask staff.','Read the tip after each answer. It is the best part!'],
   habits:['Tiny habits add up. Pick one you can do today.','A clean bottle is a great place to start.'],

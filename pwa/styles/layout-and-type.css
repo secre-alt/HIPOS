@@ -249,11 +249,6 @@ main > header {
   margin: 0;
   min-width: 0;
 }
-.guide-search-heading .mini-buddy {
-  position: relative;
-  inset: auto;
-  flex: 0 0 44px;
-}
 /* Reference pairing: chunky game labels with readable Nunito guidance. */
 @font-face {
   font-family: "HIPOS Nunito";
