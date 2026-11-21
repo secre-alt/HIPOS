@@ -414,7 +414,7 @@ try{
     await page.locator('#reminder-test').waitFor();
     await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
     await page.waitForFunction(()=>window.__notes.length===1,null,{timeout:8000});
-    assert.match(await page.evaluate(()=>window.__notes[0].options.body),/Small choices add up/);
+    assert.match(await page.evaluate(()=>window.__notes[0].options.body),/One small thing today.*Tap to open/);
     await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await page.waitForTimeout(500);
     assert.equal(await page.evaluate(()=>window.__notes.length),1,'only one a day');
     await page.locator('#reminder-test').click();

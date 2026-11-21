@@ -23,10 +23,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Unit tests
-        run: npm test
       - name: Build
         run: npm run build
+      - name: Unit tests
+        run: npm test
 
   browser:
     # The browser suites run in parallel shards so a push gets an answer in a few minutes.

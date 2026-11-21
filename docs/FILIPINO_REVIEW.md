@@ -122,3 +122,6 @@ These Filipino translations were written by Claude and have not yet been checked
 | Test sent. If you did not see it, check your phone’s notification settings for HIPOS or your browser. | Naipadala na ang test. Kung hindi mo ito nakita, tingnan ang mga setting ng abiso ng telepono mo para sa HIPOS o sa browser. |
 | Add HIPOS to your home screen so the browser can send reminders in the background. | Idagdag ang HIPOS sa home screen para makapagpadala ng paalala ang browser sa background. |
 | Could not show a notification. Check that notifications are allowed for HIPOS. | Hindi makapagpakita ng abiso. Tiyaking pinapayagan ang mga abiso para sa HIPOS. |
+| Time for your HIPOS check-in | Oras na para sa HIPOS check-in mo |
+| One small thing today: tick a habit, sort an item or play a quick game. Tap to open. | Isang maliit na gawain ngayon: mag-tick ng gawi, mag-uri ng aytem o maglaro nang mabilis. I-tap para buksan. |
+| Open HIPOS | Buksan ang HIPOS |

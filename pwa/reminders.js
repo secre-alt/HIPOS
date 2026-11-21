@@ -36,7 +36,8 @@ const ICS_DAYS=['SU','MO','TU','WE','TH','FR','SA'];
 const pad=n=>String(n).padStart(2,'0');
 const escapeText=s=>String(s).replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
 // A repeating all-device calendar event with an alert at the chosen time (floating local time, no server involved).
-export function buildIcs(prefs,now=new Date(),text={title:'HIPOS: one small thing today',body:'Small choices add up. Open HIPOS for today\'s challenge.'}){
+export const NOTICE={title:'Time for your HIPOS check-in',body:'One small thing today: tick a habit, sort an item or play a quick game. Tap to open.',open:'Open HIPOS'};
+export function buildIcs(prefs,now=new Date(),text=NOTICE){
   const p=sanitize(prefs),days=p.days.length?p.days:DEFAULTS.days,[h,m]=p.time.split(':').map(Number);
   const stamp=`${now.getUTCFullYear()}${pad(now.getUTCMonth()+1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`;
   const start=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(h)}${pad(m)}00`;
@@ -47,15 +48,16 @@ export function buildIcs(prefs,now=new Date(),text={title:'HIPOS: one small thin
 // ---------- browser side ----------
 const supportsNotify=()=>typeof Notification!=='undefined'&&'serviceWorker' in navigator;
 const permission=()=>supportsNotify()?Notification.permission:'unsupported';
-const noticeText=()=>({title:translate('HIPOS: one small thing today'),body:translate('Small choices add up. Open HIPOS for today\'s challenge.')});
+const noticeText=()=>({title:translate(NOTICE.title),body:translate(NOTICE.body),open:translate(NOTICE.open)});
 const DAY_LABELS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 // The service worker cannot read localStorage, so it gets a copy in the Cache API.
-export async function syncWorkerState(prefs,openDay){
+// doneDay is today's id once something has been done today, so the worker knows to stay quiet.
+export async function syncWorkerState(prefs,doneDay){
   try{
     if(!('caches' in globalThis))return;
     const cache=await caches.open(STATE_CACHE);
-    await cache.put('state',new Response(JSON.stringify({...sanitize(prefs),openDay,...noticeText()}),{headers:{'content-type':'application/json'}}));
+    await cache.put('state',new Response(JSON.stringify({...sanitize(prefs),doneDay,...noticeText()}),{headers:{'content-type':'application/json'}}));
   }catch{/* reminders still work while the app is open */}
 }
 async function registerPeriodic(on){
@@ -69,7 +71,8 @@ async function registerPeriodic(on){
 }
 async function showNotice(){
   const reg=await navigator.serviceWorker.ready;
-  await reg.showNotification(noticeText().title,{body:noticeText().body,tag:'hipos-daily',icon:'./icons/icon-192.png',badge:'./icons/icon-192.png',data:{url:'./'}});
+  const n=noticeText();
+  await reg.showNotification(n.title,{body:n.body,tag:'hipos-daily',icon:'./icons/icon-192.png',badge:'./icons/icon-192.png',actions:[{action:'open',title:n.open}],data:{url:'./'}});
 }
 
 export function renderSetting(){
@@ -87,9 +90,11 @@ export function initReminders({mount,deliver,activeToday,message}){
   if(!mount)return {tick(){}};
   mount.innerHTML=renderSetting();
   const $=s=>mount.querySelector(s);
-  let prefs=readPrefs(),today=dayId(new Date());
+  let prefs=readPrefs(),today=dayId(new Date()),lastDone=null;
+  const doneId=()=>(activeToday()?today:'');
+  const sync=()=>{lastDone=doneId();return syncWorkerState(prefs,lastDone);};
   const status=t=>{$('#reminder-status').textContent=t?translate(t):'';};
-  const persist=()=>{if(!savePrefs(prefs)){status('Could not save this setting. It will reset when you close the app.');}syncWorkerState(prefs,today);};
+  const persist=()=>{if(!savePrefs(prefs)){status('Could not save this setting. It will reset when you close the app.');}sync();};
   const paint=()=>{
     $('#reminder-on').checked=prefs.on;$('#reminder-options').hidden=!prefs.on;$('#reminder-time').value=prefs.time;
     mount.querySelectorAll('[data-reminder-day]').forEach(b=>{b.checked=prefs.days.includes(Number(b.dataset.reminderDay));});
@@ -129,15 +134,18 @@ export function initReminders({mount,deliver,activeToday,message}){
     try{await showNotice();status('Test sent. If you did not see it, check your phone’s notification settings for HIPOS or your browser.');}
     catch{status('Could not show a notification. Check that notifications are allowed for HIPOS.');}
   });
-  paint();syncWorkerState(prefs,today);
+  paint();sync();
+  // Keep the background reminder registered, and tell the worker when today's action is done.
+  if(prefs.on&&prefs.notify&&permission()==='granted')registerPeriodic(true);
   async function tick(){
     const now=new Date();today=dayId(now);prefs=readPrefs();
+    if(doneId()!==lastDone)sync();
     if(!dueForNotification(prefs,now,activeToday()))return;
     if(permission()!=='granted')return;
-    try{await showNotice();prefs={...prefs,lastShown:today};savePrefs(prefs);syncWorkerState(prefs,today);}catch{message?.('');}
+    try{await showNotice();prefs={...prefs,lastShown:today};savePrefs(prefs);sync();}catch{message?.('');}
   }
   tick();setInterval(tick,60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)sync();else tick();});
   return {tick,prefs:()=>prefs};
 }
 // Home nudge shown inside the app when the reminder is due (works without notification permission).
