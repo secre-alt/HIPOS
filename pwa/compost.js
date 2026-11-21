@@ -3,7 +3,8 @@
 // Runs entirely on this device. Nothing is scored against a student or sent anywhere.
 import {escapeHTML as e} from './core.js';
 import {gameArt} from './game-art.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordCompost,giveGameTreat,carePoints,gardenState} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordCompost,giveGameTreat,comboSound,carePoints,gardenState} from './buddy-fx.js';
+import {createCombo,hit,miss,comboLine,comboLevel} from './combo.js';
 import {gardenGrowth} from './garden.js';
 
 const compostArt=kind=>gameArt(kind);
@@ -44,7 +45,7 @@ export function compostGame(summary={}){
   <div class="arcade-toolbar"><span class="arcade-patch">Catch · Keep · Grow</span><label class="compost-pace" for="compost-pace"><span>Round pace</span><select id="compost-pace"><option value="regular" ${pace==='regular'?'selected':''}>Regular</option><option value="practice" ${pace==='practice'?'selected':''}>Practice (slower)</option></select></label></div>
   <p class="note" id="compost-instructions">Catch only food scraps. Hold the arrow keys or movement buttons, or drag the basket. Press Space or Escape to pause.</p>
   <div class="compost-hud" id="compost-hud" hidden><div class="compost-hud-row"><p class="compost-score" id="compost-score" aria-live="off"></p><button type="button" class="secondary" data-compost-pause hidden>Pause</button></div><div class="compost-progress-label"><span>Items completed</span><span id="compost-count" data-no-translate>0/18</span></div><progress id="compost-progress" max="18" value="0" aria-label="Round progress"></progress></div>
-  <div class="compost-field" id="compost-field" tabindex="0" role="application" aria-describedby="compost-instructions" aria-label="Compost Catch field. Use left and right arrow keys to move the basket.">
+  <div class="compost-field" id="compost-field" tabindex="0" role="application" aria-describedby="compost-instructions" aria-label="Compost Catch field. Use left and right arrow keys to move the basket."><p class="combo-chip is-off" id="compost-combo" aria-hidden="true">Combo ×0</p>
     ${startPanel()}
     <div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>
   </div>
@@ -58,6 +59,10 @@ export function compostGame(summary={}){
 
 function setStatus(text,kind='',item=''){const s=document.querySelector('#compost-status');if(s){s.replaceChildren();if(item){const name=document.createElement('strong');name.textContent=item;s.append(name,document.createTextNode(' · '));}const message=document.createElement('span');message.textContent=text;s.append(message);s.className='feedback '+kind;}}
 function setScore(){const s=document.querySelector('#compost-score');if(s&&g)s.textContent=`Caught ${g.caught} of ${g.good} compostable scraps`;const progress=document.querySelector('#compost-progress');if(progress&&g)progress.value=g.resolved;const count=document.querySelector('#compost-count');if(count&&g)count.textContent=g.resolved+'/'+TOTAL;}
+function setCombo(){
+  const chip=document.querySelector('#compost-combo');if(!chip||!g)return;
+  const n=g.combo.count,on=n>=2;chip.classList.toggle('is-off',!on);chip.setAttribute('aria-hidden',String(!on));if(on){chip.textContent=`Combo ×${n}`;chip.classList.remove('combo-bump');void chip.offsetWidth;chip.classList.add('combo-bump');}
+}
 function basketEl(){return document.querySelector('#compost-basket');}
 function moveBasket(x){if(!g||g.paused)return;g.basket=Math.max(CATCH_RANGE,Math.min(100-CATCH_RANGE,x));const b=basketEl();if(b)b.style.left=g.basket+'%';}
 function catchFeedback(good){
@@ -95,7 +100,7 @@ function finish(){
   const growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
   if(field)field.innerHTML=startPanel()+`<div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>`;
   const result=document.createElement('dialog');result.className='compost-result';result.setAttribute('aria-labelledby','compost-result-title');
-  result.innerHTML=`<div class="compost-done"><h3 id="compost-result-title">You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${plasticResult}<p class="compost-takeaway">${g.pace==='practice'?'Practice pace':'Regular pace'}</p>${growth}<p class="compost-result-tip">${e(tip)}</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Proceed to Buddy garden</a></div></div><button type="button" class="secondary compost-result-close" aria-label="Close">×</button>`;
+  result.innerHTML=`<div class="compost-done"><h3 id="compost-result-title">You caught ${g.caught} of ${g.good} compostable scraps.</h3><p>${e(line)}</p>${plasticResult}${g.combo.best>=2?`<p class="sort-best">Best streak: ${g.combo.best} in a row</p>`:''}<p class="compost-takeaway">${g.pace==='practice'?'Practice pace':'Regular pace'}</p>${growth}<p class="compost-result-tip">${e(tip)}</p><div class="actions"><button type="button" data-compost-start>Play again</button><a class="button-link secondary" href="#garden">Proceed to Buddy garden</a></div></div><button type="button" class="secondary compost-result-close" aria-label="Close">×</button>`;
   document.querySelector('#compost-game')?.append(result);
   result.querySelector('.compost-result-close').addEventListener('click',()=>result.close());
   result.addEventListener('close',()=>{result.remove();document.querySelector('[data-compost-start]')?.focus({preventScroll:true});});
@@ -122,14 +127,14 @@ function frame(now){
     if(onBasket&&!f.done){
       f.done=true;f.el.remove();g.resolved++;
       catchFeedback(f.item.good);
-      if(f.item.good){g.caught++;setStatus('Into the compost!','success-feedback',f.item.name);sparkle(basketEl(),5);buzz(8);if(!cheer('catch'))sound('coin');}
-      else{g.plasticCaught++;setStatus('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','',f.item.name);if(!cheer('miss'))sound('oops');}
+      if(f.item.good){g.caught++;const n=hit(g.combo);setStatus('Into the compost!','success-feedback',f.item.name);sparkle(basketEl(),5);buzz(8);if(!cheer('catch'))sound('coin');if(n>=2)comboSound(comboLevel(n));if(comboLine(n))buddySay(comboLine(n),{ms:2500});if(n===5||n===8)animate('spin');setCombo();}
+      else{g.plasticCaught++;miss(g.combo);setCombo();setStatus('Keep plastic out of compost. Use a dry-waste pouch only when clean and dry.','',f.item.name);if(!cheer('miss'))sound('oops');}
       setScore();
       continue;
     }
     if(f.y>100){
       f.el.remove();g.resolved++;if(!f.item.good)g.plasticAvoided++;setScore();
-      if(f.item.good&&!f.done)setStatus('This scrap can be composted. Try catching it next time.','',f.item.name);
+      if(f.item.good&&!f.done){miss(g.combo);setCombo();setStatus('This scrap can be composted. Try catching it next time.','',f.item.name);}
       continue;
     }
     keep.push(f);
@@ -211,13 +216,13 @@ export function initCompost(){
     cancelAnimationFrame(raf);
     const seq=makeSequence();
     const select=document.querySelector('#compost-pace');pace=Object.hasOwn(PACES,select.value)?select.value:'regular';select.disabled=true;try{localStorage.setItem(PACE_KEY,pace);}catch{/* the pace simply resets next time */}
-    g={paused:false,direction:0,pace,...PACES[pace],seq,good:seq.filter(x=>x.good).length,spawned:0,resolved:0,falling:[],caught:0,plasticCaught:0,plasticAvoided:0,basket:50,clock:0};
+    g={paused:false,direction:0,pace,...PACES[pace],seq,good:seq.filter(x=>x.good).length,spawned:0,resolved:0,falling:[],caught:0,plasticCaught:0,plasticAvoided:0,basket:50,clock:0,combo:createCombo()};
     field.classList.remove('is-paused');
     field.innerHTML=`<div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>`;
     const pause=document.querySelector('[data-compost-pause]');pause.hidden=false;pause.textContent='Pause';
     moveBasket(50);setScore();setStatus('');
     document.querySelector('#compost-controls').hidden=false;
-    document.querySelector('#compost-hud').hidden=false;
+    document.querySelector('#compost-hud').hidden=false;setCombo();
     document.querySelector('#compost-game').classList.add('is-playing');
     fitAfterText();
     field.focus({preventScroll:true});

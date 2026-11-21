@@ -5,7 +5,8 @@ import { FACES, renderAvatar, currentConfig } from './avatar.js';
 import {waste,moreWaste} from './content.js';
 import {escapeHTML as e} from './core.js';
 import {wasteArt,moreWasteArt} from './home.js';
-import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,carePoints,gardenState} from './buddy-fx.js';
+import {cheer,buddySay,sparkle,animate,buzz,sound,recordSort,giveGameTreat,comboSound,carePoints,gardenState} from './buddy-fx.js';
+import {createCombo,hit,miss,comboLine,comboLevel} from './combo.js';
 import {gardenGrowth} from './garden.js';
 import {celebrate} from './motion.js';
 import {queueGuideSearch} from './guide.js';
@@ -42,7 +43,7 @@ export function makePracticeRound(missed,random=Math.random,previous=[]){
   const rest=makeRound(random,previous).filter(x=>!names.has(x.title));
   return shuffle([...mine,...rest].slice(0,ROUND));
 }
-const start=(practice=false)=>{game={items:practice?makePracticeRound(reviewList(),Math.random,lastTitles):makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[]};lastTitles=game.items.map(x=>x.title);};
+const start=(practice=false)=>{game={items:practice?makePracticeRound(reviewList(),Math.random,lastTitles):makeRound(Math.random,lastTitles),i:0,score:0,answered:false,review:[],combo:createCombo()};lastTitles=game.items.map(x=>x.title);};
 
 export function sortGame(summary={}){
   gardenSummary=summary;
@@ -53,7 +54,7 @@ function body(){
   if(!game)return '';
   if(game.i>=game.items.length)return done();
   const item=game.items[game.i];
-  return `<div class="sort-round"><p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p>
+  return `<div class="sort-round"><p class="sort-progress" role="status">Item ${game.i+1} of ${game.items.length}</p><p class="combo-chip${game.combo.count>=2?'':' is-off'}"${game.combo.count>=2?'':' aria-hidden="true"'}>Combo ×${game.combo.count}</p>
   <div class="round-markers" aria-hidden="true">${game.items.map((_,i)=>`<span class="${i<game.i?'is-complete':i===game.i?'is-current':''}"></span>`).join('')}</div></div>
   <p class="note sort-instruction">Where does this belong? Drag it, or tap a destination.</p>
   <div class="sort-stage"><div class="sort-item" id="sort-item" data-sort-item><span class="item-art">${item.art}</span><strong>${e(item.title)}</strong></div></div>
@@ -68,7 +69,7 @@ function done(){
   const {score,items}=game,total=items.length,perfect=score===total;
   const line=perfect?'Perfect! Every item sorted right.':score>=total-2?'Great sorting!':'Good practice. Every round teaches something new.';
   const review=game.review.length?`<details class="sort-review"><summary>Review what you learned</summary><ul>${game.review.map(item=>`<li><strong>${e(item.title)}</strong><p>${e(item.body)}</p></li>`).join('')}</ul></details>`:'';
-  return `<div class="sort-finished"><p class="sort-finished-line">You sorted ${score} of ${total} right.</p><div class="actions"><button type="button" data-sort-results>See results</button><button type="button" class="secondary" data-sort-restart>Play again</button></div></div><dialog class="sort-answer-panel sort-result" id="sort-result-dialog" aria-labelledby="sort-result-title"><button type="button" class="secondary sort-modal-close" data-sort-result-close aria-label="Close">&times;</button><div class="sort-done"><h3 id="sort-result-title">You sorted ${score} of ${total} right.</h3><p>${line}</p>${game.growth||''}<p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#compost">Proceed to Compost Catch</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div></dialog>`;
+  return `<div class="sort-finished"><p class="sort-finished-line">You sorted ${score} of ${total} right.</p>${game.combo.best>=2?`<p class="sort-best">Best streak: ${game.combo.best} in a row</p>`:''}<div class="actions"><button type="button" data-sort-results>See results</button><button type="button" class="secondary" data-sort-restart>Play again</button></div></div><dialog class="sort-answer-panel sort-result" id="sort-result-dialog" aria-labelledby="sort-result-title"><button type="button" class="secondary sort-modal-close" data-sort-result-close aria-label="Close">&times;</button><div class="sort-done"><h3 id="sort-result-title">You sorted ${score} of ${total} right.</h3><p>${line}</p>${game.growth||''}<p class="note">Only clean, dry, nonhazardous items belong in the pouch.</p>${review}<div class="actions"><button type="button" data-sort-again>Play again</button><a class="button-link secondary" href="#compost">Proceed to Compost Catch</a><a class="button-link secondary" href="#classify">Back to Waste Guide</a></div></div></dialog>`;
 }
 function answer(choice){
   if(!game||game.answered||game.i>=game.items.length)return;
@@ -76,8 +77,9 @@ function answer(choice){
   document.querySelector('#sort-game').classList.add('is-answered');
   document.querySelector('.sort-instruction').hidden=true;
   game.answered=true;updateReview(item,right);
-  if(right)game.score++;
-  else game.review.push(item);
+  let streak=0;
+  if(right){game.score++;streak=hit(game.combo);}
+  else{game.review.push(item);miss(game.combo);}
   document.querySelectorAll('[data-sort-bin]').forEach(b=>{b.disabled=true;if(b.dataset.sortBin===choice){b.classList.add(right?'is-right':'is-wrong');b.insertAdjacentHTML('beforeend','<span class="sort-choice-label">Your choice</span>');}});
   const destination=document.querySelector(`[data-sort-bin="${item.suitable?'yes':'no'}"]`);
   destination.classList.add('is-answer');
@@ -85,7 +87,7 @@ function answer(choice){
   const itemEl=document.querySelector('#sort-item');itemEl?.classList.add(right?'sorted':'bounced');itemEl?.style.removeProperty('transform');
   const fb=document.querySelector('#sort-feedback');
   fb.hidden=false;fb.className='feedback '+(right?'success-feedback':'');
-  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Let us try this together'}</h3><p id="sort-answer-item" class="sort-answer-item">${e(item.title)}</p><p id="sort-answer-summary" class="sort-answer-destination">${item.suitable?'Dry-waste pouch':'Ask school staff'}</p><div class="sort-explanation"><p>${e(item.body)}</p></div><p class="sort-guide-link"><a class="button-link secondary" href="#classify" data-guide-for="${e(item.title)}">See in Waste Guide</a></p>`;
+  fb.innerHTML=`<h3 id="sort-answer-title">${right?'Correct!':'Let us try this together'}</h3><p id="sort-answer-item" class="sort-answer-item">${e(item.title)}</p>${streak>=2?`<p class="combo-line">${comboLine(streak)||`${streak} in a row!`}</p>`:''}<p id="sort-answer-summary" class="sort-answer-destination">${item.suitable?'Dry-waste pouch':'Ask school staff'}</p><div class="sort-explanation"><p>${e(item.body)}</p></div><p class="sort-guide-link"><a class="button-link secondary" href="#classify" data-guide-for="${e(item.title)}">See in Waste Guide</a></p>`;
   const modal=document.querySelector('#sort-answer-dialog'),review=document.querySelector('[data-sort-review]');
   modal.querySelector('.sort-modal-buddy').innerHTML=renderAvatar({...currentConfig(),face:right?1:0},{size:96,decorative:true});
   modal.addEventListener('click',event=>{if(event.target.closest('[data-sort-close]'))modal.close();const g=event.target.closest('[data-guide-for]');if(g)queueGuideSearch(g.dataset.guideFor);});
@@ -99,7 +101,7 @@ function answer(choice){
   modal.addEventListener('close',()=>{if(review.isConnected&&game?.answered){review.hidden=false;review.focus({preventScroll:true});review.scrollIntoView({block:'center',behavior:'instant'});}});
   const next=document.querySelector('#sort-next');next.hidden=false;next.innerHTML='<span>'+(game.i+1===game.items.length?'See my result':'Next item')+'</span><span aria-hidden="true">&rarr;</span>';
   modal.showModal();next.focus({preventScroll:true});
-  if(right){cheer('correct');sparkle(itemEl,6);buzz(10);}
+  if(right){cheer('correct');sparkle(itemEl,6);buzz(10);if(streak>=2)comboSound(comboLevel(streak));if(streak===5||streak===8)animate('spin');}
   else{cheer('retry');}
 }
 function openResult(){

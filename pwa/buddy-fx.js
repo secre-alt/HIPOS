@@ -4,7 +4,7 @@
 import {renderAvatar,currentConfig} from './avatar.js';
 import {translate,getLanguage} from './i18n.js';
 import {createBuddyVoice,TONES as VOICE_TONES,PACKS as VOICE_PACKS} from './buddy-voice.js';
-import {playSfx,playBabble,music,MUSIC_STYLES,MUSIC_MOODS} from './audio.js';
+import {playSfx,playCombo,playBabble,music,MUSIC_STYLES,MUSIC_MOODS} from './audio.js';
 import {createCheerPicker} from './cheers.js';
 
 const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -317,6 +317,7 @@ export function buzz(ms=12){if(cheersOn())try{navigator.vibrate?.(ms);}catch{/* 
 
 // ---------- Sounds (off by default) ----------
 // Names: tick pop boop chime coin whoosh undo oops star tada unlock win (synthesized in audio.js).
+export function comboSound(level){if(!soundOn())return;try{playCombo(level);}catch{/* sound is optional */}}
 export function sound(name,{duckMusic=false}={}){
   if(!soundOn())return;
   try{playSfx(name);if(duckMusic)music.duck();}catch{/* sound is optional */}

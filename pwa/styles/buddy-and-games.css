@@ -1833,3 +1833,35 @@ main .daily-gift {
 :where(:root[data-theme=dark]) .reward-xp {
   color: #b9f26b;
 }
+/* Combo counter for the games. It keeps its space when off so the layout never jumps. */
+.combo-chip {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: var(--leaf, #b9f26b);
+  color: #0b2a1c;
+  font-weight: 800;
+  font-size: .875rem;
+  justify-self: start;
+}
+.combo-chip.is-off { visibility: hidden; }
+.combo-chip.combo-bump { animation: combo-bump .3s cubic-bezier(.2, 1.4, .4, 1); }
+.combo-line { margin: 4px 0; font-weight: 800; color: var(--leaf-dark, #2f7d55); }
+:where(:root[data-theme=dark]) .combo-line { color: #b9f26b; }
+.sort-best { margin: 4px 0; font-weight: 700; }
+@keyframes combo-bump {
+  from { transform: scale(.7); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .combo-chip.combo-bump { animation: none; }
+}
+/* In Compost Catch the combo chip floats over the field's corner, so nothing around it moves. */
+.compost-field > .combo-chip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  pointer-events: none;
+}

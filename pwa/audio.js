@@ -63,6 +63,13 @@ const SFX={
   win:()=>[...arp([72,76,79,84,79,84,88],.09,{len:.24,type:'triangle',vol:.22}),{f:hz(91),t:.66,len:.5,vol:.18}],
 };
 export const SFX_NAMES=Object.keys(SFX);
+// Combo notes climb a pentatonic scale, one step higher for each right answer in a row.
+const COMBO_SCALE=[0,2,4,7,9,12,16];
+export function playCombo(level){
+  if(!ensure())return;
+  const step=COMBO_SCALE[Math.max(0,Math.min(COMBO_SCALE.length-1,Math.floor(level)||0))];
+  for(const n of [{f:hz(72+step),len:.1,type:'triangle',vol:.2},{f:hz(79+step),t:.07,len:.16,type:'triangle',vol:.18}])tone(sfxBus,n);
+}
 export function playSfx(name){
   if(!ensure())return;
   for(const n of (SFX[name]||SFX.pop)())tone(sfxBus,n);

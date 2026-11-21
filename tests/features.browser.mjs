@@ -350,6 +350,25 @@ try{
     assert.match(await page.locator('.buddy-level').innerText(),/Antas 1/);
     await close(s);
   });
+  await check('sorting game combo: chip, milestone line and best streak',async()=>{
+    const {waste,moreWaste}=await import('../pwa/content.js');
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.goto(base+'#sort');await page.locator('#sort-item').waitFor();
+    const lines=[];
+    for(let i=0;i<4;i++){
+      const title=await page.locator('#sort-item strong').textContent();
+      const yes=[...waste,...moreWaste].find(x=>x[0]===title)[1];
+      if(i===3)assert.match(await page.locator('.combo-chip').innerText(),/Combo ×3/);
+      await page.locator(`[data-sort-bin="${yes?'yes':'no'}"]`).click();
+      await page.locator('#sort-answer-dialog[open]').waitFor();
+      lines.push(await page.locator('.combo-line').allInnerTexts());
+      await page.locator('#sort-next').click();
+    }
+    assert.deepEqual(lines.map(l=>l.length),[0,1,1,1]);
+    assert.equal(lines[2][0],'Three in a row!');
+    assert.equal(await page.locator('.combo-chip').evaluate(el=>getComputedStyle(el).visibility),'visible');
+    await close(s);
+  });
   await check('easier viewing: high contrast, easier reading and bigger touch persist',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await openSettings(page,'text');

@@ -179,3 +179,8 @@ These Filipino translations were written by Claude and have not yet been checked
 | Basket | Bayong |
 | School bag | Bag pang-eskwela |
 | Gold star | Gintong bituin |
+| Three in a row! | Tatlong magkakasunod! |
+| Five in a row, nice! | Lima nang magkakasunod, galing! |
+| On fire! Eight in a row! | Nag-aapoy! Walong magkakasunod! |
+| Best streak: N in a row | Pinakamahabang sunod-sunod: N |
+| N in a row! | N nang magkakasunod! |
