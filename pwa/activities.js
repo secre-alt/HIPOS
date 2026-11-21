@@ -111,9 +111,17 @@ function showQuizResult(){
   dialog.querySelector('[data-quiz-next]')?.focus({preventScroll:true});
 }
 function answerFeedback(q){return `<p><strong>${session.answers[session.position]===q.correct?'Correct.':'Let’s check that.'}</strong> ${e(q.explanation)}</p>`;}
+// A page can stay open overnight without rendering again.
+function resetStaleQuiz(){
+  if(session?.day===localDay())return false;
+  document.querySelector('.quiz-panel').outerHTML=quiz();
+  document.querySelector('#quiz-question')?.focus();
+  return true;
+}
 export function answerQuiz(button){
-  if(session.position===3||session.answers.length>session.position)return;
-  const answer=Number(button.dataset.answer);if(answer!==0&&answer!==1)return;
+  if(resetStaleQuiz())return false;
+  if(session.position===3||session.answers.length>session.position)return false;
+  const answer=Number(button.dataset.answer);if(answer!==0&&answer!==1)return false;
   session.answers.push(answer);saveQuiz();
   document.querySelectorAll('[data-answer]').forEach(el=>{el.disabled=true;el.setAttribute('aria-pressed',String(Number(el.dataset.answer)===answer));});
   document.querySelector('#quiz-feedback').innerHTML=answerFeedback(questionBank[session.ids[session.position]]);
@@ -121,13 +129,16 @@ export function answerQuiz(button){
   document.querySelector('#quiz-content').insertAdjacentHTML('beforeend',resultDialog(questionBank[session.ids[session.position]]));
   document.querySelector('#quiz-storage').textContent=quizError;
   showQuizResult();
+  return true;
 }
 export function nextQuestion(){
+  if(resetStaleQuiz())return false;
   if(session.position===3||session.answers.length<=session.position)return;
   session.position++;saveQuiz();
   document.querySelector('#quiz-content').innerHTML=quizContent();
   document.querySelector('#quiz-storage').textContent=quizError;
   document.querySelector(session.position===3?'#quiz-summary':'#quiz-question').focus();
+  return session.position===3;
 }
 export function restartQuiz(){
   session=makeSession(session?.ids);saveQuiz();

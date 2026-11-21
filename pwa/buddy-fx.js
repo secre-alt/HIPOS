@@ -124,7 +124,10 @@ function load(){
 }
 let state=null;
 const get=()=>state||(state=load());
-function save(){try{localStorage.setItem(STORE,JSON.stringify(get()));return true;}catch{return false;}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(get()));return true;}catch{
+  if(typeof document!=='undefined'&&typeof CustomEvent==='function')document.dispatchEvent(new CustomEvent('hipos-progress-save-failed'));
+  return false;
+}}
 // Progress saved by another tab of HIPOS is picked up instead of being overwritten by an older copy.
 if(typeof addEventListener==='function')addEventListener('storage',e=>{if(e.key===STORE||e.key===null)state=null;});
 export const stats=()=>({...get()});
@@ -132,7 +135,7 @@ export const stats=()=>({...get()});
 export function recordTap(){const s=get();s.taps=Math.min(s.taps+1,999999);save();return s.taps;}
 export function recordSort(score,total){const s=get();s.sorts=Math.min(s.sorts+1,999999);if(score===total)s.perfect=Math.min(s.perfect+1,999999);save();}
 export function recordHazard(score,total){const s=get();s.hazard=Math.min(s.hazard+1,999999);if(total>0&&score===total)s.hazardPerfect=Math.min(s.hazardPerfect+1,999999);save();}
-export function recordCompost(caught,good){const s=get();s.compost=Math.min(s.compost+1,999999);if(good>0&&caught===good)s.compostPerfect=Math.min(s.compostPerfect+1,999999);save();}
+export function recordCompost(caught,good,plasticCaught=0){const s=get();s.compost=Math.min(s.compost+1,999999);if(good>0&&caught===good&&plasticCaught===0)s.compostPerfect=Math.min(s.compostPerfect+1,999999);save();}
 function markSeason(v){const s=get();if(!s.seasons.includes(v)){s.seasons.push(v);save();}}
 // One treat per habit per day, so ticking and unticking cannot farm them.
 export function giveTreat(index,day){
@@ -140,7 +143,7 @@ export function giveTreat(index,day){
   if((s.treatDays[day]||0)&bit)return false;
   s.treatDays[day]=(s.treatDays[day]||0)|bit;s.treats=Math.min(s.treats+1,999999);
   const keys=Object.keys(s.treatDays).sort();while(keys.length>14)delete s.treatDays[keys.shift()];
-  save();return true;
+  return save();
 }
 
 // Finishing a game round earns one treat per game per day (bits 3 and 4 beside the three habits).

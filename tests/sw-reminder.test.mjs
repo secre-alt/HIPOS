@@ -3,9 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
-// Runs the generated service worker's reminder handler with fake browser objects.
-// Needs `npm run build` first; skipped when dist/ is missing.
-const source = await readFile(new URL('../dist/sw.js', import.meta.url), 'utf8').catch(() => '');
+// Runs the same reminder source appended to the build, independent of dist/.
+const source = await readFile(new URL('../pwa/sw-reminders.js', import.meta.url), 'utf8');
 const id = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 async function run(state) {
@@ -20,7 +19,7 @@ async function run(state) {
 }
 const base = { on: true, notify: true, time: '00:00', days: [0, 1, 2, 3, 4, 5, 6], snooze: '', lastShown: '', doneDay: '', title: 'Time for your HIPOS check-in', body: 'One small thing today.', open: 'Open HIPOS' };
 
-test('background reminder shows once, with an Open HIPOS button', { skip: !source }, async () => {
+test('background reminder shows once, with an Open HIPOS button', async () => {
   const { shown, store } = await run(base);
   assert.equal(shown.length, 1);
   assert.equal(shown[0].title, 'Time for your HIPOS check-in');
@@ -28,12 +27,12 @@ test('background reminder shows once, with an Open HIPOS button', { skip: !sourc
   assert.equal(JSON.parse(store.get('state')).lastShown, id());
 });
 
-test('opening the app earlier does not hide the reminder, but doing something today does', { skip: !source }, async () => {
+test('opening the app earlier does not hide the reminder, but doing something today does', async () => {
   assert.equal((await run({ ...base, doneDay: '' })).shown.length, 1);
   assert.equal((await run({ ...base, doneDay: id() })).shown.length, 0);
 });
 
-test('background reminder stays quiet when snoozed, already shown, off, or before the time', { skip: !source }, async () => {
+test('background reminder stays quiet when snoozed, already shown, off, or before the time', async () => {
   for (const change of [{ snooze: id() }, { lastShown: id() }, { on: false }, { notify: false }, { time: '23:59' }, { days: [] }]) {
     assert.equal((await run({ ...base, ...change })).shown.length, 0, JSON.stringify(change));
   }

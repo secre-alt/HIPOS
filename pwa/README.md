@@ -14,6 +14,8 @@ Run `node tests/game-layout.browser.mjs` for game alignment checks across phone,
 tablet, desktop, and landscape viewports in both themes and languages.
 Run `node tests/compost-experience.browser.mjs` for held movement, captured
 dragging, pause/resume, practice pace, and reward checks.
+Run `node tests/progress-regressions.browser.mjs` for overnight quiz reset and
+reward save warnings at mobile/desktop widths in both themes and languages.
 
 - `index.html`: shared page shell, navigation, dialogs, and settings markup.
 - `app.js`: routing, page rendering, delegated UI events, and app information.
@@ -22,6 +24,8 @@ dragging, pause/resume, practice pace, and reward checks.
   shared message input for existing settings modules; `styles/toasts.css` styles the host.
 - `pwa-runtime.js`: installation, connection status, service worker registration,
   and user-controlled updates. Initialized once by `app.js`.
+- `sw-reminders.js`: background reminder handlers appended to the service worker
+  by the build and exercised directly by unit tests.
 - `home.js`, `guide.js`, `prevent.js`, `reuse.js`, `carry.js`: page content and interactions.
 - `games.js`: the Games hub page, the Home games strip, and the list of game routes
   that keep the single Games menu item highlighted. It also renders shared Back

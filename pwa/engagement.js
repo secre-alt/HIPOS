@@ -27,6 +27,8 @@ function read(){
 }
 function write(data){
   const cutoff=new Date();cutoff.setDate(cutoff.getDate()-35);
+  const archived=Number.isSafeInteger(data.archivedChallengeDays)&&data.archivedChallengeDays>=0?data.archivedChallengeDays:0;
+  data.archivedChallengeDays=archived+Object.entries(data.days).filter(([day,entry])=>day<localDay(cutoff)&&entry?.challenge==='done').length;
   data.days=Object.fromEntries(Object.entries(data.days).filter(([day])=>day>=localDay(cutoff)));
   data.best=Math.max(Number(data.best)||0,bestRun(data.days));
   localStorage.setItem(key,JSON.stringify(data));
@@ -66,7 +68,8 @@ function weekData(){
     days.push({id,date,entry,active:isActive(entry)});
   }
   const streak=currentStreak(data.days,today,1),best=Math.max(Number(data.best)||0,bestRun(data.days),currentStreak(data.days,today).count);
-  return {days,streak,best,badges:badgeList(data.days,best),challengeDays:Object.values(data.days).filter(entry=>entry?.challenge==='done').length};
+  const archived=Number.isSafeInteger(data.archivedChallengeDays)&&data.archivedChallengeDays>=0?data.archivedChallengeDays:0;
+  return {days,streak,best,badges:badgeList(data.days,best),challengeDays:archived+Object.values(data.days).filter(entry=>entry?.challenge==='done').length};
 }
 // Used by the "save my week as an image" card.
 export function weekSummary(){return weekData();}

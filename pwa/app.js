@@ -132,6 +132,7 @@ function onWaste(button) {
   animate("hop");
   sound("boop");
 }
+document.addEventListener('hipos-progress-save-failed', () => message('Could not save your rewards. Progress is temporary and may be lost when you reload.'));
 function onGameDone() {
   recordGame();
   refreshTodayProgress();
@@ -257,12 +258,11 @@ document.addEventListener("click", async (event) => {
       refreshTodayProgress();
     }
     if (b.hasAttribute("data-answer")) {
-      answerQuiz(b);
-      onAnswer();
+      if (answerQuiz(b)) onAnswer();
     }
     if (b.hasAttribute("data-quiz-next")) {
-      nextQuestion();
-      if (document.querySelector("#quiz-summary")) dailyBuddy(localStorage, localDay()).quizDone();
+      const completed = nextQuestion();
+      if (completed) dailyBuddy(localStorage, localDay()).quizDone();
       refreshTodayProgress();
       checkDailyCheer();
     }

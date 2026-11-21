@@ -49,20 +49,5 @@ const version=hash.digest('hex').slice(0,16);
 await writeFile('dist/sw.js',`const PREFIX='hipos-shell-'+self.registration.scope;\nconst CACHE=PREFIX+'${version}';\nconst ASSETS=${JSON.stringify(assets)};\nself.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\nself.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!event.request.url.startsWith(self.registration.scope))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);const hit=event.request.mode==='navigate'?await cache.match('./index.html'):await cache.match(event.request,{ignoreSearch:true});if(hit)return hit;try{return await fetch(event.request);}catch{return new Response('Offline',{status:503,statusText:'Offline',headers:{'content-type':'text/plain'}});}})());});\n`);
 // Daily reminder in the background: Periodic Background Sync (where the browser allows it) wakes the worker,
 // which reads a copy of the reminder settings that the app keeps in the Cache API.
-await appendFile('dist/sw.js',String.raw`
-self.addEventListener('periodicsync',event=>{if(event.tag==='hipos-daily')event.waitUntil((async()=>{
-  const cache=await caches.open('hipos-reminder-v1'),hit=await cache.match('state');if(!hit)return;
-  const s=await hit.json(),now=new Date(),id=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-  const [h,m]=String(s.time).split(':').map(Number);
-  if(!s.on||!s.notify||!Array.isArray(s.days)||!s.days.includes(now.getDay()))return;
-  if(now.getHours()*60+now.getMinutes()<h*60+m||s.doneDay===id||s.lastShown===id||s.snooze===id)return;
-  await self.registration.showNotification(s.title,{body:s.body,tag:'hipos-daily',icon:'./icons/icon-192.png',badge:'./icons/icon-192.png',actions:s.open?[{action:'open',title:s.open}]:[],data:{url:'./'}});
-  s.lastShown=id;await cache.put('state',new Response(JSON.stringify(s),{headers:{'content-type':'application/json'}}));
-})());});
-self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil((async()=>{
-  const all=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-  for(const c of all){if('focus' in c){await c.focus();return;}}
-  await self.clients.openWindow('./');
-})());});
-`);
+await appendFile('dist/sw.js',await readFile('pwa/sw-reminders.js','utf8'));
 console.log(`HIPOS built in dist/ (offline cache ${version}).`);

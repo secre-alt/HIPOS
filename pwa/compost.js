@@ -91,7 +91,7 @@ function finish(){
   const tip=g.plasticCaught>0?'Watch for wrappers and spoons. Let them fall past the basket.':g.caught<g.good?'Try practice pace for more time to reach each food scrap.':'You kept food scraps and plastic apart. Keep it up!';
   const plasticResult=TOTAL>g.good?`<p class="compost-plastic-result"><span>Plastic kept out</span><strong data-no-translate>${g.plasticAvoided}/${TOTAL-g.good}</strong></p>`:'';
   const before=gardenState(carePoints(gardenSummary));
-  recordCompost(g.caught,g.good);giveGameTreat('compost');
+  recordCompost(g.caught,g.good,g.plasticCaught);giveGameTreat('compost');
   const growth=gardenGrowth(before,gardenState(carePoints(gardenSummary)));
   if(field)field.innerHTML=startPanel()+`<div class="compost-basket" id="compost-basket" aria-hidden="true">${compostArt('basket')}</div>`;
   const result=document.createElement('dialog');result.className='compost-result';result.setAttribute('aria-labelledby','compost-result-title');
