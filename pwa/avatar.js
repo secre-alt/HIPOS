@@ -625,8 +625,8 @@ export function avatarEditor() {
 </div>`;
 }
 
-export function buddyStrip(treats = 0) {
-  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><button type="button" class="buddy-strip-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(getConfig(), { size: 72, decorative: true })}</button><div><h2 id="buddy-heading" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><p class="buddy-mood">Hi! Tap me for a tip.</p><p class="buddy-treats">Treats shared: ${treats}</p></div><div class="buddy-strip-actions"><a class="button-link secondary" href="#avatar">Customize buddy</a><a class="button-link secondary" href="#sort">Play sorting game</a></div></section>`;
+export function buddyStrip(treats = 0, extra = '') {
+  return `<section class="buddy-strip" aria-labelledby="buddy-heading"><button type="button" class="buddy-strip-art secondary" data-buddy-tap aria-label="Tap your buddy">${renderAvatar(getConfig(), { size: 72, decorative: true })}</button><div><h2 id="buddy-heading" ${loadNickname() ? 'data-no-translate' : ''}>${esc(loadNickname() || 'Your buddy')}</h2><p class="buddy-mood">Hi! Tap me for a tip.</p><p class="buddy-treats">Treats shared: ${treats}</p>${extra}</div><div class="buddy-strip-actions"><a class="button-link secondary" href="#avatar">Customize buddy</a><a class="button-link secondary" href="#sort">Play sorting game</a></div></section>`;
 }
 
 // Redraws the header avatar and the Home strip. Safe to call when neither is on the page.

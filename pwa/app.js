@@ -14,6 +14,7 @@ import { initReminders, nudgeHtml, snoozeToday } from "./reminders.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { refreshPerch } from "./buddy-hop.js";
+import { rewardClick, announceLevelUp, refreshRewardViews, collectionCard } from "./rewards.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { reviewList, sortInProgress, sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost, compostActive } from "./compost.js";
@@ -110,6 +111,8 @@ function onHabit(input) {
   cheer(all ? "complete" : "habit");
   const treats = document.querySelector(".buddy-treats");
   if (treats) treats.textContent = `Treats shared: ${stats().treats}`;
+  refreshRewardViews();
+  announceLevelUp();
 }
 function onChallenge(state) {
   if (state === "done") {
@@ -137,7 +140,10 @@ function onGameDone() {
   recordGame();
   refreshTodayProgress();
   refreshWeekly();
-  whenResultClosed(() => checkBuddyUnlocks(true));
+  whenResultClosed(() => {
+    checkBuddyUnlocks(true);
+    announceLevelUp();
+  });
 }
 document.addEventListener("hipos-game-done", onGameDone);
 const PAGE_LINES = { games: "Pick a game!", classify: "Let us sort it out!", sort: "Ready to sort? Let us play!", compost: "Catch the compost!", garden: "Look at my flowers!", reuse: "Reuse is the best!", prevent: "Less waste starts here!", carry: "Clean and dry only. Remember?", avatar: "Ooh, make me look great!" };
@@ -210,7 +216,7 @@ function render() {
     applyPendingGuideSearch();
   }
   if (page === "carry") view.innerHTML = carryPage();
-  if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device.") + avatarEditor() + stickerBook(summaryNow());
+  if (page === "avatar") view.innerHTML = intro("Meet your buddy.", "Pick a character and make it yours. Your buddy stays on this device.") + avatarEditor() + stickerBook(summaryNow()) + collectionCard();
   if (page === "games") view.innerHTML = intro("Games", "Short, friendly games about waste. Nothing is graded or sent anywhere.") + gamesPage(gamesProgress());
   if (page === "sort") view.innerHTML = gamesBack() + intro("Sorting game", "A quick, friendly game. Nothing is graded or sent anywhere.") + howTo("sort") + sortGame(summaryNow()) + gameNavigation(page);
   if (page === "garden") view.innerHTML = gamesBack() + intro("Buddy garden","Your flowers grow from the care you give. Nothing wilts and nothing is sent anywhere.") + gardenPage(summaryNow()) + gameNavigation(page);
@@ -284,6 +290,7 @@ document.addEventListener("click", async (event) => {
       b.closest(".reminder-nudge")?.remove();
     }
     if (b.dataset.howtoDismiss) dismissHowTo(b.dataset.howtoDismiss);
+    if (rewardClick(b)) return;
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {
       avatarClick(b);

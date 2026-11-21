@@ -125,3 +125,57 @@ These Filipino translations were written by Claude and have not yet been checked
 | Time for your HIPOS check-in | Oras na para sa HIPOS check-in mo |
 | One small thing today: tick a habit, sort an item or play a quick game. Tap to open. | Isang maliit na gawain ngayon: mag-tick ng gawi, mag-uri ng aytem o maglaro nang mabilis. I-tap para buksan. |
 | Open HIPOS | Buksan ang HIPOS |
+| Daily gift | Pang-araw-araw na regalo |
+| Your buddy found something for you today. | May nahanap ang buddy mo para sa iyo ngayon. |
+| Open gift | Buksan ang regalo |
+| Opened today. Come back tomorrow for another. | Nabuksan na ngayon. Bumalik bukas para sa isa pa. |
+| See my collection | Tingnan ang koleksyon ko |
+| This week’s quests | Mga quest ngayong linggo |
+| Short goals with a chest at the end. New quests every Monday. | Maiikling layunin na may kaban sa dulo. May bagong quest tuwing Lunes. |
+| Chest opened. New quests on Monday. | Nabuksan na ang kaban. May bagong quest sa Lunes. |
+| Open the weekly chest | Buksan ang kaban ng linggo |
+| Finish all three to open the weekly chest. | Tapusin ang lahat ng tatlo para mabuksan ang kaban ng linggo. |
+| Keepsakes | Mga keepsake |
+| Open your daily gift on Home to find the next one. | Buksan ang pang-araw-araw na regalo sa Home para makuha ang susunod. |
+| Not found yet | Hindi pa nahahanap |
+| You found a keepsake! | Nakakuha ka ng keepsake! |
+| Weekly chest opened! | Nabuksan ang kaban ng linggo! |
+| Nice! | Ang galing! |
+| Progress to the next level | Progreso papunta sa susunod na antas |
+| Keepsakes collected | Mga nakolektang keepsake |
+| Finish 3 sorting rounds | Tapusin ang 3 round ng pag-uuri |
+| Finish 3 Compost Catch rounds | Tapusin ang 3 round ng Compost Catch |
+| Share 5 treats with your buddy | Magbahagi ng 5 treat sa buddy mo |
+| Play 5 game rounds | Maglaro ng 5 round |
+| Get a perfect sorting round | Makakuha ng perpektong round sa pag-uuri |
+| Open 4 daily gifts | Magbukas ng 4 na pang-araw-araw na regalo |
+| Seedling | Punla |
+| Helper | Katulong |
+| Sorter | Tagauri |
+| Guardian | Tagapag-alaga |
+| Champion | Kampeon |
+| Hero | Bayani |
+| Legend | Alamat |
+| Little seed | Munting buto |
+| Fresh leaf | Sariwang dahon |
+| Potted plant | Halaman sa paso |
+| Recycle badge | Badge ng recycle |
+| Refill bottle | Boteng pang-refill |
+| Lunchbox | Lunchbox |
+| Reusable fork | Tinidor na magagamit ulit |
+| Compost pail | Balde ng compost |
+| Compost worm | Uod ng compost |
+| Autumn leaf | Dahon ng taglagas |
+| Tiny tree | Munting puno |
+| Water drop | Patak ng tubig |
+| Little Earth | Munting Daigdig |
+| Sunshine | Sikat ng araw |
+| Butterfly | Paruparo |
+| Busy bee | Masipag na bubuyog |
+| Ladybug | Ladybug |
+| Mushroom | Kabute |
+| Nest | Pugad |
+| Sea shell | Kabibe |
+| Basket | Bayong |
+| School bag | Bag pang-eskwela |
+| Gold star | Gintong bituin |

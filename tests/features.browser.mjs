@@ -328,6 +328,28 @@ try{
     assert.ok(link==='none'||link==='1',`no squash under reduced motion: ${link}`);
     await close(s);
   });
+  await check('daily gift, buddy level and weekly quests',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    await page.goto(base+'#home');
+    await page.locator('#daily-gift [data-gift-open]').click();
+    await page.locator('#reward-modal').waitFor();
+    assert.match(await page.locator('#reward-modal').innerText(),/\+5 XP[\s\S]*1 of 24 keepsakes/);
+    await page.locator('[data-reward-close]').click();
+    await page.locator('#reward-modal').waitFor({state:'detached'});
+    assert.equal(await page.locator('#daily-gift [data-gift-open]').count(),0,'one gift a day');
+    assert.match(await page.locator('#daily-gift').innerText(),/Come back tomorrow/);
+    assert.match(await page.locator('.buddy-level').innerText(),/Level 1/);
+    assert.equal(await page.locator('#weekly-quests .quest-list li').count(),3);
+    assert.equal(await page.locator('#weekly-quests progress').count(),3);
+    await page.goto(base+'#avatar');
+    assert.match(await page.locator('#keepsakes').innerText(),/1 of 24 keepsakes/);
+    // Filipino
+    await openSettings(page,'language');await page.locator('#language').selectOption('fil');await page.keyboard.press('Escape');
+    await page.goto(base+'#home');
+    assert.match(await page.locator('#weekly-quests').innerText(),/Mga quest ngayong linggo/);
+    assert.match(await page.locator('.buddy-level').innerText(),/Antas 1/);
+    await close(s);
+  });
   await check('easier viewing: high contrast, easier reading and bigger touch persist',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await openSettings(page,'text');
