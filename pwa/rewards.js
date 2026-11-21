@@ -4,6 +4,7 @@
 import { stats, carePoints, todayKey, buddySay, sparkle, cheer, sound, buzz } from './buddy-fx.js';
 import { weekSummary } from './engagement.js';
 import { escapeHTML as e } from './core.js';
+import { eventXp, eventKeepsakes, readEvents } from './events.js';
 
 const KEY = 'hipos.rewards.v1';
 
@@ -31,7 +32,7 @@ export function levelFor(xp) {
   const start = xpForLevel(level), next = xpForLevel(level + 1);
   return { level, title: TITLES[Math.min(level, TITLES.length) - 1], xp: total, into: total - start, span: next - start, toNext: next - total, pct: Math.round(((total - start) / (next - start)) * 100) };
 }
-export const totalXp = ({ care = 0, gifts = 0, chests = 0 }) => care * XP_PER_CARE + gifts * XP_PER_GIFT + chests * XP_PER_CHEST;
+export const totalXp = ({ care = 0, gifts = 0, chests = 0, bonus = 0 }) => care * XP_PER_CARE + gifts * XP_PER_GIFT + chests * XP_PER_CHEST + bonus;
 
 // ---------- Weekly quests ----------
 // Progress is counted from a snapshot taken at the start of the week, so it needs no extra hooks.
@@ -104,7 +105,7 @@ function nextKeepsake(collected) {
 export function rewardsNow({ storage = globalThis.localStorage, now = new Date(), s = stats(), summary = safeSummary() } = {}) {
   const r = readRewards(storage);
   if (ensureWeek(r, now, s)) saveRewards(r, storage);
-  const xp = totalXp({ care: carePoints(summary), gifts: r.gifts.length, chests: r.chests });
+  const xp = totalXp({ care: carePoints(summary), gifts: r.gifts.length, chests: r.chests, bonus: eventXp(readEvents(storage)) });
   const level = levelFor(xp);
   const live = { ...s, giftDays: r.quest.giftDays };
   const quests = pickQuests(r.quest.week).map((q) => {
@@ -173,16 +174,22 @@ export function questsCard() {
       : '<p class="quest-chest">Finish all three to open the weekly chest.</p>';
   return `<section class="quests card" id="weekly-quests" aria-labelledby="quests-heading"><h2 id="quests-heading">This week’s quests</h2><p>Short goals with a chest at the end. New quests every Monday.</p><ul class="quest-list">${items}</ul>${chest}</section>`;
 }
+function eventCollection() {
+  const list = eventKeepsakes();
+  if (!list.some((k) => k.owned)) return '';
+  const cells = list.map((k) => (k.owned ? `<li class="keepsake"><span aria-hidden="true">${k.emoji}</span><small>${k.name}</small></li>` : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>')).join('');
+  return `<h3>Linggo ng Wika keepsakes</h3><ul class="keepsake-grid">${cells}</ul>`;
+}
 export function collectionCard() {
   const v = rewardsNow(), have = new Set(v.r.gifts);
   const cells = KEEPSAKES.map(([emoji, name], i) => have.has(i)
     ? `<li class="keepsake"><span aria-hidden="true">${emoji}</span><small>${name}</small></li>`
     : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>').join('');
-  return `<section class="card keepsakes" id="keepsakes" aria-labelledby="keepsakes-heading"><h2 id="keepsakes-heading">Keepsakes</h2><p>${v.collected} of ${KEEPSAKES.length} keepsakes</p>${bar(v.collected, KEEPSAKES.length, 'gift-meter', 'Keepsakes collected')}<ul class="keepsake-grid">${cells}</ul><p class="note">Open your daily gift on Home to find the next one.</p></section>`;
+  return `<section class="card keepsakes" id="keepsakes" aria-labelledby="keepsakes-heading"><h2 id="keepsakes-heading">Keepsakes</h2><p>${v.collected} of ${KEEPSAKES.length} keepsakes</p>${bar(v.collected, KEEPSAKES.length, 'gift-meter', 'Keepsakes collected')}<ul class="keepsake-grid">${cells}</ul><p class="note">Open your daily gift on Home to find the next one.</p>${eventCollection()}</section>`;
 }
 
 // ---------- Behaviour ----------
-function reveal(result, heading) {
+export function revealReward(result, heading) {
   if (typeof document === 'undefined') return;
   document.querySelector('#reward-modal')?.remove();
   const [emoji, name] = result.item;
@@ -190,7 +197,7 @@ function reveal(result, heading) {
   dialog.id = 'reward-modal';
   dialog.className = 'sort-answer-panel reward-modal';
   dialog.setAttribute('aria-labelledby', 'reward-title');
-  dialog.innerHTML = `<div class="reward-emoji" aria-hidden="true">${emoji}</div><h3 id="reward-title">${e(heading)}</h3><p class="reward-name">${result.isNew ? e(name) : e(name) + ' again'}</p><p class="reward-xp">+${result.xp} XP</p><p class="reward-count">${result.collected} of ${result.total} keepsakes</p><div class="actions"><button type="button" data-reward-close>Nice!</button></div>`;
+  dialog.innerHTML = `<div class="reward-emoji" aria-hidden="true">${emoji}</div><h3 id="reward-title">${e(heading)}</h3><p class="reward-name">${result.isNew ? e(name) : e(name) + ' again'}</p><p class="reward-xp">+${result.xp} XP</p><p class="reward-count">${e(result.countLabel || `${result.collected} of ${result.total} keepsakes`)}</p><div class="actions"><button type="button" data-reward-close>Nice!</button></div>`;
   dialog.addEventListener('click', (event) => { if (event.target === dialog || event.target.closest('[data-reward-close]')) dialog.close(); });
   dialog.addEventListener('close', () => { dialog.remove(); announceLevelUp(); });
   document.body.append(dialog);
@@ -218,12 +225,12 @@ export function announceLevelUp() {
 export function rewardClick(button) {
   if (button.hasAttribute('data-gift-open')) {
     const result = openGift();
-    if (result) { reveal(result, 'You found a keepsake!'); refreshRewardViews(); }
+    if (result) { revealReward(result, 'You found a keepsake!'); refreshRewardViews(); }
     return true;
   }
   if (button.hasAttribute('data-chest-open')) {
     const result = openChest();
-    if (result) { reveal(result, 'Weekly chest opened!'); refreshRewardViews(); }
+    if (result) { revealReward(result, 'Weekly chest opened!'); refreshRewardViews(); }
     return true;
   }
   return false;

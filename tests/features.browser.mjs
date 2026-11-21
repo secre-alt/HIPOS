@@ -369,6 +369,30 @@ try{
     assert.equal(await page.locator('.combo-chip').evaluate(el=>getComputedStyle(el).visibility),'visible');
     await close(s);
   });
+  await check('Linggo ng Wika: word of the day only during August 13 to 19, keepsakes and Filipino',async()=>{
+    const s=await open({viewport:{width:390,height:800}}),{page}=s;
+    assert.equal(await page.locator('#wika-event').count(),0,'no event outside the week');
+    await page.clock.setFixedTime(new Date(2026,7,15,10,0,0));
+    await page.goto(base+'#home');await page.reload();await page.locator('#wika-event').waitFor();
+    assert.equal(await page.locator('#wika-event [data-wika-learn]').count(),3,'today plus two earlier words');
+    await page.locator('#wika-event .wika-today [data-wika-learn]').click();
+    await page.locator('#reward-modal').waitFor();
+    assert.match(await page.locator('#reward-modal').innerText(),/New word learned![\s\S]*Malinis[\s\S]*\+10 XP[\s\S]*1 of 7 words/);
+    await page.locator('[data-reward-close]').click();
+    assert.equal(await page.locator('#wika-event [data-wika-learn]').count(),2,'learned word is marked done');
+    await page.locator('#wika-event summary').click();
+    await page.locator('#wika-event details [data-wika-learn]').first().click();
+    await page.locator('[data-reward-close]').click();
+    assert.match(await page.locator('#wika-event .wika-count').innerText(),/2 of 7 words/);
+    await page.goto(base+'#avatar');
+    assert.match(await page.locator('#keepsakes').innerText(),/Linggo ng Wika keepsakes/);
+    await openSettings(page,'language');await page.locator('#language').selectOption('fil');await page.keyboard.press('Escape');
+    await page.goto(base+'#home');
+    assert.match(await page.locator('#wika-event').innerText(),/Salita ng araw/);
+    assert.match(await page.locator('#wika-event .wika-count').innerText(),/2 sa 7 salita/);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no sideways scroll');
+    await close(s);
+  });
   await check('easier viewing: high contrast, easier reading and bigger touch persist',async()=>{
     const s=await open({viewport:{width:390,height:800}}),{page}=s;
     await openSettings(page,'text');

@@ -14,7 +14,8 @@ import { initReminders, nudgeHtml, snoozeToday } from "./reminders.js";
 import { initFontStyle } from "./fontstyle.js";
 import { avatarEditor, avatarClick, submitNickname, nicknameInput, resetNickname, refreshAvatars, syncUnlocks, greeting } from "./avatar.js";
 import { refreshPerch } from "./buddy-hop.js";
-import { rewardClick, announceLevelUp, refreshRewardViews, collectionCard } from "./rewards.js";
+import { rewardClick, announceLevelUp, refreshRewardViews, collectionCard, revealReward } from "./rewards.js";
+import { eventClick } from "./events.js";
 import { cheersOn, cheer, celebrateUnlock, buddySay, tapBuddy, applyMood, animate, sparkle, buzz, sound, giveTreat, syncStickers, earnedKeys, stats, gardenState, carePoints, stickerBook, initBuddySettings } from "./buddy-fx.js";
 import { reviewList, sortInProgress, sortGame, fitGame, sortClick, sortPointerDown, sortPointerMove, sortPointerUp } from "./sortgame.js";
 import { compostGame, initCompost, compostActive } from "./compost.js";
@@ -291,6 +292,7 @@ document.addEventListener("click", async (event) => {
     }
     if (b.dataset.howtoDismiss) dismissHowTo(b.dataset.howtoDismiss);
     if (rewardClick(b)) return;
+    if (eventClick(b, { reveal: revealReward, after: refreshRewardViews })) return;
     if (b.id === "buddy-nickname-reset") resetNickname(b.closest("form"));
     if (b.dataset.avatarKey || b.dataset.avatarAction) {
       avatarClick(b);

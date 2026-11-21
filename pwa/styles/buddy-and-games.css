@@ -1712,7 +1712,7 @@ main .daily-gift .gift-art {
   width: 64px;
   height: 64px;
   border-radius: 20px;
-  background: var(--surface-soft, #edf5ed);
+  background: rgba(120, 140, 125, .2);
   font-size: 2.25rem;
   line-height: 1;
 }
@@ -1796,7 +1796,7 @@ main .keepsake {
   gap: 2px;
   padding: 8px 4px;
   border-radius: 16px;
-  background: var(--surface-soft, #edf5ed);
+  background: rgba(120, 140, 125, .2);
   text-align: center;
 }
 main .keepsake span { font-size: 1.75rem; line-height: 1.2; }
@@ -1865,3 +1865,29 @@ main .daily-gift {
   z-index: 3;
   pointer-events: none;
 }
+/* Linggo ng Wika event card. */
+main .wika-event .eyebrow { margin: 0 0 4px; }
+main .wika-event h2 { margin: 0 0 4px; }
+main .wika-word {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: start;
+  margin: 12px 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(120, 140, 125, .2);
+}
+main .wika-word > .wika-learn,
+main .wika-word > .wika-done { grid-column: 1 / -1; min-height: 48px; margin: 0; }
+main .wika-done { display: grid; place-items: center; font-weight: 800; }
+main .wika-art { font-size: 2.5rem; line-height: 1; }
+main .wika-copy p { margin: 2px 0; }
+main .wika-term { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
+main .wika-meaning { color: var(--muted); }
+main .wika-example { font-style: italic; }
+main .wika-english { font-size: .875rem; color: var(--muted); }
+main .wika-earlier summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+main .wika-count { margin: 8px 0 4px; font-size: .875rem; color: var(--muted); }
+main .wika-champion { margin: 8px 0 0; font-weight: 800; }
+main .keepsakes h3 { margin: 16px 0 0; }

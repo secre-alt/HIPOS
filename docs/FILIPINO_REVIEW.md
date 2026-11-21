@@ -184,3 +184,26 @@ These Filipino translations were written by Claude and have not yet been checked
 | On fire! Eight in a row! | Nag-aapoy! Walong magkakasunod! |
 | Best streak: N in a row | Pinakamahabang sunod-sunod: N |
 | N in a row! | N nang magkakasunod! |
+| Linggo ng Wika · August 13–19 | Linggo ng Wika · Agosto 13–19 |
+| Word of the day | Salita ng araw |
+| Learn a Filipino word each day this week and collect a keepsake. | Matuto ng isang salitang Filipino bawat araw ngayong linggo at mangolekta ng keepsake. |
+| I learned it | Natutunan ko na |
+| Learned ✓ | Natutunan ✓ |
+| Earlier words | Mga naunang salita |
+| In English: | Sa English: |
+| waste or trash | kalat o bagay na itatapon |
+| nature and the environment | ang paligid at likas na yaman |
+| clean | walang dumi |
+| to use again | gamitin nang paulit-ulit |
+| neighbors working together | sama-samang pagtutulungan ng magkakapitbahay |
+| water | iniinom at ginagamit sa paglilinis |
+| hope | pananabik sa magandang mangyayari |
+| All seven words learned! Wika champion. | Natutunan mo na ang lahat ng pitong salita! Kampeon ng Wika. |
+| New word learned! | Bagong salita ang natutunan! |
+| Wika champion! | Kampeon ng Wika! |
+| Wika champion | Kampeon ng Wika |
+| Linggo ng Wika keepsakes | Mga keepsake ng Linggo ng Wika |
+
+### Linggo ng Wika words and sentences (pwa/events.js)
+
+Please check the example sentences and word choices: Basura, Kalikasan, Malinis, Muling gamitin, Bayanihan, Tubig and Pag-asa, with “Itapon ang basura sa tamang lalagyan.”, “Alagaan natin ang kalikasan.”, “Malinis ang aming silid-aralan.”, “Muling gamitin ang bote ng tubig.”, “Sa bayanihan, gumagaan ang gawain.”, “Magtipid tayo ng tubig.” and “Pag-asa ang dala ng maliliit na gawa.”
