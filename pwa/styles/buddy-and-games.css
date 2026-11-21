@@ -1865,10 +1865,10 @@ main .daily-gift {
   z-index: 3;
   pointer-events: none;
 }
-/* Linggo ng Wika event card. */
-main .wika-event .eyebrow { margin: 0 0 4px; }
-main .wika-event h2 { margin: 0 0 4px; }
-main .wika-word {
+/* Event week card (Linggo ng Wika, Christmas week). */
+main .event-card .eyebrow { margin: 0 0 4px; }
+main .event-card h2 { margin: 0 0 4px; }
+main .event-item {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 8px 16px;
@@ -1878,16 +1878,22 @@ main .wika-word {
   border-radius: 20px;
   background: rgba(120, 140, 125, .2);
 }
-main .wika-word > .wika-learn,
-main .wika-word > .wika-done { grid-column: 1 / -1; min-height: 48px; margin: 0; }
-main .wika-done { display: grid; place-items: center; font-weight: 800; }
-main .wika-art { font-size: 2.5rem; line-height: 1; }
-main .wika-copy p { margin: 2px 0; }
-main .wika-term { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
-main .wika-meaning { color: var(--muted); }
-main .wika-example { font-style: italic; }
-main .wika-english { font-size: .875rem; color: var(--muted); }
-main .wika-earlier summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
-main .wika-count { margin: 8px 0 4px; font-size: .875rem; color: var(--muted); }
-main .wika-champion { margin: 8px 0 0; font-weight: 800; }
+main .event-item > .event-learn,
+main .event-item > .event-done { grid-column: 1 / -1; min-height: 48px; margin: 0; }
+main .event-done { display: grid; place-items: center; font-weight: 800; }
+main .event-art { font-size: 2.5rem; line-height: 1; }
+main .event-copy p { margin: 2px 0; }
+main .event-term { font-size: 1.75rem; font-weight: 800; line-height: 1.15; }
+main .event-meaning { color: var(--muted); }
+main .event-example { font-style: italic; }
+main .event-english { font-size: .875rem; color: var(--muted); }
+main .event-earlier summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+main .event-count { margin: 8px 0 4px; font-size: .875rem; color: var(--muted); }
+main .event-champion { margin: 8px 0 0; font-weight: 800; }
 main .keepsakes h3 { margin: 16px 0 0; }
+main .event-card[data-event=christmas] {
+  border-color: #c8553d;
+}
+main .event-card[data-event=christmas] .event-term {
+  font-size: 1.25rem;
+}

@@ -175,10 +175,10 @@ export function questsCard() {
   return `<section class="quests card" id="weekly-quests" aria-labelledby="quests-heading"><h2 id="quests-heading">This week’s quests</h2><p>Short goals with a chest at the end. New quests every Monday.</p><ul class="quest-list">${items}</ul>${chest}</section>`;
 }
 function eventCollection() {
-  const list = eventKeepsakes();
-  if (!list.some((k) => k.owned)) return '';
-  const cells = list.map((k) => (k.owned ? `<li class="keepsake"><span aria-hidden="true">${k.emoji}</span><small>${k.name}</small></li>` : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>')).join('');
-  return `<h3>Linggo ng Wika keepsakes</h3><ul class="keepsake-grid">${cells}</ul>`;
+  return eventKeepsakes().filter((g) => g.items.some((k) => k.owned)).map((g) => {
+    const cells = g.items.map((k) => (k.owned ? `<li class="keepsake"><span aria-hidden="true">${k.emoji}</span><small>${k.name}</small></li>` : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>')).join('');
+    return `<h3>${g.event.collection}</h3><ul class="keepsake-grid">${cells}</ul>`;
+  }).join('');
 }
 export function collectionCard() {
   const v = rewardsNow(), have = new Set(v.r.gifts);

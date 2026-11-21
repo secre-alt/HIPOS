@@ -207,3 +207,40 @@ These Filipino translations were written by Claude and have not yet been checked
 ### Linggo ng Wika words and sentences (pwa/events.js)
 
 Please check the example sentences and word choices: Basura, Kalikasan, Malinis, Muling gamitin, Bayanihan, Tubig and Pag-asa, with “Itapon ang basura sa tamang lalagyan.”, “Alagaan natin ang kalikasan.”, “Malinis ang aming silid-aralan.”, “Muling gamitin ang bote ng tubig.”, “Sa bayanihan, gumagaan ang gawain.”, “Magtipid tayo ng tubig.” and “Pag-asa ang dala ng maliliit na gawa.”
+
+### Christmas week (pwa/events.js)
+
+| English | Filipino |
+| --- | --- |
+| Christmas week · December 19–25 | Linggo ng Pasko · Disyembre 19–25 |
+| Idea of the day | Ideya ng araw |
+| Try one waste-smart Christmas idea each day this week and collect a keepsake. | Subukan ang isang ideya sa Paskong matipid sa basura bawat araw ngayong linggo at mangolekta ng keepsake. |
+| I tried it | Sinubukan ko na |
+| Tried ✓ | Nasubukan ✓ |
+| Earlier ideas | Mga naunang ideya |
+| All seven ideas tried! Christmas star. | Nasubukan mo na ang lahat ng pitong ideya! Bituin ng Pasko. |
+| Idea tried! | Nasubukan ang ideya! |
+| Christmas star! | Bituin ng Pasko! |
+| Christmas star | Bituin ng Pasko |
+| Christmas week keepsakes | Mga keepsake ng Linggo ng Pasko |
+| Wrap with cloth or old paper | Balutin ng tela o lumang papel |
+| Use a cloth, a scarf or last year’s paper. Shiny gift wrap is often hard to recycle. | Gumamit ng tela, bandana o papel noong nakaraang taon. Madalas mahirap i-recycle ang makintab na pambalot. |
+| Make a parol from scrap | Gumawa ng parol mula sa tira-tirang gamit |
+| Build a parol from clean scrap paper, cardboard or bottle caps. | Gumawa ng parol mula sa malinis na tirang papel, karton o takip ng bote. |
+| Bring your own bag | Magdala ng sariling bag |
+| Take a reusable bag when you shop for Noche Buena. | Magdala ng bag na magagamit ulit kapag namimili para sa Noche Buena. |
+| Plan only what you can eat | Magplano ayon sa kayang ubusin |
+| Cook the right amount. Share extra food with neighbors while it is fresh. | Magluto ng sakto. Ibahagi sa kapitbahay ang sobrang pagkain habang sariwa pa. |
+| Reuse a gift box or ribbon | Muling gamitin ang kahon o laso |
+| Keep boxes, ribbons and bags to use again next year. | Itabi ang mga kahon, laso at supot para magamit ulit sa susunod na taon. |
+| Skip single-use plates | Iwasan ang minsanang gamit na plato |
+| Use real plates and spoons at the family table and wash up together. | Gumamit ng tunay na plato at kutsara sa hapag ng pamilya at maghugas nang sama-sama. |
+| Give a gift of time | Magregalo ng oras |
+| A hug, a song or a helping hand makes no waste at all. | Ang yakap, awit o pagtulong ay hindi nagiging basura. |
+| Cloth wrap | Pambalot na tela |
+| Parol | Parol |
+| Market bag | Bag pang-palengke |
+| Noche Buena plate | Plato ng Noche Buena |
+| Ribbon | Laso |
+| Real spoon | Tunay na kutsara |
+| Gift of time | Regalo ng oras |

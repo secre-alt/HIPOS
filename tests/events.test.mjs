@@ -1,10 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WORDS, CHAMPION, activeEvent, dayIndex, learnWord, sanitize, readEvents, eventXp, eventKeepsakes, hasChampion, wikaCard } from '../pwa/events.js';
+import { WIKA, CHRISTMAS, EVENTS, activeEvent, dayIndex, completeItem, sanitize, readEvents, eventXp, eventKeepsakes, hasChampion, eventCard } from '../pwa/events.js';
 import { pairs } from '../pwa/i18n.js';
 
+const WORDS = WIKA.items, CHAMPION = WIKA.champion;
 const memory = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, String(v)) }; };
 const aug = (d, y = 2026) => new Date(y, 7, d, 12);
+const dec = (d, y = 2026) => new Date(y, 11, d, 12);
+const learnWord = completeItem;
+const wikaCard = eventCard;
 
 test('Linggo ng Wika runs August 13 to 19 only', () => {
   assert.equal(activeEvent(aug(12)), null);
@@ -37,28 +41,52 @@ test('all seven words earn the champion keepsake and bonus XP, and keepsakes sta
   assert.deepEqual(last.item, CHAMPION);
   const state = readEvents(storage);
   assert.equal(eventXp(state), 7 * 10 + 30);
-  assert.equal(hasChampion(state), true);
-  assert.ok(eventKeepsakes(state).every((k) => k.owned));
+  assert.equal(hasChampion(state, 'wika'), true);
+  assert.ok(eventKeepsakes(state)[0].items.every((k) => k.owned));
   // A new year starts fresh progress but keeps what was earned.
   const next = learnWord(0, { storage, now: aug(13, 2027) });
   assert.equal(next.collected, 1);
   assert.equal(eventXp(readEvents(storage)), 7 * 10 + 30 + 10);
-  assert.ok(eventKeepsakes(readEvents(storage)).every((k) => k.owned));
+  assert.ok(eventKeepsakes(readEvents(storage))[0].items.every((k) => k.owned));
 });
 
 test('saved event data is validated and the card only shows during the week', () => {
   assert.deepEqual(sanitize({ wika: { 2026: [0, 0, 9, 'x', 3], bad: [1], 2027: 'no' } }).wika, { 2026: [0, 3] });
-  assert.deepEqual(sanitize(null), { wika: {} });
+  assert.deepEqual(sanitize(null), { wika: {}, christmas: {} });
   const storage = memory();
   assert.equal(wikaCard({ storage, now: aug(25) }), '');
   const html = wikaCard({ storage, now: aug(15) });
   assert.match(html, /Word of the day/);
   assert.match(html, /Kalikasan|Malinis/);
-  assert.equal((html.match(/data-wika-learn/g) || []).length, 3, 'today plus two earlier words');
+  assert.equal((html.match(/data-event-item/g) || []).length, 3, 'today plus two earlier words');
+});
+
+test('Christmas week runs December 19 to 25 and works like the other event', () => {
+  assert.equal(activeEvent(dec(18)), null);
+  assert.equal(activeEvent(dec(19)).id, 'christmas');
+  assert.equal(activeEvent(dec(25)).id, 'christmas');
+  assert.equal(activeEvent(dec(26)), null);
+  assert.deepEqual([19, 22, 25].map((d) => dayIndex(dec(d))), [0, 3, 6]);
+  assert.equal(CHRISTMAS.items.length, 7);
+  const storage = memory();
+  assert.equal(completeItem(1, { storage, now: dec(19) }), null, 'cannot skip ahead');
+  const first = completeItem(0, { storage, now: dec(19) });
+  assert.deepEqual([first.xp, first.countLabel, first.heading, first.item[1]], [10, '1 of 7 ideas', 'Idea tried!', 'Cloth wrap']);
+  for (let i = 1; i < 7; i++) completeItem(i, { storage, now: dec(25) });
+  const state = readEvents(storage);
+  assert.equal(hasChampion(state, 'christmas'), true);
+  assert.equal(hasChampion(state, 'wika'), false, 'events are separate');
+  assert.equal(eventXp(state), 100);
+  assert.match(eventCard({ storage, now: dec(22) }), /Idea of the day/);
+  assert.match(eventCard({ storage, now: dec(22) }), /data-event="christmas"/);
 });
 
 test('event text has Filipino translations', () => {
   const have = new Map(pairs.map((p) => [p[0], p[1]]));
-  const strings = [...WORDS.map((w) => w.meaning), 'Word of the day', 'I learned it', 'Learned ✓', 'Earlier words', 'In English:', 'New word learned!', 'Wika champion!', 'Wika champion', 'Linggo ng Wika keepsakes', 'Linggo ng Wika · August 13–19', 'All seven words learned! Wika champion.'];
+  const strings = [];
+  for (const ev of EVENTS) {
+    strings.push(ev.eyebrow, ev.heading, ev.intro, ev.button, ev.done, ev.complete, ev.revealNew, ev.revealChampion, ev.collection, ev.champion[1], `Earlier ${ev.unit}`);
+    for (const it of ev.items) strings.push(...(ev.kind === 'word' ? [it.meaning] : [it.title, it.detail, it.name]));
+  }
   for (const text of strings) assert.ok(have.has(text), `missing Filipino: ${text}`);
 });
