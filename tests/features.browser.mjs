@@ -343,6 +343,24 @@ try{
     assert.equal(await page.locator('#weekly-quests progress').count(),3);
     await page.goto(base+'#avatar');
     assert.match(await page.locator('#keepsakes').innerText(),/1 of 24 keepsakes/);
+    // Tapping a keepsake opens a viewer; Little Earth is a globe that can be turned by dragging.
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.locator('[data-keepsake-name="Little Earth"]').click();
+    const stage=page.locator('#keepsake-view .keepsake-stage');
+    await stage.waitFor();
+    assert.equal(await page.locator('#keepsake-view canvas.keepsake-globe').count(),1);
+    const colors=await page.evaluate(()=>{const c=document.querySelector('.keepsake-globe'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let land=0,sea=0;for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;if(d[i+1]>d[i+2])land++;else sea++;}return{land,sea};});
+    assert.ok(colors.land>500&&colors.sea>500,`globe shows land and sea: ${JSON.stringify(colors)}`);
+    const yaw0=Number(await stage.getAttribute('data-yaw')),box=await stage.boundingBox();
+    await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+100,box.y+box.height/2,{steps:6});await page.mouse.up();
+    const yaw1=Number(await stage.getAttribute('data-yaw'));
+    const turned=(((yaw1-yaw0)%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+    assert.ok(Math.abs(turned-1.2)<0.1,`drag turned the globe about 1.2 rad, got ${turned}`);
+    await stage.focus();await page.keyboard.press('ArrowRight');
+    assert.notEqual(await stage.getAttribute('data-yaw'),String(yaw1.toFixed(2)),'arrow keys turn it too');
+    await page.keyboard.press('Escape');
+    await page.locator('#keepsake-view').waitFor({state:'detached'});
+    await page.emulateMedia({reducedMotion:'no-preference'});
     // Filipino
     await openSettings(page,'language');await page.locator('#language').selectOption('fil');await page.keyboard.press('Escape');
     await page.goto(base+'#home');

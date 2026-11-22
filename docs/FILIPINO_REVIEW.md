@@ -169,6 +169,9 @@ These Filipino translations were written by Claude and have not yet been checked
 | Tiny tree | Munting puno |
 | Water drop | Patak ng tubig |
 | Little Earth | Munting Daigdig |
+| Drag to turn it around | I-drag para paikutin |
+| Spin | Paikutin |
+| Drag or use the arrow keys to turn it around | I-drag o gamitin ang arrow keys para paikutin |
 | Sunshine | Sikat ng araw |
 | Butterfly | Paruparo |
 | Busy bee | Masipag na bubuyog |

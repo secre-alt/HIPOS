@@ -1897,3 +1897,41 @@ main .event-card[data-event=christmas] {
 main .event-card[data-event=christmas] .event-term {
   font-size: 1.25rem;
 }
+
+/* Keepsake tiles open a viewer where the keepsake can be turned all the way around. */
+main .keepsake-open {
+  width: 100%;
+  min-height: 64px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: none;
+}
+main .keepsake-open:hover { background: rgba(120, 140, 125, .2); }
+.keepsake-view { text-align: center; align-items: center; }
+.keepsake-stage {
+  width: min(220px, 70vw);
+  aspect-ratio: 1;
+  margin: 8px auto;
+  display: grid;
+  place-items: center;
+  perspective: 600px;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  border-radius: 50%;
+}
+.keepsake-stage:active { cursor: grabbing; }
+.keepsake-globe { width: 100%; height: 100%; border-radius: 50%; display: block; box-shadow: 0 10px 28px rgba(0, 0, 0, .35); }
+.turn-stack { position: relative; width: 120px; height: 120px; transform-style: preserve-3d; }
+.turn-layer { position: absolute; inset: 0; display: grid; place-items: center; font-size: 6.5rem; line-height: 1; }
+.keepsake-hint { margin: 0; color: var(--muted); font-size: .875rem; }
+.keepsake-view .actions { display: flex; gap: 8px; justify-content: center; }
+.keepsake-view .actions button { min-height: 48px; }

@@ -5,6 +5,7 @@ import { stats, carePoints, todayKey, buddySay, sparkle, cheer, sound, buzz } fr
 import { weekSummary } from './engagement.js';
 import { escapeHTML as e } from './core.js';
 import { eventXp, eventKeepsakes, readEvents } from './events.js';
+import { openKeepsake } from './keepsake-viewer.js';
 
 const KEY = 'hipos.rewards.v1';
 
@@ -174,16 +175,17 @@ export function questsCard() {
       : '<p class="quest-chest">Finish all three to open the weekly chest.</p>';
   return `<section class="quests card" id="weekly-quests" aria-labelledby="quests-heading"><h2 id="quests-heading">This week’s quests</h2><p>Short goals with a chest at the end. New quests every Monday.</p><ul class="quest-list">${items}</ul>${chest}</section>`;
 }
+const keepsakeTile = (emoji, name) => `<li class="keepsake"><button type="button" class="keepsake-open" data-keepsake="${e(emoji)}" data-keepsake-name="${e(name)}"><span aria-hidden="true">${emoji}</span><small>${e(name)}</small></button></li>`;
 function eventCollection() {
   return eventKeepsakes().filter((g) => g.items.some((k) => k.owned)).map((g) => {
-    const cells = g.items.map((k) => (k.owned ? `<li class="keepsake"><span aria-hidden="true">${k.emoji}</span><small>${k.name}</small></li>` : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>')).join('');
+    const cells = g.items.map((k) => (k.owned ? keepsakeTile(k.emoji, k.name) : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>')).join('');
     return `<h3>${g.event.collection}</h3><ul class="keepsake-grid">${cells}</ul>`;
   }).join('');
 }
 export function collectionCard() {
   const v = rewardsNow(), have = new Set(v.r.gifts);
   const cells = KEEPSAKES.map(([emoji, name], i) => have.has(i)
-    ? `<li class="keepsake"><span aria-hidden="true">${emoji}</span><small>${name}</small></li>`
+    ? keepsakeTile(emoji, name)
     : '<li class="keepsake keepsake-locked"><span aria-hidden="true">?</span><small>Not found yet</small></li>').join('');
   return `<section class="card keepsakes" id="keepsakes" aria-labelledby="keepsakes-heading"><h2 id="keepsakes-heading">Keepsakes</h2><p>${v.collected} of ${KEEPSAKES.length} keepsakes</p>${bar(v.collected, KEEPSAKES.length, 'gift-meter', 'Keepsakes collected')}<ul class="keepsake-grid">${cells}</ul><p class="note">Open your daily gift on Home to find the next one.</p>${eventCollection()}</section>`;
 }
@@ -223,6 +225,7 @@ export function announceLevelUp() {
 }
 // Handles the gift and chest buttons from the page's click handler. Returns true when it handled one.
 export function rewardClick(button) {
+  if (button.hasAttribute('data-keepsake')) { openKeepsake(button.dataset.keepsake, button.dataset.keepsakeName); return true; }
   if (button.hasAttribute('data-gift-open')) {
     const result = openGift();
     if (result) { revealReward(result, 'You found a keepsake!'); refreshRewardViews(); }
