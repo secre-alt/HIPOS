@@ -6,6 +6,7 @@ import { sparkle, sound, buzz } from './buddy-fx.js';
 import { landMask, LAND_W, LAND_H } from './land-mask.js';
 import { KEEPSAKE_INFO } from './keepsake-info.js';
 import { EVENTS } from './events.js';
+import { buildScene, lightScene } from './keepsake-scene.js';
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((a % TAU) + TAU) % TAU;
@@ -60,7 +61,7 @@ function drawGlobe(canvas, s) {
 }
 
 // ---------- Spinning emoji with thickness ----------
-const LAYERS = 9;
+const LAYERS = 13;
 function buildStack(emoji) {
   const stack = document.createElement('div');
   stack.className = 'turn-stack';
@@ -69,7 +70,7 @@ function buildStack(emoji) {
     const layer = document.createElement('span');
     layer.className = 'turn-layer';
     layer.textContent = emoji;
-    const depth = (i - (LAYERS - 1) / 2) * 3;
+    const depth = (i - (LAYERS - 1) / 2) * 2.5;
     layer.style.transform = `translateZ(${depth}px)`;
     layer.style.filter = `brightness(${(0.62 + 0.38 * (i / (LAYERS - 1))).toFixed(2)})`;
     stack.append(layer);
@@ -102,6 +103,8 @@ export function openKeepsake(emoji, name) {
   dialog.setAttribute('aria-labelledby', 'keepsake-view-title');
   dialog.innerHTML = `<h3 id="keepsake-view-title">${e(name)}</h3><div class="keepsake-stage" tabindex="0" role="group" aria-label="Drag or use the arrow keys to turn it around"></div><p class="keepsake-hint">Drag to turn it around</p>${detailsHTML(name)}<div class="actions"><button type="button" class="secondary" data-keepsake-spin>Spin</button><button type="button" data-keepsake-close>Close</button></div>`;
   const stage = dialog.querySelector('.keepsake-stage');
+  const scene = buildScene(name);
+  stage.append(scene);
   let canvas = null, stack = null;
   if (isEarth) {
     canvas = document.createElement('canvas');
@@ -110,7 +113,10 @@ export function openKeepsake(emoji, name) {
     stage.append(canvas);
   } else {
     stack = buildStack(emoji);
-    stage.append(stack);
+    const light = document.createElement('div');
+    light.className = 'keepsake-light';
+    light.append(stack);
+    stage.append(light);
   }
 
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -120,6 +126,7 @@ export function openKeepsake(emoji, name) {
   function paint() {
     if (isEarth) drawGlobe(canvas, s);
     else stack.style.transform = `rotateX(${(-s.pitch).toFixed(3)}rad) rotateY(${s.yaw.toFixed(3)}rad)`;
+    lightScene(scene, s.yaw);
     stage.dataset.yaw = wrapAngle(s.yaw).toFixed(2);
     stage.dataset.pitch = s.pitch.toFixed(2);
   }

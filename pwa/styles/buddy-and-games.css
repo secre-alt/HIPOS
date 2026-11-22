@@ -1938,3 +1938,62 @@ main .keepsake-open:hover { background: rgba(120, 140, 125, .2); }
 .keepsake-about { margin: 8px 0 4px; font-size: 1rem; }
 .keepsake-fil { margin: 2px 0; font-style: italic; }
 .keepsake-tip { margin: 4px 0 8px; padding: 8px 12px; border-radius: 14px; background: rgba(120, 140, 125, .2); font-size: .9375rem; text-align: left; }
+
+/* Scene behind each keepsake: backdrop, pedestal, shadow and drifting bits. */
+.keepsake-stage { position: relative; }
+.keepsake-stage > .keepsake-globe, .keepsake-stage > .keepsake-light { position: relative; z-index: 1; }
+.keepsake-globe { box-shadow: 0 0 26px rgba(120, 190, 255, .55), 0 10px 28px rgba(0, 0, 0, .35); }
+.keepsake-stage > .keepsake-globe { width: 86%; height: 86%; }
+.keepsake-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, var(--scene-a), var(--scene-b) 78%);
+  pointer-events: none;
+  --sx: 1;
+}
+.keepsake-scene.is-space { background: radial-gradient(circle at 50% 50%, var(--scene-a), var(--scene-b) 80%); }
+.keepsake-floor {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 9%;
+  height: 15%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, .85), rgba(255, 255, 255, .15) 70%);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .12);
+}
+.keepsake-shadow {
+  position: absolute;
+  left: 32%;
+  right: 32%;
+  bottom: 12%;
+  height: 7%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .28);
+  filter: blur(4px);
+  transform: scaleX(var(--sx));
+}
+.keepsake-light { filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .25)); margin-top: -6%; }
+.keepsake-fx { position: absolute; bottom: 6%; opacity: 0; line-height: 1; animation: keepsake-rise 6s linear infinite; }
+.keepsake-fx.is-fall { bottom: auto; top: 0; animation-name: keepsake-fall; }
+.keepsake-star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  animation: keepsake-twinkle 2.6s ease-in-out infinite;
+}
+@keyframes keepsake-rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(14px, -210px); opacity: 0; } }
+@keyframes keepsake-fall { 0% { transform: translate(0, -10px) rotate(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(-16px, 220px) rotate(160deg); opacity: 0; } }
+@keyframes keepsake-twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes keepsake-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@media (prefers-reduced-motion: no-preference) { .keepsake-light { animation: keepsake-bob 3.2s ease-in-out infinite; } }
+@media (prefers-reduced-motion: reduce) {
+  .keepsake-fx { animation: none; opacity: .55; bottom: auto; top: 18%; }
+  .keepsake-fx:nth-child(odd) { top: 30%; }
+  .keepsake-star { animation: none; opacity: .8; }
+}

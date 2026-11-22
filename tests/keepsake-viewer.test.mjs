@@ -39,3 +39,17 @@ test('every keepsake has details, and every detail line has a Filipino translati
   }
   assert.ok(known.has('Try this:'));
 });
+
+test('every keepsake has a scene theme with its own bits', async () => {
+  const { themeFor } = await import('../pwa/keepsake-scene.js');
+  const { KEEPSAKES } = await import('../pwa/rewards.js');
+  for (const [, name] of KEEPSAKES) {
+    const t = themeFor(name);
+    assert.equal(t.palette.length, 2, name);
+    assert.ok(t.space || t.bits.length > 0, `bits for ${name}`);
+  }
+  assert.equal(themeFor('Little Earth').space, true);
+  assert.deepEqual(themeFor('Compost worm').bits, ['🍂', '🍃']);
+  assert.ok(themeFor('Parol').bits.includes('❄️'), 'Christmas items get snow');
+  assert.ok(themeFor('Basura').bits.includes('🌟'), 'Wika items get stars');
+});
