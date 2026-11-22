@@ -3,6 +3,7 @@
 // emoji with some thickness. Nothing is loaded from the network.
 import { escapeHTML as e } from './core.js';
 import { sparkle, sound, buzz } from './buddy-fx.js';
+import { landMask, LAND_W, LAND_H } from './land-mask.js';
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((a % TAU) + TAU) % TAU;
@@ -15,45 +16,19 @@ export function stepSpin(s, dt, { idle = 0.5, friction = 2.4 } = {}) {
   return { ...s, vyaw, vpitch, yaw: s.yaw + (s.dragging ? 0 : vyaw * dt), pitch: clampPitch(s.pitch + (s.dragging ? 0 : vpitch * dt)) };
 }
 
-// ---------- Globe: rough continents as [longitude, latitude] outlines ----------
-const LAND = [
-  [[-168, 66], [-156, 71], [-125, 70], [-95, 72], [-80, 63], [-64, 60], [-56, 52], [-66, 45], [-70, 42], [-76, 38], [-81, 31], [-80, 25], [-84, 30], [-90, 29], [-97, 26], [-97, 20], [-91, 19], [-87, 21], [-88, 16], [-83, 15], [-83, 10], [-79, 9], [-85, 10], [-92, 14], [-97, 16], [-105, 20], [-110, 24], [-115, 30], [-117, 32], [-121, 35], [-124, 40], [-124, 48], [-130, 54], [-140, 60], [-150, 61], [-158, 57], [-165, 55], [-162, 60], [-166, 64]],
-  [[-73, 78], [-60, 82], [-30, 83], [-20, 75], [-22, 70], [-43, 60], [-52, 66], [-58, 75]],
-  [[-78, 8], [-72, 12], [-62, 10], [-52, 5], [-50, 0], [-35, -6], [-39, -15], [-41, -22], [-48, -26], [-58, -35], [-62, -40], [-66, -47], [-69, -52], [-72, -54], [-75, -47], [-73, -37], [-71, -28], [-70, -18], [-76, -14], [-81, -5], [-80, 0], [-77, 4]],
-  [[8, 58], [5, 62], [15, 69], [28, 71], [40, 67], [44, 68], [60, 70], [80, 73], [105, 78], [130, 72], [160, 70], [180, 68], [180, 65], [170, 60], [163, 58], [156, 51], [142, 54], [138, 46], [130, 42], [129, 35], [122, 40], [122, 30], [118, 24], [108, 21], [106, 10], [100, 13], [103, 2], [98, 8], [98, 16], [92, 22], [88, 22], [80, 15], [77, 8], [73, 17], [72, 21], [66, 25], [57, 25], [56, 27], [50, 30], [48, 29], [52, 24], [56, 24], [59, 22], [52, 16], [44, 13], [43, 16], [35, 28], [33, 31], [36, 36], [28, 37], [26, 40], [22, 37], [19, 41], [12, 44], [16, 38], [10, 44], [3, 43], [-1, 37], [-6, 36], [-9, 37], [-9, 43], [-2, 44], [-1, 47], [-5, 48], [2, 51], [8, 54]],
-  [[-17, 21], [-10, 30], [-6, 36], [10, 37], [11, 33], [20, 31], [32, 31], [34, 28], [38, 20], [43, 12], [51, 12], [48, 4], [40, -3], [40, -15], [35, -24], [33, -28], [27, -34], [20, -35], [17, -30], [12, -17], [14, -9], [9, -1], [9, 4], [4, 6], [-8, 4], [-13, 8], [-17, 14]],
-  [[114, -22], [122, -18], [130, -12], [137, -12], [142, -11], [146, -19], [153, -26], [150, -37], [141, -38], [135, -34], [129, -32], [115, -34], [113, -26]],
-  [[-5, 50], [1, 51], [-2, 56], [-5, 58], [-6, 55]],
-  [[130, 31], [135, 34], [141, 38], [142, 45], [140, 41], [136, 36]],
-  [[109, 1], [117, 7], [119, 1], [116, -4], [110, -3]],
-  [[95, 5], [98, 4], [106, -3], [105, -6], [100, -2]],
-  [[44, -25], [47, -25], [50, -15], [49, -12], [44, -17]],
-  [[120, 18], [122, 18], [122, 14], [124, 12], [126, 8], [125, 6], [122, 7], [121, 12], [120, 14]],
-  [[-180, -70], [180, -70], [180, -90], [-180, -90]]
-];
-const TW = 720, TH = 360;
-let landMask = null;
-function mask() {
-  if (landMask) return landMask;
-  const c = document.createElement('canvas');
-  c.width = TW; c.height = TH;
-  const g = c.getContext('2d', { willReadFrequently: true });
-  g.fillStyle = '#000';
-  for (const poly of LAND) {
-    g.beginPath();
-    poly.forEach(([lon, lat], i) => { const x = (lon + 180) * 2, y = (90 - lat) * 2; if (i) g.lineTo(x, y); else g.moveTo(x, y); });
-    g.closePath(); g.fill();
-  }
-  const data = g.getImageData(0, 0, TW, TH).data;
-  landMask = new Uint8Array(TW * TH);
-  for (let i = 0; i < landMask.length; i++) landMask[i] = data[i * 4 + 3] > 127 ? 1 : 0;
-  return landMask;
+// ---------- Globe: land and sea from a bundled quarter-degree bitmap (pwa/land-mask.js) ----------
+const SIZE = 240;
+function sample(land, lon, lat) {
+  // Bilinear, so coastlines are smooth instead of stair-stepped.
+  const fx = (((lon + 180) % 360) + 360) % 360 * 4 - 0.5, fy = Math.min(LAND_H - 1, Math.max(0, (90 - lat) * 4 - 0.5));
+  const x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0;
+  const xa = (x0 + LAND_W) % LAND_W, xb = (x0 + 1) % LAND_W, ya = y0 * LAND_W, yb = Math.min(LAND_H - 1, y0 + 1) * LAND_W;
+  return (land[ya + xa] * (1 - tx) + land[ya + xb] * tx) * (1 - ty) + (land[yb + xa] * (1 - tx) + land[yb + xb] * tx) * ty;
 }
-
-const SIZE = 176;
+const mix = (a, b, t) => a + (b - a) * t;
 function drawGlobe(canvas, s) {
   const g = canvas.getContext('2d');
-  const img = g.createImageData(SIZE, SIZE), px = img.data, land = mask();
+  const img = g.createImageData(SIZE, SIZE), px = img.data, land = landMask();
   const sp = Math.sin(-s.pitch), cp = Math.cos(-s.pitch), half = SIZE / 2;
   for (let j = 0; j < SIZE; j++) {
     for (let i = 0; i < SIZE; i++) {
@@ -63,16 +38,20 @@ function drawGlobe(canvas, s) {
       const y2 = y * cp - z * sp, z2 = y * sp + z * cp;
       const lon = (Math.atan2(x, z2) * 180) / Math.PI - (s.yaw * 180) / Math.PI;
       const lat = (Math.asin(Math.max(-1, Math.min(1, y2))) * 180) / Math.PI;
-      const u = Math.floor((((lon + 180) % 360) + 360) % 360 * 2) % TW, v = Math.min(TH - 1, Math.floor((90 - lat) * 2));
-      const isLand = land[v * TW + u] === 1;
+      const t = sample(land, lon, lat);
+      // Greener near the equator, paler toward the poles, white ice at the very top and bottom.
+      const polar = Math.min(1, Math.max(0, (Math.abs(lat) - 62) / 14));
+      const warm = Math.max(0, 1 - Math.abs(lat) / 50);
+      const landRGB = [mix(mix(70, 118, 1 - warm), 238, polar), mix(mix(160, 165, 1 - warm), 244, polar), mix(mix(82, 96, 1 - warm), 246, polar)];
+      const depth = 0.75 + 0.25 * Math.min(1, z * 1.4);
+      const sea = [40 * depth + 4, 112 * depth + 8, 190 * depth + 6];
       const light = 0.5 + 0.5 * Math.max(0, -0.4 * x + 0.5 * y + 0.75 * z);
       const rim = Math.pow(r2, 4) * 0.35;
-      const [R, G, B] = isLand ? [86, 170, 84] : [44, 120, 196];
       const o = (j * SIZE + i) * 4;
-      px[o] = Math.min(255, R * light + 255 * rim * 0.4);
-      px[o + 1] = Math.min(255, G * light + 255 * rim * 0.6);
-      px[o + 2] = Math.min(255, B * light + 255 * rim);
-      px[o + 3] = 255;
+      px[o] = Math.min(255, mix(sea[0], landRGB[0], t) * light + 100 * rim);
+      px[o + 1] = Math.min(255, mix(sea[1], landRGB[1], t) * light + 150 * rim);
+      px[o + 2] = Math.min(255, mix(sea[2], landRGB[2], t) * light + 255 * rim);
+      px[o + 3] = r2 > 0.985 ? Math.round(255 * (1 - r2) / 0.015) : 255;
     }
   }
   g.putImageData(img, 0, 0);
