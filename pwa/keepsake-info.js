@@ -1,0 +1,31 @@
+// Short facts and a small action for each keepsake, shown in the keepsake viewer. The Filipino
+// versions are in pwa/i18n.js and listed in docs/FILIPINO_REVIEW.md. Wika and Christmas week items
+// reuse their event text (pwa/events.js).
+export const KEEPSAKE_INFO = {
+  "Little seed": { about: "A seed holds a whole plant inside it.", tip: "Plant a seed from fruit you ate, in a used cup." },
+  "Fresh leaf": { about: "Leaves make food from sunlight and give us fresh air.", tip: "Collect fallen leaves for compost instead of burning them." },
+  "Potted plant": { about: "Plants can grow in any container that has holes for water to drain.", tip: "Reuse a clean can or bottle as a plant pot." },
+  "Recycle badge": { about: "The loop of arrows reminds us that materials can be used again.", tip: "Check the Waste Guide before you toss something." },
+  "Refill bottle": { about: "One refillable bottle can replace hundreds of single-use bottles.", tip: "Bring your bottle to school and refill it." },
+  "Lunchbox": { about: "A lunchbox keeps food fresh without plastic wrap.", tip: "Pack only what you can finish." },
+  "Reusable fork": { about: "A real fork can be washed and used thousands of times.", tip: "Keep a spoon and fork in your bag." },
+  "Compost pail": { about: "A pail collects food scraps that turn into food for soil.", tip: "Collect fruit peels and vegetable scraps, and ask your teacher what your school composts." },
+  "Compost worm": { about: "Worms eat scraps and leave rich soil behind.", tip: "Keep compost a little damp, like a squeezed sponge." },
+  "Autumn leaf": { about: "Leaves change color when a tree rests for the cold season.", tip: "Dry leaves can cover soil and keep it moist." },
+  "Tiny tree": { about: "Trees give shade, clean the air and shelter birds.", tip: "Plant or care for a tree with your class." },
+  "Water drop": { about: "Only a small part of Earth’s water is fresh and ready to drink.", tip: "Turn off the tap while you brush your teeth." },
+  "Little Earth": { about: "Earth is the only home we have, so small habits matter.", tip: "Spin me around and find the Philippines!" },
+  "Sunshine": { about: "Sunlight can dry clothes and power solar panels.", tip: "Dry clothes in the sun instead of using a dryer." },
+  "Rainbow": { about: "Rainbows appear when sunlight passes through water drops.", tip: "Collect rainwater to water plants." },
+  "Butterfly": { about: "Butterflies help flowers make seeds when they visit them.", tip: "Plant flowers and skip sprays that harm insects." },
+  "Busy bee": { about: "Bees carry pollen from flower to flower, and that helps fruit grow.", tip: "Leave a small bowl of water with stones for thirsty bees." },
+  "Ladybug": { about: "Ladybugs eat tiny pests that nibble on plants.", tip: "Look for ladybugs in the garden, and watch without picking them up." },
+  "Mushroom": { about: "Mushrooms help break down fallen leaves and wood.", tip: "Never eat a wild mushroom unless a knowing adult says it is safe." },
+  "Nest": { about: "Birds build nests from twigs, leaves and grass.", tip: "Keep trees and shrubs where birds can nest." },
+  "Sea shell": { about: "A shell is the old home of a sea animal.", tip: "Keep litter out of drains so it never reaches the sea." },
+  "Basket": { about: "A basket can carry things again and again.", tip: "Use a basket or bayong when you shop." },
+  "School bag": { about: "A strong bag can last for years if you look after it.", tip: "Mend a torn strap instead of buying a new bag." },
+  "Gold star": { about: "A gold star means you kept going with small habits.", tip: "Tell a friend one habit that you do." },
+  "Wika champion": { about: "You learned all seven words of Linggo ng Wika!", tip: "Teach one of the words to someone at home." },
+  "Christmas star": { about: "You tried all seven Christmas ideas!", tip: "Keep one idea going all year." },
+};

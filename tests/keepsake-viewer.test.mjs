@@ -23,3 +23,19 @@ test('while dragging nothing moves on its own, and idle 0 lets it rest', () => {
   for (let i = 0; i < 600; i++) s = stepSpin(s, 0.016, { idle: 0 });
   assert.ok(Math.abs(s.vyaw) < 0.01);
 });
+
+test('every keepsake has details, and every detail line has a Filipino translation', async () => {
+  const { KEEPSAKES } = await import('../pwa/rewards.js');
+  const { EVENTS } = await import('../pwa/events.js');
+  const { KEEPSAKE_INFO } = await import('../pwa/keepsake-info.js');
+  const { detailsHTML } = await import('../pwa/keepsake-viewer.js');
+  const { pairs } = await import('../pwa/i18n.js');
+  const known = new Set(pairs.map((p) => p[0]));
+  const names = [...KEEPSAKES.map((k) => k[1]), ...EVENTS.flatMap((ev) => [...ev.items.map((i) => i.name), ev.champion[1]])];
+  for (const name of names) {
+    assert.ok(detailsHTML(name).includes('keepsake-about'), `details for ${name}`);
+    const info = KEEPSAKE_INFO[name];
+    if (info) for (const line of [info.about, info.tip]) assert.ok(known.has(line), `Filipino for: ${line}`);
+  }
+  assert.ok(known.has('Try this:'));
+});

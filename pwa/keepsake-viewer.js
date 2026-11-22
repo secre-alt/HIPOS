@@ -4,6 +4,8 @@
 import { escapeHTML as e } from './core.js';
 import { sparkle, sound, buzz } from './buddy-fx.js';
 import { landMask, LAND_W, LAND_H } from './land-mask.js';
+import { KEEPSAKE_INFO } from './keepsake-info.js';
+import { EVENTS } from './events.js';
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((a % TAU) + TAU) % TAU;
@@ -75,6 +77,20 @@ function buildStack(emoji) {
   return stack;
 }
 
+// ---------- Details shown under the name ----------
+// Daily-gift keepsakes use KEEPSAKE_INFO; event keepsakes show what the event item taught.
+export function detailsHTML(name) {
+  const plain = KEEPSAKE_INFO[name];
+  if (plain) return `<p class="keepsake-about">${e(plain.about)}</p><p class="keepsake-tip"><strong>Try this:</strong> <span>${e(plain.tip)}</span></p>`;
+  for (const ev of EVENTS) {
+    const it = ev.items.find((x) => x.name === name);
+    if (!it) continue;
+    if (ev.kind === 'word') return `<p class="keepsake-about">${e(it.meaning)}</p><p class="keepsake-fil" lang="fil" data-no-translate>“${e(it.example)}”</p><p class="keepsake-tip"><strong>In English:</strong> <span data-no-translate>${e(it.english)}</span></p>`;
+    return `<p class="keepsake-about">${e(it.detail)}</p><p class="keepsake-tip"><strong>Try this:</strong> <span>${e(it.title)}</span></p>`;
+  }
+  return '';
+}
+
 // ---------- Dialog ----------
 export function openKeepsake(emoji, name) {
   if (typeof document === 'undefined') return;
@@ -84,7 +100,7 @@ export function openKeepsake(emoji, name) {
   dialog.id = 'keepsake-view';
   dialog.className = 'sort-answer-panel reward-modal keepsake-view';
   dialog.setAttribute('aria-labelledby', 'keepsake-view-title');
-  dialog.innerHTML = `<h3 id="keepsake-view-title">${e(name)}</h3><div class="keepsake-stage" tabindex="0" role="group" aria-label="Drag or use the arrow keys to turn it around"></div><p class="keepsake-hint">Drag to turn it around</p><div class="actions"><button type="button" class="secondary" data-keepsake-spin>Spin</button><button type="button" data-keepsake-close>Close</button></div>`;
+  dialog.innerHTML = `<h3 id="keepsake-view-title">${e(name)}</h3><div class="keepsake-stage" tabindex="0" role="group" aria-label="Drag or use the arrow keys to turn it around"></div><p class="keepsake-hint">Drag to turn it around</p>${detailsHTML(name)}<div class="actions"><button type="button" class="secondary" data-keepsake-spin>Spin</button><button type="button" data-keepsake-close>Close</button></div>`;
   const stage = dialog.querySelector('.keepsake-stage');
   let canvas = null, stack = null;
   if (isEarth) {

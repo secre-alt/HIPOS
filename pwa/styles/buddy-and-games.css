@@ -1917,7 +1917,7 @@ main .keepsake-open {
 main .keepsake-open:hover { background: rgba(120, 140, 125, .2); }
 .keepsake-view { text-align: center; align-items: center; }
 .keepsake-stage {
-  width: min(220px, 70vw);
+  width: min(220px, 70vw, 36dvh);
   aspect-ratio: 1;
   margin: 8px auto;
   display: grid;
@@ -1935,3 +1935,6 @@ main .keepsake-open:hover { background: rgba(120, 140, 125, .2); }
 .keepsake-hint { margin: 0; color: var(--muted); font-size: .875rem; }
 .keepsake-view .actions { display: flex; gap: 8px; justify-content: center; }
 .keepsake-view .actions button { min-height: 48px; }
+.keepsake-about { margin: 8px 0 4px; font-size: 1rem; }
+.keepsake-fil { margin: 2px 0; font-style: italic; }
+.keepsake-tip { margin: 4px 0 8px; padding: 8px 12px; border-radius: 14px; background: rgba(120, 140, 125, .2); font-size: .9375rem; text-align: left; }

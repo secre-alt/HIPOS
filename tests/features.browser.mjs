@@ -349,6 +349,7 @@ try{
     const stage=page.locator('#keepsake-view .keepsake-stage');
     await stage.waitFor();
     assert.equal(await page.locator('#keepsake-view canvas.keepsake-globe').count(),1);
+    assert.match(await page.locator('#keepsake-view').innerText(),/Earth is the only home[\s\S]*Try this:[\s\S]*Philippines/);
     const colors=await page.evaluate(()=>{const c=document.querySelector('.keepsake-globe'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let land=0,sea=0;for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;if(d[i+1]>d[i+2])land++;else sea++;}return{land,sea};});
     assert.ok(colors.land>500&&colors.sea>500,`globe shows land and sea: ${JSON.stringify(colors)}`);
     const yaw0=Number(await stage.getAttribute('data-yaw')),box=await stage.boundingBox();

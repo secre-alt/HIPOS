@@ -172,6 +172,59 @@ These Filipino translations were written by Claude and have not yet been checked
 | Drag to turn it around | I-drag para paikutin |
 | Spin | Paikutin |
 | Drag or use the arrow keys to turn it around | I-drag o gamitin ang arrow keys para paikutin |
+| Try this: | Subukan ito: |
+| A seed holds a whole plant inside it. | Ang buto ay may buong halaman sa loob nito. |
+| Plant a seed from fruit you ate, in a used cup. | Magtanim ng buto mula sa prutas na kinain mo, sa lumang baso. |
+| Leaves make food from sunlight and give us fresh air. | Gumagawa ng pagkain ang dahon mula sa sikat ng araw at nagbibigay sa atin ng sariwang hangin. |
+| Collect fallen leaves for compost instead of burning them. | Ipunin ang mga nalaglag na dahon para sa compost sa halip na sunugin. |
+| Plants can grow in any container that has holes for water to drain. | Puwedeng tumubo ang halaman sa anumang lalagyang may butas para sa tubig. |
+| Reuse a clean can or bottle as a plant pot. | Gamiting paso ang malinis na lata o bote. |
+| The loop of arrows reminds us that materials can be used again. | Pinapaalala ng mga arrow na puwedeng gamitin ulit ang mga materyales. |
+| Check the Waste Guide before you toss something. | Tingnan ang Waste Guide bago magtapon. |
+| One refillable bottle can replace hundreds of single-use bottles. | Isang boteng nirerefill ay puwedeng pumalit sa daan-daang minsanang bote. |
+| Bring your bottle to school and refill it. | Magdala ng bote sa school at i-refill ito. |
+| A lunchbox keeps food fresh without plastic wrap. | Napapanatiling sariwa ng lunchbox ang pagkain nang walang plastik na balot. |
+| Pack only what you can finish. | Magbaon lang ng kayang ubusin. |
+| A real fork can be washed and used thousands of times. | Ang tunay na tinidor ay nahuhugasan at magagamit nang libu-libong beses. |
+| Keep a spoon and fork in your bag. | Maglagay ng kutsara at tinidor sa bag mo. |
+| A pail collects food scraps that turn into food for soil. | Iniipon ng balde ang tirang pagkain na nagiging pagkain ng lupa. |
+| Collect fruit peels and vegetable scraps, and ask your teacher what your school composts. | Ipunin ang balat ng prutas at tira ng gulay, at itanong sa guro kung ano ang kino-compost sa school. |
+| Worms eat scraps and leave rich soil behind. | Kumakain ng tira ang uod at nag-iiwan ng masustansiyang lupa. |
+| Keep compost a little damp, like a squeezed sponge. | Panatilihing medyo basa ang compost, tulad ng pinigang espongha. |
+| Leaves change color when a tree rests for the cold season. | Nagbabago ng kulay ang dahon kapag nagpapahinga ang puno sa malamig na panahon. |
+| Dry leaves can cover soil and keep it moist. | Puwedeng ipantakip sa lupa ang tuyong dahon para manatiling basa. |
+| Trees give shade, clean the air and shelter birds. | Nagbibigay ng lilim ang puno, nililinis ang hangin at tinitirhan ng ibon. |
+| Plant or care for a tree with your class. | Magtanim o mag-alaga ng puno kasama ang klase mo. |
+| Only a small part of Earth’s water is fresh and ready to drink. | Maliit na bahagi lang ng tubig sa mundo ang sariwa at maiinom. |
+| Turn off the tap while you brush your teeth. | Isara ang gripo habang nagsisipilyo. |
+| Earth is the only home we have, so small habits matter. | Ang Daigdig lang ang tahanan natin, kaya mahalaga ang maliliit na gawi. |
+| Spin me around and find the Philippines! | Paikutin mo ako at hanapin ang Pilipinas! |
+| Sunlight can dry clothes and power solar panels. | Napapatuyo ng sikat ng araw ang damit at napapagana ang solar panel. |
+| Dry clothes in the sun instead of using a dryer. | Magpatuyo ng damit sa araw sa halip na gumamit ng dryer. |
+| Rainbows appear when sunlight passes through water drops. | Lumilitaw ang bahaghari kapag dumaan ang sikat ng araw sa mga patak ng tubig. |
+| Collect rainwater to water plants. | Mag-ipon ng tubig-ulan para sa pagdidilig ng halaman. |
+| Butterflies help flowers make seeds when they visit them. | Natutulungan ng paruparo ang mga bulaklak na magkabuto kapag dumadapo sila. |
+| Plant flowers and skip sprays that harm insects. | Magtanim ng bulaklak at iwasan ang spray na nakakasama sa kulisap. |
+| Bees carry pollen from flower to flower, and that helps fruit grow. | Dinadala ng bubuyog ang pollen sa bawat bulaklak, at nakakatulong ito sa pagbunga. |
+| Leave a small bowl of water with stones for thirsty bees. | Maglagay ng maliit na mangkok ng tubig na may bato para sa uhaw na bubuyog. |
+| Ladybugs eat tiny pests that nibble on plants. | Kinakain ng ladybug ang maliliit na peste na kumakain sa halaman. |
+| Look for ladybugs in the garden, and watch without picking them up. | Hanapin ang ladybug sa hardin at panoorin lang, huwag hawakan. |
+| Mushrooms help break down fallen leaves and wood. | Tumutulong ang kabute na pagbulukin ang nalaglag na dahon at kahoy. |
+| Never eat a wild mushroom unless a knowing adult says it is safe. | Huwag kumain ng ligaw na kabute maliban kung sinabi ng nakakaalam na adulto na ligtas ito. |
+| Birds build nests from twigs, leaves and grass. | Gumagawa ng pugad ang ibon mula sa sanga, dahon at damo. |
+| Keep trees and shrubs where birds can nest. | Panatilihin ang mga puno at halaman na mapupugaran ng ibon. |
+| A shell is the old home of a sea animal. | Ang kabibe ay dating tahanan ng hayop sa dagat. |
+| Keep litter out of drains so it never reaches the sea. | Huwag hayaang mapunta ang basura sa kanal para hindi umabot sa dagat. |
+| A basket can carry things again and again. | Paulit-ulit na nakakapagdala ng gamit ang basket. |
+| Use a basket or bayong when you shop. | Gumamit ng basket o bayong kapag namimili. |
+| A strong bag can last for years if you look after it. | Tatagal nang ilang taon ang matibay na bag kung aalagaan. |
+| Mend a torn strap instead of buying a new bag. | Tahiin ang sirang strap sa halip na bumili ng bago. |
+| A gold star means you kept going with small habits. | Ang gintong bituin ay para sa pagpapatuloy sa maliliit na gawi. |
+| Tell a friend one habit that you do. | Sabihin sa kaibigan ang isang gawi mo. |
+| You learned all seven words of Linggo ng Wika! | Natutunan mo ang lahat ng pitong salita ng Linggo ng Wika! |
+| Teach one of the words to someone at home. | Ituro ang isa sa mga salita sa kasama mo sa bahay. |
+| You tried all seven Christmas ideas! | Nasubukan mo ang lahat ng pitong ideya sa Pasko! |
+| Keep one idea going all year. | Ituloy ang isang ideya buong taon. |
 | Sunshine | Sikat ng araw |
 | Butterfly | Paruparo |
 | Busy bee | Masipag na bubuyog |

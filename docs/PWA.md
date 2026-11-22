@@ -72,7 +72,7 @@ Everything here is cosmetic, optional and stays on the device. The code is in `p
 
 ## Keepsake viewer
 
-Collected keepsakes (My buddy page) are buttons. Tapping one opens `pwa/keepsake-viewer.js`: a dialog where the keepsake can be turned by dragging, with the arrow keys, or with the Spin button, and it coasts after a flick. Little Earth is a real globe drawn on a canvas from a built-in quarter-degree land and sea bitmap (`pwa/land-mask.js`, about 18 KB, made from Natural Earth 1:50m land, which is public domain; rebuild it with `scripts/make-land-mask.py`). It needs no images or network; every other keepsake is its emoji stacked in layers so it has thickness. With reduced motion it does not drift or coast, but dragging still works. The dialog closes with Close, Escape or a tap outside.
+Collected keepsakes (My buddy page) are buttons. Tapping one opens `pwa/keepsake-viewer.js`: a dialog where the keepsake can be turned by dragging, with the arrow keys, or with the Spin button, and it coasts after a flick. Little Earth is a real globe drawn on a canvas from a built-in quarter-degree land and sea bitmap (`pwa/land-mask.js`, about 18 KB, made from Natural Earth 1:50m land, which is public domain; rebuild it with `scripts/make-land-mask.py`). It needs no images or network; every other keepsake is its emoji stacked in layers so it has thickness. With reduced motion it does not drift or coast, but dragging still works. Under the name each keepsake shows a short fact and a small action to try (`pwa/keepsake-info.js`; event keepsakes reuse their event text). The dialog closes with Close, Escape or a tap outside.
 
 ## Tests
 
