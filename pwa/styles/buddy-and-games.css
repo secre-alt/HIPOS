@@ -1997,3 +1997,4 @@ main .keepsake-open:hover { background: rgba(120, 140, 125, .2); }
   .keepsake-fx:nth-child(odd) { top: 30%; }
   .keepsake-star { animation: none; opacity: .8; }
 }
+.keepsake-stage > .keepsake-model { position: relative; z-index: 1; width: 92%; height: 92%; margin-top: -8%; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .25)); }

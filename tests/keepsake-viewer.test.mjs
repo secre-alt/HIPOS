@@ -53,3 +53,19 @@ test('every keepsake has a scene theme with its own bits', async () => {
   assert.ok(themeFor('Parol').bits.includes('❄️'), 'Christmas items get snow');
   assert.ok(themeFor('Basura').bits.includes('🌟'), 'Wika items get stars');
 });
+
+test('3D models project into back-to-front faces that stay in front of the camera', async () => {
+  const { MODELS, projectFaces } = await import('../pwa/keepsake-model.js');
+  assert.deepEqual(Object.keys(MODELS).sort(), ['Butterfly', 'Gold star', 'Tiny tree']);
+  for (const [name, m] of Object.entries(MODELS)) {
+    for (const view of [{ yaw: 0, pitch: 0 }, { yaw: 2.4, pitch: 0.6 }, { yaw: -1, pitch: -1.1 }]) {
+      const faces = projectFaces(m.faces(0.3), view);
+      assert.ok(faces.length > 20, `${name} has faces`);
+      for (let i = 1; i < faces.length; i++) assert.ok(faces[i - 1].depth <= faces[i].depth, `${name} sorted`);
+      for (const f of faces) {
+        assert.ok(f.color.every((c) => c >= 0 && c <= 255), `${name} colour`);
+        assert.ok(f.pts.every((p) => p[2] < 3.5), `${name} stays inside the camera distance`);
+      }
+    }
+  }
+});

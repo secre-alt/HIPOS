@@ -7,6 +7,7 @@ import { landMask, LAND_W, LAND_H } from './land-mask.js';
 import { KEEPSAKE_INFO } from './keepsake-info.js';
 import { EVENTS } from './events.js';
 import { buildScene, lightScene } from './keepsake-scene.js';
+import { MODELS, drawModel } from './keepsake-model.js';
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((a % TAU) + TAU) % TAU;
@@ -96,7 +97,7 @@ export function detailsHTML(name) {
 export function openKeepsake(emoji, name) {
   if (typeof document === 'undefined') return;
   document.querySelector('#keepsake-view')?.remove();
-  const isEarth = emoji === '🌍';
+  const isEarth = emoji === '🌍', model = MODELS[name] || null;
   const dialog = document.createElement('dialog');
   dialog.id = 'keepsake-view';
   dialog.className = 'sort-answer-panel reward-modal keepsake-view';
@@ -106,9 +107,9 @@ export function openKeepsake(emoji, name) {
   const scene = buildScene(name);
   stage.append(scene);
   let canvas = null, stack = null;
-  if (isEarth) {
+  if (isEarth || model) {
     canvas = document.createElement('canvas');
-    canvas.width = SIZE; canvas.height = SIZE; canvas.className = 'keepsake-globe';
+    canvas.width = SIZE; canvas.height = SIZE; canvas.className = isEarth ? 'keepsake-globe' : 'keepsake-model';
     canvas.setAttribute('aria-hidden', 'true');
     stage.append(canvas);
   } else {
@@ -120,11 +121,12 @@ export function openKeepsake(emoji, name) {
   }
 
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let s = { yaw: isEarth ? -2.1 : 0, pitch: isEarth ? 0.35 : 0, vyaw: 0, vpitch: 0, dragging: false };
+  let s = { yaw: isEarth ? -2.1 : model?.yaw || 0, pitch: isEarth ? 0.35 : model?.pitch || 0, vyaw: 0, vpitch: 0, dragging: false };
   let raf = 0, last = 0, pointer = null, lx = 0, ly = 0, lt = 0;
   const idle = calm ? 0 : 0.5;
   function paint() {
     if (isEarth) drawGlobe(canvas, s);
+    else if (model) drawModel(canvas, model, s, performance.now() / 1000);
     else stack.style.transform = `rotateX(${(-s.pitch).toFixed(3)}rad) rotateY(${s.yaw.toFixed(3)}rad)`;
     lightScene(scene, s.yaw);
     stage.dataset.yaw = wrapAngle(s.yaw).toFixed(2);
