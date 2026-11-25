@@ -1,5 +1,6 @@
 // Small hand-built 3D models for a few favourite keepsakes, drawn on a canvas with a tiny
 // software renderer (flat-shaded faces, sorted back to front). No libraries or images.
+import { SHAPES } from './keepsake-shapes.js';
 const TAU = Math.PI * 2;
 const ring = (n, r, y, off = 0) => Array.from({ length: n }, (_, i) => [Math.cos(off + (i / n) * TAU) * r, y, Math.sin(off + (i / n) * TAU) * r]);
 
@@ -57,19 +58,23 @@ function butterflyFaces(t) {
   return out;
 }
 
+const MOVING = new Set(['Busy bee', 'Compost worm']);
+const PITCH = { 'Ladybug': 0.55, 'Nest': 0.55, 'Noche Buena plate': 0.5, 'Sea shell': 0.1, 'Rainbow': 0.1, 'Pag-asa': 0.3, 'Compost worm': 0.5, 'Malinis': 0.4, 'Lunchbox': 0.35, 'Basket': 0.3, 'Mushroom': 0.15, 'Sunshine': 0.1, 'Wika champion': 0.1, 'Recycle badge': 0.1, 'Muling gamitin': 0.1, 'Mushroom': 0.2 };
 export const MODELS = {
   'Gold star': { faces: () => starFaces(), pitch: 0.15, yaw: 0.6, scale: 0.4 },
   'Tiny tree': { faces: () => treeFaces(), pitch: 0.18, yaw: 0.5, scale: 0.4 },
-  'Butterfly': { faces: (t) => butterflyFaces(t), pitch: 0.25, yaw: 0, scale: 0.33, animated: true }
+  'Butterfly': { faces: (t) => butterflyFaces(t), pitch: 0.25, yaw: 0, scale: 0.33, animated: true },
+  ...Object.fromEntries(Object.entries(SHAPES).map(([name, faces]) => [name, { faces, pitch: PITCH[name] ?? 0.22, yaw: 0.55, animated: MOVING.has(name) }]))
 };
 
 // ---------- Renderer ----------
 const L = (() => { const v = [-0.4, 0.6, 0.7], n = Math.hypot(...v); return v.map((x) => x / n); })();
 const H = (() => { const v = [L[0], L[1], L[2] + 1], n = Math.hypot(...v); return v.map((x) => x / n); })();
-export function projectFaces(faces, { yaw, pitch }) {
+export function projectFaces(faces, { yaw, pitch }, center = [0, 0, 0]) {
   const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
   return faces.map((f) => {
-    const pts = f.pts.map(([x, y, z]) => {
+    const pts = f.pts.map(([x0, y0, z0]) => {
+      const x = x0 - center[0], y = y0 - center[1], z = z0 - center[2];
       const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
       return [x1, y * cp - z1 * sp, y * sp + z1 * cp];
     });
@@ -87,18 +92,31 @@ export function projectFaces(faces, { yaw, pitch }) {
     const spec = (f.spec || 0) * Math.pow(Math.max(0, nx * H[0] + ny * H[1] + nz * H[2]), 24);
     const shade = 0.5 + 0.5 * diff;
     const color = f.color.map((c) => Math.min(255, Math.round(c * shade + 255 * spec * 0.9)));
-    return { pts, depth, color };
+    return { pts, depth, color, alpha: f.alpha };
   }).sort((a, b) => a.depth - b.depth);
 }
+// Centres each model on its own middle and sizes it so it never leaves the canvas while turning.
+function prepare(model) {
+  if (model.fit) return;
+  const pts = model.faces(0.4).flatMap((f) => f.pts), lo = [0, 1, 2].map((a) => Math.min(...pts.map((p) => p[a]))), hi = [0, 1, 2].map((a) => Math.max(...pts.map((p) => p[a])));
+  model.center = lo.map((v, a) => (v + hi[a]) / 2);
+  const R = Math.max(...pts.map((p) => Math.hypot(p[0] - model.center[0], p[1] - model.center[1], p[2] - model.center[2]))) * (model.animated ? 1.1 : 1);
+  model.fit = Math.min(0.4, 0.4 / R);
+}
 export function drawModel(canvas, model, s, time = 0) {
-  const g = canvas.getContext('2d'), size = canvas.width, c = size / 2, k = size * model.scale;
+  prepare(model);
+  const g = canvas.getContext('2d'), size = canvas.width, c = size / 2, k = size * model.fit;
   g.clearRect(0, 0, size, size);
-  g.lineJoin = 'round'; g.lineWidth = 1;
-  for (const f of projectFaces(model.faces(time), s)) {
+  g.lineJoin = 'round'; g.lineWidth = 1; g.globalAlpha = 1;
+  // Still models are built once; moving ones are rebuilt every frame.
+  const faces = model.animated ? model.faces(time) : (model.cache ||= model.faces(0));
+  for (const f of projectFaces(faces, s, model.center)) {
     g.beginPath();
     f.pts.forEach(([x, y, z], i) => { const p = 4 / (4 - z), px = c + x * p * k, py = c - y * p * k; if (i) g.lineTo(px, py); else g.moveTo(px, py); });
     g.closePath();
     const css = `rgb(${f.color[0]}, ${f.color[1]}, ${f.color[2]})`;
-    g.fillStyle = css; g.strokeStyle = css; g.fill(); g.stroke();
+    g.globalAlpha = f.alpha || 1;
+    g.fillStyle = css; g.strokeStyle = css; g.fill(); if (!f.alpha) g.stroke();
   }
+  g.globalAlpha = 1;
 }
