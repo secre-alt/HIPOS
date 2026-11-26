@@ -343,6 +343,9 @@ try{
     assert.equal(await page.locator('#weekly-quests progress').count(),3);
     await page.goto(base+'#avatar');
     assert.match(await page.locator('#keepsakes').innerText(),/1 of 24 keepsakes/);
+    // The tiles must look like tiles, not like the dark green action buttons.
+    const tile=await page.evaluate(()=>{const b=document.querySelector('.keepsake-open'),c=getComputedStyle(b);return{bg:c.backgroundColor,img:c.backgroundImage,shadow:c.boxShadow,color:c.color};});
+    assert.equal(tile.img,'none','keepsake tile has no button gradient');assert.equal(tile.shadow,'none','keepsake tile has no raised button shadow');assert.match(tile.bg,/rgba\(0, 0, 0, 0\)|transparent/);
     // Tapping a keepsake opens a viewer; Little Earth is a globe that can be turned by dragging.
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.locator('[data-keepsake-name="Little Earth"]').click();

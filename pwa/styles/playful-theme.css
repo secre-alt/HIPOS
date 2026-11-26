@@ -112,7 +112,7 @@ button,
     background-color .15s ease-out,
     border-color .15s ease-out;
 }
-main button:not(.secondary):not(.danger):not(.waste-choice),
+main button:not(.secondary):not(.danger):not(.waste-choice):not(.keepsake-open),
 main .button-link:not(.secondary) {
   background:
     linear-gradient(
@@ -121,7 +121,7 @@ main .button-link:not(.secondary) {
       #145540);
   box-shadow: 0 3px 0 #0a2a20, 0 8px 16px #0c312626;
 }
-main button:not(.secondary):not(.danger):not(.waste-choice):hover,
+main button:not(.secondary):not(.danger):not(.waste-choice):not(.keepsake-open):hover,
 main .button-link:not(.secondary):hover {
   background:
     linear-gradient(
@@ -130,7 +130,7 @@ main .button-link:not(.secondary):hover {
       #18603f);
   transform: translateY(-1px);
 }
-main button:not(.secondary):not(.danger):not(.waste-choice):active,
+main button:not(.secondary):not(.danger):not(.waste-choice):not(.keepsake-open):active,
 main .button-link:not(.secondary):active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #0a2a20;
